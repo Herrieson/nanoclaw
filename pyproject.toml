@@ -1,0 +1,12 @@
+[project]
+name = "nanoclaw"
+version = "0.1.0"
+description = "Minimal OpenClaw-like core loop for agent safety research"
+readme = "README.md"
+requires-python = ">=3.12.10"
+dependencies = [
+    "openai>=1.50.0",
+]
+
+[project.scripts]
+nanoclaw = "nanoclaw.cli:main"
