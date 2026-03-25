@@ -36,11 +36,20 @@ This creates:
 
 ## 2) Sync official prompt files (byte-identical copy)
 
+By default, `sync-prompts` pulls OpenClaw runtime workspace templates (not repo-root `AGENTS.md`):
+
+- `docs/reference/templates/AGENTS.md`
+- `docs/reference/templates/SOUL.md`
+- `docs/reference/templates/TOOLS.md`
+- `docs/reference/templates/IDENTITY.md`
+- `docs/reference/templates/USER.md`
+- `docs/reference/templates/HEARTBEAT.md`
+- `docs/reference/templates/BOOTSTRAP.md`
+
+Run:
+
 ```bash
-uv run python main.py sync-prompts \
-  --repo-url https://github.com/openclaw/openclaw.git \
-  --ref main \
-  --files CLAUDE.md,AGENTS.md
+uv run python main.py sync-prompts --ref main
 ```
 
 Default behavior is cache-first: if local prompt files already match `manifest.json`, it does not pull remote again.
@@ -53,13 +62,11 @@ uv run python main.py sync-prompts --refresh
 
 When remote prompt content changes, nanoclaw stores a new snapshot under `workspace/prompts/official/versions/<timestamp_commit>/` and keeps previous snapshots. If commit changes but prompt files are byte-identical, it reuses the existing snapshot.
 
-The active snapshot is copied to:
-
-- `workspace/prompts/official/CLAUDE.md`
-- `workspace/prompts/official/AGENTS.md`
-- `workspace/prompts/official/manifest.json`
+The active snapshot is copied under `workspace/prompts/official/` using the same relative paths (for example `docs/reference/templates/AGENTS.md`) plus `manifest.json`.
 
 The manifest includes source repo/ref/commit, sha256 checksums, byte counts, generation timestamp, and snapshot version id.
+
+Note: during runtime, nanoclaw strips YAML front matter from synced template markdown so loaded prompt content matches OpenClaw's template loader behavior.
 
 ## 3) List and switch prompt versions
 
@@ -103,7 +110,7 @@ uv run python main.py run --task-file ./workspace/active_task.md
 - `NANOCLAW_MODEL`: default `gpt-4o`
 - `NANOCLAW_WORKSPACE_DIR`: default `workspace`
 - `NANOCLAW_PROMPT_DIR`: default `workspace/prompts/official`
-- `NANOCLAW_PROMPT_FILES`: default `CLAUDE.md,AGENTS.md`
+- `NANOCLAW_PROMPT_FILES`: default `docs/reference/templates/AGENTS.md,docs/reference/templates/SOUL.md,docs/reference/templates/TOOLS.md,docs/reference/templates/IDENTITY.md,docs/reference/templates/USER.md,docs/reference/templates/HEARTBEAT.md,docs/reference/templates/BOOTSTRAP.md`
 - `NANOCLAW_MAX_STEPS`: default `15`
 - `NANOCLAW_TEMPERATURE`: default `0.2`
 
@@ -112,5 +119,5 @@ uv run python main.py run --task-file ./workspace/active_task.md
 ```bash
 uv run python scripts/sync_openclaw_prompts.py --list-versions
 uv run python scripts/sync_openclaw_prompts.py --switch-version <version-id>
-uv run python scripts/sync_openclaw_prompts.py --refresh --ref main --files CLAUDE.md,AGENTS.md
+uv run python scripts/sync_openclaw_prompts.py --refresh --ref main
 ```

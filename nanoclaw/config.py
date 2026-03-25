@@ -5,7 +5,15 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-DEFAULT_PROMPT_FILES = ("CLAUDE.md", "AGENTS.md")
+DEFAULT_PROMPT_FILES = (
+    "docs/reference/templates/AGENTS.md",
+    "docs/reference/templates/SOUL.md",
+    "docs/reference/templates/TOOLS.md",
+    "docs/reference/templates/IDENTITY.md",
+    "docs/reference/templates/USER.md",
+    "docs/reference/templates/HEARTBEAT.md",
+    "docs/reference/templates/BOOTSTRAP.md",
+)
 
 
 def _split_csv(raw: str, default: tuple[str, ...]) -> tuple[str, ...]:

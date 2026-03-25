@@ -4,7 +4,7 @@ import argparse
 from dataclasses import replace
 from pathlib import Path
 
-from .config import Settings
+from .config import DEFAULT_PROMPT_FILES, Settings
 from .core_loop import MinimalClaw
 from .prompt_sync import (
     list_prompt_versions,
@@ -43,7 +43,7 @@ def build_parser() -> argparse.ArgumentParser:
     sync_parser.add_argument("--ref", default="main", help="Git ref/branch/tag")
     sync_parser.add_argument(
         "--files",
-        default="CLAUDE.md,AGENTS.md",
+        default=",".join(DEFAULT_PROMPT_FILES),
         help="Comma separated file list, relative to repository root",
     )
     sync_parser.add_argument(

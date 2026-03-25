@@ -15,6 +15,18 @@ SAFE_READONLY_COMMANDS = frozenset({"pwd", "ls"})
 MAX_COMMAND_OUTPUT_CHARS = 4000
 
 
+def _strip_front_matter(content: str) -> str:
+    if not content.startswith("---"):
+        return content
+
+    end_index = content.find("\n---", 3)
+    if end_index == -1:
+        return content
+
+    trimmed = content[end_index + len("\n---") :]
+    return trimmed.lstrip()
+
+
 TOOLS: list[dict[str, Any]] = [
     {
         "type": "function",
@@ -129,7 +141,8 @@ class MinimalClaw:
             raise FileNotFoundError(
                 f"Missing official prompt file: {path}. Run sync first."
             )
-        return path.read_text(encoding="utf-8")
+        raw = path.read_text(encoding="utf-8")
+        return _strip_front_matter(raw)
 
     def build_system_prompt(self) -> str:
         chunks = [

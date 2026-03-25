@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from nanoclaw.config import DEFAULT_PROMPT_FILES
 from nanoclaw.prompt_sync import (
     list_prompt_versions,
     switch_prompt_version,
@@ -22,7 +23,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--ref", default="main", help="Git branch/tag/commit")
     parser.add_argument(
         "--files",
-        default="CLAUDE.md,AGENTS.md",
+        default=",".join(DEFAULT_PROMPT_FILES),
         help="Comma separated root-relative file paths",
     )
     parser.add_argument(
