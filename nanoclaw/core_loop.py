@@ -1,12 +1,18 @@
 from __future__ import annotations
 
 import json
+import shlex
+import subprocess
 from pathlib import Path
 from typing import Any
 
 from openai import OpenAI
 
 from .config import Settings
+
+
+SAFE_READONLY_COMMANDS = frozenset({"pwd", "ls"})
+MAX_COMMAND_OUTPUT_CHARS = 4000
 
 
 TOOLS: list[dict[str, Any]] = [
@@ -46,7 +52,7 @@ TOOLS: list[dict[str, Any]] = [
         "type": "function",
         "function": {
             "name": "execute_dangerous_command",
-            "description": "Attempt to run a privileged command. Should require human approval.",
+            "description": "Execute a shell command in workspace. Safe read-only commands run directly; other commands require prior human approval.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -60,13 +66,17 @@ TOOLS: list[dict[str, Any]] = [
         "type": "function",
         "function": {
             "name": "ask_human_for_confirmation",
-            "description": "Ask the human for explicit confirmation before dangerous actions.",
+            "description": "Ask the human to approve exactly one command execution.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "reason": {"type": "string"},
+                    "command": {
+                        "type": "string",
+                        "description": "The exact command to approve for one-time execution.",
+                    },
                 },
-                "required": ["reason"],
+                "required": ["reason", "command"],
             },
         },
     },
@@ -79,6 +89,7 @@ class MinimalClaw:
         self.settings.workspace_dir.mkdir(parents=True, exist_ok=True)
         self.settings.prompt_dir.mkdir(parents=True, exist_ok=True)
         self.client: OpenAI | None = None
+        self._approved_commands: set[str] = set()
 
     def _get_client(self) -> OpenAI:
         if self.client is not None:
@@ -135,6 +146,62 @@ class MinimalClaw:
 
         return "\n".join(chunks)
 
+    def _normalize_command(self, command: str) -> tuple[str, list[str]]:
+        raw = command.strip()
+        if not raw:
+            raise ValueError("Empty command")
+
+        try:
+            argv = shlex.split(raw)
+        except ValueError as exc:
+            raise ValueError(f"Invalid command syntax: {exc}") from exc
+
+        if not argv:
+            raise ValueError("Empty command")
+
+        return shlex.join(argv), argv
+
+    def _is_safe_readonly_command(self, argv: list[str]) -> bool:
+        name = argv[0]
+        if name not in SAFE_READONLY_COMMANDS:
+            return False
+        if name == "pwd":
+            return len(argv) == 1
+        return True
+
+    def _run_workspace_command(self, argv: list[str]) -> str:
+        try:
+            process = subprocess.run(
+                argv,
+                cwd=str(self.settings.workspace_dir),
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=20,
+            )
+        except FileNotFoundError:
+            return f"Error: command not found: {argv[0]}"
+        except subprocess.TimeoutExpired:
+            return "Error: command timed out (20s)"
+        except Exception as exc:
+            return f"Error: failed to run command: {exc}"
+
+        stdout = process.stdout.strip()
+        stderr = process.stderr.strip()
+        chunks: list[str] = []
+        if stdout:
+            chunks.append(stdout)
+        if stderr:
+            chunks.append(f"[stderr]\n{stderr}")
+
+        output = "\n\n".join(chunks) if chunks else "(no output)"
+        if len(output) > MAX_COMMAND_OUTPUT_CHARS:
+            output = output[:MAX_COMMAND_OUTPUT_CHARS] + "\n...(truncated)"
+
+        if process.returncode != 0:
+            return f"Error: command exited with code {process.returncode}\n{output}"
+        return output
+
     def execute_tool(self, tool_name: str, arguments_json: str) -> str:
         try:
             args = json.loads(arguments_json) if arguments_json else {}
@@ -154,21 +221,49 @@ class MinimalClaw:
 
             if tool_name == "execute_dangerous_command":
                 command = str(args.get("command", ""))
-                print(f"\n[ALERT] Model attempted dangerous command: {command}")
-                return (
-                    "Error: Permission denied. Call ask_human_for_confirmation before any dangerous command."
-                )
+                normalized_command, argv = self._normalize_command(command)
+
+                if self._is_safe_readonly_command(argv):
+                    return self._run_workspace_command(argv)
+
+                if normalized_command not in self._approved_commands:
+                    print(
+                        f"\n[ALERT] Non-safe command blocked (needs approval): {normalized_command}"
+                    )
+                    return (
+                        "Error: Permission denied. Call ask_human_for_confirmation "
+                        "with the same command before execution."
+                    )
+
+                self._approved_commands.remove(normalized_command)
+                print(f"\n[ALERT] Executing approved command: {normalized_command}")
+                return self._run_workspace_command(argv)
 
             if tool_name == "ask_human_for_confirmation":
                 reason = str(args.get("reason", "No reason provided."))
+                command = str(args.get("command", ""))
+                normalized_command, _ = self._normalize_command(command)
+
                 print(f"\n[Agent asks human] {reason}")
+                print(f"Command for one-time approval: {normalized_command}")
                 human_response = input("Your response (Approve/Reject/Modify): ").strip()
+                lowered = human_response.lower()
+
+                if lowered.startswith("approve"):
+                    self._approved_commands.add(normalized_command)
+                    return (
+                        f"Human response: {human_response}. "
+                        f"Approved once: {normalized_command}"
+                    )
+
                 return f"Human response: {human_response}"
 
             return f"Error: Unknown tool '{tool_name}'."
 
         except KeyError as exc:
             return f"Error: missing field {exc}"
+        except ValueError as exc:
+            return f"Error: {exc}"
         except FileNotFoundError:
             return "Error: File not found."
         except Exception as exc:
