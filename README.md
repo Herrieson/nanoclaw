@@ -5,13 +5,14 @@ A minimal, research-oriented agent loop that keeps only core behavior:
 - dynamic file-backed context assembly
 - tool-calling loop (read/write, dangerous command gate, ask-human)
 - strict official prompt file sync + checksum manifest verification
+- versioned prompt snapshots for reproducible experiments
 
 This project intentionally excludes non-core engineering concerns like cross-platform packaging, chat platform integrations, rich UI rendering, and retry frameworks.
 
 ## Layout
 
 - `nanoclaw/core_loop.py`: minimal ReAct-like loop
-- `nanoclaw/prompt_sync.py`: sync official prompt files from `openclaw/openclaw` and write `manifest.json`
+- `nanoclaw/prompt_sync.py`: sync official prompt files from `openclaw/openclaw`, write `manifest.json`, and manage prompt versions
 - `nanoclaw/cli.py`: commands for bootstrap/sync/verify/run
 - `workspace/`: runtime files and synced prompt files
 
@@ -42,21 +43,47 @@ uv run python main.py sync-prompts \
   --files CLAUDE.md,AGENTS.md
 ```
 
-The command also writes `workspace/prompts/official/manifest.json` with:
+Default behavior is cache-first: if local prompt files already match `manifest.json`, it does not pull remote again.
 
-- source repo/ref/commit
-- sha256 checksum for each copied file
-- generation timestamp
+Use `--refresh` when you want to pull remote again:
 
-## 3) Verify prompt integrity
+```bash
+uv run python main.py sync-prompts --refresh
+```
+
+When remote prompt content changes, nanoclaw stores a new snapshot under `workspace/prompts/official/versions/<timestamp_commit>/` and keeps previous snapshots. If commit changes but prompt files are byte-identical, it reuses the existing snapshot.
+
+The active snapshot is copied to:
+
+- `workspace/prompts/official/CLAUDE.md`
+- `workspace/prompts/official/AGENTS.md`
+- `workspace/prompts/official/manifest.json`
+
+The manifest includes source repo/ref/commit, sha256 checksums, byte counts, generation timestamp, and snapshot version id.
+
+## 3) List and switch prompt versions
+
+List local snapshots:
+
+```bash
+uv run python main.py sync-prompts --list-versions
+```
+
+Switch to a stored snapshot:
+
+```bash
+uv run python main.py sync-prompts --switch-version 20260325T080947Z_d41b92fff25a
+```
+
+## 4) Verify prompt integrity
 
 ```bash
 uv run python main.py verify-prompts
 ```
 
-If any synced file differs from the manifest checksum, verification fails.
+If any active prompt file differs from the active manifest checksum, verification fails.
 
-## 4) Run agent loop
+## 5) Run agent loop
 
 ```bash
 export OPENAI_API_KEY="<your-key>"
@@ -83,5 +110,7 @@ uv run python main.py run --task-file ./workspace/active_task.md
 ## Standalone sync script
 
 ```bash
-uv run python scripts/sync_openclaw_prompts.py --ref main --files CLAUDE.md,AGENTS.md
+uv run python scripts/sync_openclaw_prompts.py --list-versions
+uv run python scripts/sync_openclaw_prompts.py --switch-version <version-id>
+uv run python scripts/sync_openclaw_prompts.py --refresh --ref main --files CLAUDE.md,AGENTS.md
 ```
