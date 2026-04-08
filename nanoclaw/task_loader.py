@@ -25,6 +25,12 @@ class TaskRuntime:
 
 
 @dataclass(frozen=True, slots=True)
+class TaskSkills:
+    include: tuple[str, ...]
+    auto: bool
+
+
+@dataclass(frozen=True, slots=True)
 class TaskDefinition:
     source_path: Path
     source_text: str
@@ -34,9 +40,14 @@ class TaskDefinition:
     asset: str
     prompt: str
     prompt_source: str | None
+    skills: TaskSkills
     runtime: TaskRuntime
 
-    def resolved_payload(self) -> dict[str, Any]:
+    def resolved_payload(
+        self,
+        *,
+        activated_skills: tuple[dict[str, Any], ...] = (),
+    ) -> dict[str, Any]:
         return {
             "id": self.task_id,
             "name": self.name,
@@ -45,6 +56,11 @@ class TaskDefinition:
             "task": {
                 "prompt": self.prompt,
                 "task_file": self.prompt_source,
+            },
+            "skills": {
+                "include": list(self.skills.include),
+                "auto": self.skills.auto,
+                "activated": list(activated_skills),
             },
             "runtime": {
                 "model": self.runtime.model,
@@ -131,9 +147,58 @@ class _SimpleYamlParser:
                     if child_indent <= indent:
                         value = {}
                     else:
-                        value, index = self._parse_mapping(child_line, child_indent)
+                        value, index = self._parse_node(child_line, child_indent)
 
             payload[key] = value
+
+    def _parse_node(self, start: int, expected_indent: int) -> tuple[Any, int]:
+        current = self._next_significant_line(start)
+        if current is None:
+            return {}, len(self.lines)
+
+        _, stripped = self._line_info(current)
+        if stripped == "-" or stripped.startswith("- "):
+            return self._parse_sequence(start, expected_indent)
+        return self._parse_mapping(start, expected_indent)
+
+    def _parse_sequence(
+        self, start: int, expected_indent: int
+    ) -> tuple[list[Any], int]:
+        payload: list[Any] = []
+        index = start
+
+        while True:
+            current = self._next_significant_line(index)
+            if current is None:
+                return payload, len(self.lines)
+
+            indent, stripped = self._line_info(current)
+            if indent < expected_indent:
+                return payload, current
+            if indent > expected_indent:
+                raise ValueError(
+                    f"Unexpected indentation at line {current + 1}: {self.lines[current]}"
+                )
+            if stripped != "-" and not stripped.startswith("- "):
+                return payload, current
+
+            raw_value = stripped[1:].strip()
+            index = current + 1
+
+            if raw_value:
+                value = _parse_scalar(raw_value)
+            else:
+                child_line = self._next_significant_line(index)
+                if child_line is None:
+                    value = {}
+                else:
+                    child_indent, _ = self._line_info(child_line)
+                    if child_indent <= indent:
+                        value = {}
+                    else:
+                        value, index = self._parse_node(child_line, child_indent)
+
+            payload.append(value)
 
     def _parse_block_scalar(
         self, start: int, parent_indent: int, *, folded: bool
@@ -240,6 +305,46 @@ def _optional_string(value: Any, field_name: str) -> str | None:
     return value
 
 
+def _optional_bool(value: Any, field_name: str) -> bool | None:
+    if value is None:
+        return None
+    if not isinstance(value, bool):
+        raise ValueError(f"Field '{field_name}' must be a boolean")
+    return value
+
+
+def _string_tuple(value: Any, field_name: str) -> tuple[str, ...]:
+    if value is None:
+        return ()
+    if isinstance(value, str):
+        stripped = value.strip()
+        return (stripped,) if stripped else ()
+    if not isinstance(value, list):
+        raise ValueError(f"Field '{field_name}' must be a string or list of strings")
+
+    collected: list[str] = []
+    for item in value:
+        if not isinstance(item, str):
+            raise ValueError(f"Field '{field_name}' must contain only strings")
+        stripped = item.strip()
+        if stripped:
+            collected.append(stripped)
+    return tuple(collected)
+
+
+def _load_task_skills(value: Any) -> TaskSkills:
+    if value is None:
+        return TaskSkills(include=(), auto=False)
+    if isinstance(value, (str, list)):
+        return TaskSkills(include=_string_tuple(value, "skills"), auto=False)
+
+    mapping = _require_mapping(value, "skills")
+    return TaskSkills(
+        include=_string_tuple(mapping.get("include"), "skills.include"),
+        auto=_optional_bool(mapping.get("auto"), "skills.auto") or False,
+    )
+
+
 def load_task_definition(task_path: Path, settings: Settings) -> TaskDefinition:
     source_path = task_path.expanduser().resolve()
     if not source_path.exists():
@@ -271,6 +376,7 @@ def load_task_definition(task_path: Path, settings: Settings) -> TaskDefinition:
         prompt_source = str(prompt_path)
     else:
         prompt = prompt_inline or ""
+    skills = _load_task_skills(payload.get("skills"))
 
     runtime_block_raw = payload.get("runtime")
     runtime_block = (
@@ -295,6 +401,7 @@ def load_task_definition(task_path: Path, settings: Settings) -> TaskDefinition:
         asset=asset,
         prompt=prompt,
         prompt_source=prompt_source,
+        skills=skills,
         runtime=runtime,
     )
 

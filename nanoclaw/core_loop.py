@@ -11,6 +11,7 @@ from typing import Any, Callable
 from openai import OpenAI
 
 from .config import Settings
+from .skills import SkillDefinition
 
 
 SAFE_READONLY_COMMANDS = frozenset({"pwd", "ls"})
@@ -107,7 +108,13 @@ class RunReport:
 
 
 class MinimalClaw:
-    def __init__(self, settings: Settings) -> None:
+    def __init__(
+        self,
+        settings: Settings,
+        *,
+        available_skills: tuple[SkillDefinition, ...] = (),
+        activated_skills: tuple[SkillDefinition, ...] = (),
+    ) -> None:
         self.settings = settings
         self.settings.workspace_dir.mkdir(parents=True, exist_ok=True)
         self.settings.prompt_dir.mkdir(parents=True, exist_ok=True)
@@ -115,6 +122,8 @@ class MinimalClaw:
         self._approved_commands: set[str] = set()
         self._event_handler: EventHandler | None = None
         self.last_run_report: RunReport | None = None
+        self.available_skills = available_skills
+        self.activated_skills = activated_skills
 
     def _get_client(self) -> OpenAI:
         if self.client is not None:
@@ -168,6 +177,26 @@ class MinimalClaw:
             chunks.append(f"--- BEGIN {name} ---")
             chunks.append(content)
             chunks.append(f"--- END {name} ---")
+            chunks.append("")
+
+        if self.available_skills:
+            chunks.append("--- BEGIN SKILL CATALOG ---")
+            chunks.append(
+                "Available skills for this run are summarized below. Only activated skills include full instructions."
+            )
+            chunks.append("")
+            for skill in self.available_skills:
+                chunks.append(f"- {skill.slug}: {skill.description}")
+            chunks.append("--- END SKILL CATALOG ---")
+            chunks.append("")
+
+        for skill in self.activated_skills:
+            chunks.append(f"--- BEGIN SKILL {skill.slug} ---")
+            chunks.append(f"Name: {skill.name}")
+            chunks.append(f"Description: {skill.description}")
+            chunks.append("")
+            chunks.append(skill.instructions)
+            chunks.append(f"--- END SKILL {skill.slug} ---")
             chunks.append("")
 
         return "\n".join(chunks)
@@ -372,6 +401,7 @@ class MinimalClaw:
             model=self.settings.model,
             max_steps=self.settings.max_steps,
             temperature=self.settings.temperature,
+            activated_skills=[skill.slug for skill in self.activated_skills],
         )
         self._emit_event("user_task", content=user_task)
 

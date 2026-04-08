@@ -20,6 +20,12 @@ from .run_store import (
     write_final_answer,
     write_summary,
 )
+from .skills import (
+    auto_select_skills,
+    discover_skills,
+    resolve_requested_skills,
+    serialize_skill,
+)
 from .task_loader import list_task_files, load_task_definition
 
 
@@ -33,6 +39,43 @@ def _load_task(task: str | None, task_file: str | None) -> str:
     if task_file:
         return Path(task_file).read_text(encoding="utf-8")
     raise ValueError("Provide --task or --task-file")
+
+
+def _unique_strings(values: tuple[str, ...]) -> tuple[str, ...]:
+    unique: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        stripped = value.strip()
+        if not stripped or stripped in seen:
+            continue
+        seen.add(stripped)
+        unique.append(stripped)
+    return tuple(unique)
+
+
+def _select_skills(
+    *,
+    task_text: str,
+    settings: Settings,
+    workspace_dir: Path | None = None,
+    requested_skill_names: tuple[str, ...],
+    auto_skills: bool,
+):
+    catalog = discover_skills(
+        workspace_dir or settings.workspace_dir,
+        settings.extra_skill_dirs,
+    )
+    selected = list(resolve_requested_skills(catalog.skills, requested_skill_names))
+    selected_slugs = {skill.slug for skill in selected}
+
+    if auto_skills:
+        for skill in auto_select_skills(catalog.skills, task_text):
+            if skill.slug in selected_slugs:
+                continue
+            selected.append(skill)
+            selected_slugs.add(skill.slug)
+
+    return catalog, tuple(selected)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -96,6 +139,17 @@ def build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument(
         "--max-steps", type=int, default=None, help="Override max tool steps"
     )
+    run_parser.add_argument(
+        "--skill",
+        action="append",
+        default=[],
+        help="Activate a skill by slug or name (repeatable)",
+    )
+    run_parser.add_argument(
+        "--auto-skills",
+        action="store_true",
+        help="Auto-select skills by matching the task text to skill metadata",
+    )
 
     list_tasks_parser = sub.add_parser("list-tasks", help="List task YAML files")
     list_tasks_parser.add_argument(
@@ -103,6 +157,8 @@ def build_parser() -> argparse.ArgumentParser:
         default="tasks",
         help="Directory containing task YAML files",
     )
+
+    sub.add_parser("list-skills", help="List discovered skills")
 
     run_task_parser = sub.add_parser(
         "run-task", help="Run a task YAML against an asset-backed workspace"
@@ -121,6 +177,17 @@ def build_parser() -> argparse.ArgumentParser:
         "--results-dir",
         default="results",
         help="Directory used to store run outputs",
+    )
+    run_task_parser.add_argument(
+        "--skill",
+        action="append",
+        default=[],
+        help="Activate an additional skill by slug or name (repeatable)",
+    )
+    run_task_parser.add_argument(
+        "--auto-skills",
+        action="store_true",
+        help="Auto-select skills by matching the resolved task prompt to skill metadata",
     )
 
     return parser
@@ -214,8 +281,28 @@ def main() -> None:
         if args.max_steps is not None:
             settings = replace(settings, max_steps=args.max_steps)
 
-        agent = MinimalClaw(settings)
+        requested_skills = _unique_strings(tuple(args.skill))
+        catalog, activated_skills = _select_skills(
+            task_text=task,
+            settings=settings,
+            requested_skill_names=requested_skills,
+            auto_skills=bool(args.auto_skills),
+        )
+
+        agent = MinimalClaw(
+            settings,
+            available_skills=catalog.skills,
+            activated_skills=activated_skills,
+        )
         agent.bootstrap_workspace()
+        if catalog.errors:
+            print("Skill discovery warnings:")
+            for error in catalog.errors:
+                print(f"- {error.source_path}: {error.error}")
+        if activated_skills:
+            print("Activated skills:")
+            for skill in activated_skills:
+                print(f"- {skill.slug} ({skill.source_path})")
         agent.run(task, echo=True)
         return
 
@@ -237,12 +324,42 @@ def main() -> None:
                 print(f"! invalid task: {task_path} ({exc})")
         return
 
+    if args.command == "list-skills":
+        catalog = discover_skills(settings.workspace_dir, settings.extra_skill_dirs)
+        if not catalog.skills:
+            print("No skills found")
+        else:
+            for skill in catalog.skills:
+                print(f"{skill.slug} source={skill.source_path}")
+                print(f"  name={skill.name}")
+                print(f"  description={skill.description}")
+        if catalog.errors:
+            print("Skill discovery warnings:")
+            for error in catalog.errors:
+                print(f"- {error.source_path}: {error.error}")
+        return
+
     if args.command == "run-task":
         task = load_task_definition(Path(args.task), settings)
+        task_assets_root = Path(args.assets_dir).expanduser().resolve()
+        skill_workspace_dir = task_assets_root / task.asset
+        requested_skills = _unique_strings(task.skills.include + tuple(args.skill))
+        auto_skills = task.skills.auto or bool(args.auto_skills)
+        catalog, activated_skills = _select_skills(
+            task_text=task.prompt,
+            settings=settings,
+            workspace_dir=skill_workspace_dir,
+            requested_skill_names=requested_skills,
+            auto_skills=auto_skills,
+        )
+        resolved_payload = task.resolved_payload(
+            activated_skills=tuple(serialize_skill(skill) for skill in activated_skills)
+        )
         layout = create_task_run(
             task,
-            assets_root=Path(args.assets_dir),
+            assets_root=task_assets_root,
             results_root=Path(args.results_dir),
+            resolved_payload=resolved_payload,
         )
         task_settings = replace(
             settings,
@@ -252,7 +369,11 @@ def main() -> None:
             temperature=task.runtime.temperature,
         )
 
-        agent = MinimalClaw(task_settings)
+        agent = MinimalClaw(
+            task_settings,
+            available_skills=catalog.skills,
+            activated_skills=activated_skills,
+        )
         agent.bootstrap_workspace()
         snapshot_workspace(layout.workspace_dir, layout.before_dir)
 
@@ -289,6 +410,13 @@ def main() -> None:
                 "model": task_settings.model,
                 "max_steps": task_settings.max_steps,
                 "temperature": task_settings.temperature,
+                "skills": {
+                    "requested": list(requested_skills),
+                    "auto": auto_skills,
+                    "activated": [
+                        serialize_skill(skill) for skill in activated_skills
+                    ],
+                },
                 "steps_used": report.steps_used if report else 0,
                 "started_at": started_at,
                 "finished_at": finished_at,
@@ -303,6 +431,14 @@ def main() -> None:
         print(f"Trace: {layout.trace_path}")
         print(f"Summary: {layout.summary_path}")
         print(f"Final answer: {layout.final_answer_path}")
+        if catalog.errors:
+            print("Skill discovery warnings:")
+            for error in catalog.errors:
+                print(f"- {error.source_path}: {error.error}")
+        if activated_skills:
+            print("Activated skills:")
+            for skill in activated_skills:
+                print(f"- {skill.slug} ({skill.source_path})")
         if run_error is not None:
             raise SystemExit(f"Task run failed: {run_error}")
         return

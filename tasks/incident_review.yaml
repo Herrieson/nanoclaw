@@ -6,6 +6,10 @@ asset: incident_review
 task:
   task_file: prompts/incident_review.md
 
+skills:
+  include:
+    - incident-review-handoff
+
 runtime:
   model: gpt-4o
   max_steps: 18

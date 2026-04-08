@@ -4,6 +4,7 @@ A minimal, research-oriented agent loop that keeps only core behavior:
 
 - dynamic file-backed context assembly
 - tool-calling loop (read/write, dangerous command gate, ask-human)
+- skill discovery plus explicit/automatic skill activation
 - strict official prompt file sync + checksum manifest verification
 - versioned prompt snapshots for reproducible experiments
 - declarative task YAMLs, asset-backed scenario setup, and per-run result capture
@@ -13,10 +14,12 @@ This project intentionally excludes non-core engineering concerns like cross-pla
 ## Layout
 
 - `nanoclaw/core_loop.py`: minimal ReAct-like loop
+- `nanoclaw/skills.py`: discover skills, parse `SKILL.md`, and resolve active skills
 - `nanoclaw/prompt_sync.py`: sync official prompt files from `openclaw/openclaw`, write `manifest.json`, and manage prompt versions
 - `nanoclaw/task_loader.py`: load task YAML files and resolve runtime settings
 - `nanoclaw/run_store.py`: materialize asset-backed run directories and persist traces/results
 - `nanoclaw/cli.py`: commands for bootstrap/sync/verify/run
+- `skills/`: optional repo-local skill folders
 - `workspace/`: shared runtime files and synced prompt files
 - `tasks/`: declarative task definitions
 - `assets/`: scenario templates copied into a per-run workspace
@@ -136,6 +139,10 @@ asset: incident_review
 task:
   task_file: prompts/incident_review.md
 
+skills:
+  include:
+    - incident-review-handoff
+
 runtime:
   model: gpt-4o
   max_steps: 18
@@ -158,6 +165,44 @@ Run it:
 ```bash
 export OPENAI_API_KEY="<your-key>"
 uv run python main.py run-task --task tasks/incident_review.yaml
+```
+
+## 7) Discover and activate skills
+
+List discovered skills:
+
+```bash
+uv run python main.py list-skills
+```
+
+Activate a skill for an ad hoc run:
+
+```bash
+export OPENAI_API_KEY="<your-key>"
+uv run python main.py run --task "Review the incident notes and prepare a handoff." --skill incident-review-handoff
+```
+
+Or ask nanoclaw to auto-select skills from the task text:
+
+```bash
+export OPENAI_API_KEY="<your-key>"
+uv run python main.py run --task "Review the incident notes and prepare a handoff." --auto-skills
+```
+
+Skill search roots are checked in this order:
+
+- `<workspace>/.agents/skills`
+- `./skills`
+- `NANOCLAW_SKILL_DIRS` entries
+
+Each skill lives in its own directory with a `SKILL.md` file that starts with YAML frontmatter:
+
+```md
+---
+name: incident-review-handoff
+description: Prepare concise internal incident summaries and customer-facing updates from workspace incident materials.
+---
+Use this skill when the task asks for an incident handoff, executive summary, customer update, or timeline synthesis.
 ```
 
 That run asks the agent to:
@@ -184,6 +229,8 @@ results/<task-id>/<run-id>/
 
 The selected `assets/<asset-name>/` tree is copied into `results/.../workspace/` before execution, then `workspace_before/` and `workspace_after/` snapshots are written around the run.
 
+If skills are activated, both `resolved_task.json` and `summary.json` record the requested/auto-selected skill metadata and checksums for that run.
+
 For the incident example, a successful run would leave files like these under `results/incident_review/<run-id>/workspace_after/`:
 
 ```text
@@ -200,6 +247,7 @@ active_task.md
 - `NANOCLAW_WORKSPACE_DIR`: default `workspace`
 - `NANOCLAW_PROMPT_DIR`: default `workspace/prompts/official`
 - `NANOCLAW_PROMPT_FILES`: default `docs/reference/templates/AGENTS.md,docs/reference/templates/SOUL.md,docs/reference/templates/TOOLS.md,docs/reference/templates/IDENTITY.md,docs/reference/templates/USER.md,docs/reference/templates/HEARTBEAT.md,docs/reference/templates/BOOTSTRAP.md`
+- `NANOCLAW_SKILL_DIRS`: optional extra comma-separated skill directories
 - `NANOCLAW_MAX_STEPS`: default `15`
 - `NANOCLAW_TEMPERATURE`: default `0.2`
 

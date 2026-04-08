@@ -52,6 +52,7 @@ def create_task_run(
     *,
     assets_root: Path,
     results_root: Path,
+    resolved_payload: dict[str, Any] | None = None,
 ) -> TaskRunLayout:
     asset_dir = (assets_root.expanduser() / task.asset).resolve()
     if not asset_dir.exists() or not asset_dir.is_dir():
@@ -75,7 +76,7 @@ def create_task_run(
     approval_log_path = run_dir / "approval_log.jsonl"
 
     task_copy_path.write_text(task.source_text, encoding="utf-8")
-    _write_json(resolved_task_path, task.resolved_payload())
+    _write_json(resolved_task_path, resolved_payload or task.resolved_payload())
 
     return TaskRunLayout(
         task=task,

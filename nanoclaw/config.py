@@ -33,6 +33,7 @@ class Settings:
     workspace_dir: Path
     prompt_dir: Path
     prompt_files: tuple[str, ...]
+    extra_skill_dirs: tuple[Path, ...]
     max_steps: int
     temperature: float
 
@@ -51,6 +52,10 @@ class Settings:
             os.getenv("NANOCLAW_PROMPT_FILES", ",".join(DEFAULT_PROMPT_FILES)),
             DEFAULT_PROMPT_FILES,
         )
+        extra_skill_dirs = tuple(
+            Path(item).expanduser()
+            for item in _split_csv(os.getenv("NANOCLAW_SKILL_DIRS", ""), ())
+        )
 
         return cls(
             model=os.getenv("NANOCLAW_MODEL", "gpt-4o"),
@@ -59,6 +64,7 @@ class Settings:
             workspace_dir=workspace_dir,
             prompt_dir=prompt_dir,
             prompt_files=prompt_files,
+            extra_skill_dirs=extra_skill_dirs,
             max_steps=int(os.getenv("NANOCLAW_MAX_STEPS", "15")),
             temperature=float(os.getenv("NANOCLAW_TEMPERATURE", "0.2")),
         )
