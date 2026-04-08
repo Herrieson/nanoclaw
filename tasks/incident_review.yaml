@@ -1,0 +1,12 @@
+id: incident_review
+name: Incident Review
+description: Summarize a production incident and draft follow-up notes.
+asset: incident_review
+
+task:
+  task_file: prompts/incident_review.md
+
+runtime:
+  model: gpt-4o
+  max_steps: 18
+  temperature: 0.1

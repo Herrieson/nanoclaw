@@ -12,6 +12,15 @@ from .prompt_sync import (
     sync_official_prompts,
     verify_manifest,
 )
+from .run_store import (
+    RunRecorder,
+    create_task_run,
+    snapshot_workspace,
+    utc_now_iso,
+    write_final_answer,
+    write_summary,
+)
+from .task_loader import list_task_files, load_task_definition
 
 
 def _parse_csv_files(raw: str) -> tuple[str, ...]:
@@ -86,6 +95,32 @@ def build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--task-file", default=None, help="Load task text from file")
     run_parser.add_argument(
         "--max-steps", type=int, default=None, help="Override max tool steps"
+    )
+
+    list_tasks_parser = sub.add_parser("list-tasks", help="List task YAML files")
+    list_tasks_parser.add_argument(
+        "--tasks-dir",
+        default="tasks",
+        help="Directory containing task YAML files",
+    )
+
+    run_task_parser = sub.add_parser(
+        "run-task", help="Run a task YAML against an asset-backed workspace"
+    )
+    run_task_parser.add_argument(
+        "--task",
+        required=True,
+        help="Path to the task YAML file",
+    )
+    run_task_parser.add_argument(
+        "--assets-dir",
+        default="assets",
+        help="Directory containing asset subdirectories",
+    )
+    run_task_parser.add_argument(
+        "--results-dir",
+        default="results",
+        help="Directory used to store run outputs",
     )
 
     return parser
@@ -182,6 +217,94 @@ def main() -> None:
         agent = MinimalClaw(settings)
         agent.bootstrap_workspace()
         agent.run(task, echo=True)
+        return
+
+    if args.command == "list-tasks":
+        task_files = list_task_files(Path(args.tasks_dir))
+        if not task_files:
+            print(f"No task files found in: {Path(args.tasks_dir)}")
+            return
+
+        for task_path in task_files:
+            try:
+                task = load_task_definition(task_path, settings)
+                print(
+                    f"{task.task_id} "
+                    f"asset={task.asset} "
+                    f"source={task.source_path}"
+                )
+            except Exception as exc:
+                print(f"! invalid task: {task_path} ({exc})")
+        return
+
+    if args.command == "run-task":
+        task = load_task_definition(Path(args.task), settings)
+        layout = create_task_run(
+            task,
+            assets_root=Path(args.assets_dir),
+            results_root=Path(args.results_dir),
+        )
+        task_settings = replace(
+            settings,
+            workspace_dir=layout.workspace_dir,
+            model=task.runtime.model,
+            max_steps=task.runtime.max_steps,
+            temperature=task.runtime.temperature,
+        )
+
+        agent = MinimalClaw(task_settings)
+        agent.bootstrap_workspace()
+        snapshot_workspace(layout.workspace_dir, layout.before_dir)
+
+        recorder = RunRecorder(layout)
+        started_at = utc_now_iso()
+        run_error: Exception | None = None
+
+        try:
+            final_text = agent.run(
+                task.prompt,
+                echo=True,
+                event_handler=recorder.record_event,
+            )
+            write_final_answer(layout.final_answer_path, final_text)
+        except Exception as exc:
+            run_error = exc
+            failure_text = f"{type(exc).__name__}: {exc}"
+            write_final_answer(layout.final_answer_path, failure_text)
+        finally:
+            snapshot_workspace(layout.workspace_dir, layout.after_dir)
+            finished_at = utc_now_iso()
+            report = agent.last_run_report
+            summary = {
+                "task_id": task.task_id,
+                "task_name": task.name,
+                "description": task.description,
+                "asset": task.asset,
+                "asset_dir": str(layout.asset_dir),
+                "task_file": str(task.source_path),
+                "run_id": layout.run_id,
+                "result_dir": str(layout.run_dir),
+                "status": report.status if report else "failed",
+                "error": report.error if report else None,
+                "model": task_settings.model,
+                "max_steps": task_settings.max_steps,
+                "temperature": task_settings.temperature,
+                "steps_used": report.steps_used if report else 0,
+                "started_at": started_at,
+                "finished_at": finished_at,
+                "final_answer_file": layout.final_answer_path.name,
+                "trace_file": layout.trace_path.name,
+                "before_state_dir": layout.before_dir.name,
+                "after_state_dir": layout.after_dir.name,
+            }
+            write_summary(layout.summary_path, summary)
+
+        print(f"Run dir: {layout.run_dir}")
+        print(f"Trace: {layout.trace_path}")
+        print(f"Summary: {layout.summary_path}")
+        print(f"Final answer: {layout.final_answer_path}")
+        if run_error is not None:
+            raise SystemExit(f"Task run failed: {run_error}")
         return
 
     raise SystemExit(f"Unknown command: {args.command}")

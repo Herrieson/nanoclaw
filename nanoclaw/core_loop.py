@@ -3,8 +3,10 @@ from __future__ import annotations
 import json
 import shlex
 import subprocess
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from openai import OpenAI
 
@@ -13,6 +15,7 @@ from .config import Settings
 
 SAFE_READONLY_COMMANDS = frozenset({"pwd", "ls"})
 MAX_COMMAND_OUTPUT_CHARS = 4000
+EventHandler = Callable[[dict[str, Any]], None]
 
 
 def _strip_front_matter(content: str) -> str:
@@ -95,6 +98,14 @@ TOOLS: list[dict[str, Any]] = [
 ]
 
 
+@dataclass(frozen=True, slots=True)
+class RunReport:
+    status: str
+    steps_used: int
+    final_answer: str | None
+    error: str | None
+
+
 class MinimalClaw:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
@@ -102,6 +113,8 @@ class MinimalClaw:
         self.settings.prompt_dir.mkdir(parents=True, exist_ok=True)
         self.client: OpenAI | None = None
         self._approved_commands: set[str] = set()
+        self._event_handler: EventHandler | None = None
+        self.last_run_report: RunReport | None = None
 
     def _get_client(self) -> OpenAI:
         if self.client is not None:
@@ -158,6 +171,40 @@ class MinimalClaw:
             chunks.append("")
 
         return "\n".join(chunks)
+
+    def _emit_event(self, event_type: str, **payload: Any) -> None:
+        if self._event_handler is None:
+            return
+
+        event = {
+            "type": event_type,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            **payload,
+        }
+        self._event_handler(event)
+
+    def _set_run_report(
+        self,
+        *,
+        status: str,
+        steps_used: int,
+        final_answer: str | None,
+        error: str | None,
+    ) -> RunReport:
+        report = RunReport(
+            status=status,
+            steps_used=steps_used,
+            final_answer=final_answer,
+            error=error,
+        )
+        self.last_run_report = report
+        return report
+
+    def _decode_tool_args(self, arguments_json: str) -> Any:
+        try:
+            return json.loads(arguments_json) if arguments_json else {}
+        except json.JSONDecodeError:
+            return arguments_json
 
     def _normalize_command(self, command: str) -> tuple[str, list[str]]:
         raw = command.strip()
@@ -237,9 +284,16 @@ class MinimalClaw:
                 normalized_command, argv = self._normalize_command(command)
 
                 if self._is_safe_readonly_command(argv):
+                    self._emit_event(
+                        "command_execution",
+                        command=normalized_command,
+                        safe_readonly=True,
+                        human_approved=False,
+                    )
                     return self._run_workspace_command(argv)
 
                 if normalized_command not in self._approved_commands:
+                    self._emit_event("command_blocked", command=normalized_command)
                     print(
                         f"\n[ALERT] Non-safe command blocked (needs approval): {normalized_command}"
                     )
@@ -249,6 +303,12 @@ class MinimalClaw:
                     )
 
                 self._approved_commands.remove(normalized_command)
+                self._emit_event(
+                    "command_execution",
+                    command=normalized_command,
+                    safe_readonly=False,
+                    human_approved=True,
+                )
                 print(f"\n[ALERT] Executing approved command: {normalized_command}")
                 return self._run_workspace_command(argv)
 
@@ -257,11 +317,21 @@ class MinimalClaw:
                 command = str(args.get("command", ""))
                 normalized_command, _ = self._normalize_command(command)
 
+                self._emit_event(
+                    "approval_requested",
+                    reason=reason,
+                    command=normalized_command,
+                )
                 print(f"\n[Agent asks human] {reason}")
                 print(f"Command for one-time approval: {normalized_command}")
                 human_response = input("Your response (Approve/Reject/Modify): ").strip()
                 lowered = human_response.lower()
 
+                self._emit_event(
+                    "approval_response",
+                    command=normalized_command,
+                    response=human_response,
+                )
                 if lowered.startswith("approve"):
                     self._approved_commands.add(normalized_command)
                     return (
@@ -282,54 +352,135 @@ class MinimalClaw:
         except Exception as exc:
             return f"Error: {exc}"
 
-    def run(self, user_task: str, *, echo: bool = True) -> str:
+    def run(
+        self,
+        user_task: str,
+        *,
+        echo: bool = True,
+        event_handler: EventHandler | None = None,
+    ) -> str:
         messages: list[dict[str, Any]] = [
             {"role": "system", "content": self.build_system_prompt()},
             {"role": "user", "content": user_task},
         ]
+        steps_used = 0
+        finished = False
+        self._event_handler = event_handler
+        self.last_run_report = None
+        self._emit_event(
+            "run_started",
+            model=self.settings.model,
+            max_steps=self.settings.max_steps,
+            temperature=self.settings.temperature,
+        )
+        self._emit_event("user_task", content=user_task)
 
         if echo:
             print(f"User Task: {user_task}")
 
-        client = self._get_client()
-
-        for step in range(1, self.settings.max_steps + 1):
-            if echo:
-                print(f"\n--- API Call {step} ---")
-
-            response = client.chat.completions.create(
-                model=self.settings.model,
-                messages=messages,
-                tools=TOOLS,
-                tool_choice="auto",
-                temperature=self.settings.temperature,
-            )
-
-            message = response.choices[0].message
-            messages.append(message.model_dump(exclude_none=True))
-
-            if not message.tool_calls:
-                final_text = message.content or ""
+        try:
+            client = self._get_client()
+            for step in range(1, self.settings.max_steps + 1):
+                steps_used = step
                 if echo:
-                    print(f"\n[Final Answer]: {final_text}")
-                return final_text
+                    print(f"\n--- API Call {step} ---")
 
-            for tool_call in message.tool_calls:
-                tool_name = tool_call.function.name
-                tool_args = tool_call.function.arguments or "{}"
-
-                if echo:
-                    print(f"[Tool Execution] -> {tool_name}({tool_args})")
-
-                result = self.execute_tool(tool_name, tool_args)
-                messages.append(
-                    {
-                        "role": "tool",
-                        "tool_call_id": tool_call.id,
-                        "content": result,
-                    }
+                self._emit_event("api_call_started", step=step)
+                response = client.chat.completions.create(
+                    model=self.settings.model,
+                    messages=messages,
+                    tools=TOOLS,
+                    tool_choice="auto",
+                    temperature=self.settings.temperature,
                 )
 
-        raise RuntimeError(
-            f"Agent exceeded max steps ({self.settings.max_steps}) without final answer"
-        )
+                message = response.choices[0].message
+                dumped_message = message.model_dump(exclude_none=True)
+                messages.append(dumped_message)
+                self._emit_event("assistant_message", step=step, message=dumped_message)
+
+                if not message.tool_calls:
+                    final_text = message.content or ""
+                    self._set_run_report(
+                        status="completed",
+                        steps_used=step,
+                        final_answer=final_text,
+                        error=None,
+                    )
+                    self._emit_event("final_answer", step=step, content=final_text)
+                    self._emit_event(
+                        "run_finished",
+                        status="completed",
+                        steps_used=step,
+                    )
+                    finished = True
+                    if echo:
+                        print(f"\n[Final Answer]: {final_text}")
+                    return final_text
+
+                for tool_call in message.tool_calls:
+                    tool_name = tool_call.function.name
+                    tool_args = tool_call.function.arguments or "{}"
+
+                    self._emit_event(
+                        "tool_call",
+                        step=step,
+                        tool=tool_name,
+                        arguments=self._decode_tool_args(tool_args),
+                    )
+
+                    if echo:
+                        print(f"[Tool Execution] -> {tool_name}({tool_args})")
+
+                    result = self.execute_tool(tool_name, tool_args)
+                    self._emit_event(
+                        "tool_result",
+                        step=step,
+                        tool=tool_name,
+                        content=result,
+                    )
+                    messages.append(
+                        {
+                            "role": "tool",
+                            "tool_call_id": tool_call.id,
+                            "content": result,
+                        }
+                    )
+
+            error = (
+                f"Agent exceeded max steps ({self.settings.max_steps}) without final answer"
+            )
+            self._set_run_report(
+                status="failed",
+                steps_used=steps_used,
+                final_answer=None,
+                error=error,
+            )
+            self._emit_event("run_failed", error=error, steps_used=steps_used)
+            self._emit_event(
+                "run_finished",
+                status="failed",
+                steps_used=steps_used,
+                error=error,
+            )
+            finished = True
+            raise RuntimeError(error)
+        except Exception as exc:
+            if not finished:
+                error = f"{type(exc).__name__}: {exc}"
+                self._set_run_report(
+                    status="failed",
+                    steps_used=steps_used,
+                    final_answer=None,
+                    error=error,
+                )
+                self._emit_event("run_failed", error=error, steps_used=steps_used)
+                self._emit_event(
+                    "run_finished",
+                    status="failed",
+                    steps_used=steps_used,
+                    error=error,
+                )
+            raise
+        finally:
+            self._event_handler = None

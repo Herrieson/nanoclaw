@@ -1,0 +1,13 @@
+id: summarize_memory
+name: Summarize Memory
+description: Read the scenario memory file and summarize it.
+asset: empty
+
+task:
+  prompt: |
+    Read MEMORY.md and summarize its current contents.
+
+runtime:
+  model: gpt-4o
+  max_steps: 15
+  temperature: 0.2

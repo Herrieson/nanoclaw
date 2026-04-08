@@ -6,6 +6,7 @@ A minimal, research-oriented agent loop that keeps only core behavior:
 - tool-calling loop (read/write, dangerous command gate, ask-human)
 - strict official prompt file sync + checksum manifest verification
 - versioned prompt snapshots for reproducible experiments
+- declarative task YAMLs, asset-backed scenario setup, and per-run result capture
 
 This project intentionally excludes non-core engineering concerns like cross-platform packaging, chat platform integrations, rich UI rendering, and retry frameworks.
 
@@ -13,8 +14,13 @@ This project intentionally excludes non-core engineering concerns like cross-pla
 
 - `nanoclaw/core_loop.py`: minimal ReAct-like loop
 - `nanoclaw/prompt_sync.py`: sync official prompt files from `openclaw/openclaw`, write `manifest.json`, and manage prompt versions
+- `nanoclaw/task_loader.py`: load task YAML files and resolve runtime settings
+- `nanoclaw/run_store.py`: materialize asset-backed run directories and persist traces/results
 - `nanoclaw/cli.py`: commands for bootstrap/sync/verify/run
-- `workspace/`: runtime files and synced prompt files
+- `workspace/`: shared runtime files and synced prompt files
+- `tasks/`: declarative task definitions
+- `assets/`: scenario templates copied into a per-run workspace
+- `results/`: generated task runs, traces, and before/after snapshots
 
 ## Install
 
@@ -101,6 +107,89 @@ Or from a task file:
 
 ```bash
 uv run python main.py run --task-file ./workspace/active_task.md
+```
+
+## 6) Run a task YAML against an asset
+
+List tasks:
+
+```bash
+uv run python main.py list-tasks
+```
+
+Run one task:
+
+```bash
+export OPENAI_API_KEY="<your-key>"
+uv run python main.py run-task --task tasks/summarize_memory.yaml
+```
+
+A more realistic example in this repo is `tasks/incident_review.yaml`. It uses `task.task_file` to point at a longer prompt file and pulls its starting workspace from `assets/incident_review/`.
+
+Task definition:
+
+```yaml
+id: incident_review
+name: Incident Review
+asset: incident_review
+
+task:
+  task_file: prompts/incident_review.md
+
+runtime:
+  model: gpt-4o
+  max_steps: 18
+  temperature: 0.1
+```
+
+Asset contents:
+
+```text
+assets/incident_review/
+  MEMORY.md
+  active_task.md
+  reports/
+    incident_report.md
+    timeline.md
+```
+
+Run it:
+
+```bash
+export OPENAI_API_KEY="<your-key>"
+uv run python main.py run-task --task tasks/incident_review.yaml
+```
+
+That run asks the agent to:
+
+- read the incident notes and timeline
+- write `deliverables/executive_summary.md`
+- write `deliverables/customer_update.md`
+- update `active_task.md` with the completed handoff
+
+Each run creates a directory like:
+
+```text
+results/<task-id>/<run-id>/
+  task.yaml
+  resolved_task.json
+  workspace/
+  workspace_before/
+  workspace_after/
+  trace.jsonl
+  approval_log.jsonl
+  summary.json
+  final_answer.md
+```
+
+The selected `assets/<asset-name>/` tree is copied into `results/.../workspace/` before execution, then `workspace_before/` and `workspace_after/` snapshots are written around the run.
+
+For the incident example, a successful run would leave files like these under `results/incident_review/<run-id>/workspace_after/`:
+
+```text
+deliverables/executive_summary.md
+deliverables/customer_update.md
+active_task.md
 ```
 
 ## Environment variables
