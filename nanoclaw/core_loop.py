@@ -25,6 +25,8 @@ MAX_COMMAND_OUTPUT_CHARS = 4000
 MAX_SEARCH_MATCHES = 200
 HEARTBEAT_CONTEXT_FILE = "HEARTBEAT.md"
 HEARTBEAT_ACK = "HEARTBEAT_OK"
+HEARTBEAT_PROMPT_FILE = "HEARTBEAT.md"
+BOOTSTRAP_PROMPT_FILE = "BOOTSTRAP.md"
 SILENT_REPLY = "SILENT_REPLY"
 EventHandler = Callable[[dict[str, Any]], None]
 
@@ -282,6 +284,7 @@ class MinimalClaw:
         self.activated_skills = activated_skills
         self.last_workspace_context_files: tuple[str, ...] = ()
         self.last_runtime_metadata: dict[str, Any] = {}
+        self._bootstrapped_this_run = False
 
     def _get_client(self) -> OpenAI:
         if self.client is not None:
@@ -301,6 +304,12 @@ class MinimalClaw:
         active_task_path = self.settings.workspace_dir / "active_task.md"
         daily_memory_dir = self.settings.workspace_dir / "memory"
 
+        self._bootstrapped_this_run = (
+            not memory_path.exists()
+            or not active_task_path.exists()
+            or not daily_memory_dir.exists()
+        )
+
         if not memory_path.exists():
             memory_path.write_text("# Memory\nNo entries yet.\n", encoding="utf-8")
         if not active_task_path.exists():
@@ -316,16 +325,16 @@ class MinimalClaw:
         return candidate
 
     def _read_prompt_file(self, relative_path: str) -> str:
+        path = self._resolve_prompt_file_path(relative_path)
+        raw = path.read_text(encoding="utf-8")
+        return _strip_front_matter(raw)
+
+    def _resolve_prompt_file_path(self, relative_path: str) -> Path:
         path = (self.settings.prompt_dir / relative_path).resolve()
         prompt_root = self.settings.prompt_dir.resolve()
         if path != prompt_root and prompt_root not in path.parents:
             raise ValueError(f"Prompt path escapes prompt dir: {relative_path}")
-        if not path.exists():
-            raise FileNotFoundError(
-                f"Missing official prompt file: {path}. Run sync first."
-            )
-        raw = path.read_text(encoding="utf-8")
-        return _strip_front_matter(raw)
+        return path
 
     def _resolve_tool_path(self, raw_path: str | None, *, default: str = ".") -> Path:
         candidate = (raw_path or default).strip() or default
@@ -362,124 +371,231 @@ class MinimalClaw:
 
     def _tool_prompt_lines(self) -> list[str]:
         lines = [
-            "--- BEGIN RUNTIME TOOLS ---",
-            "Tool availability is defined by the runtime, not by TOOLS.md.",
+            "## Tooling",
+            "",
+            "Tool availability (filtered by policy):",
             "Call tools exactly by the names listed below.",
             "",
         ]
         for tool in TOOLS:
             function = tool["function"]
             lines.append(f"- {function['name']}: {function['description']}")
-        lines.append("--- END RUNTIME TOOLS ---")
+        lines.append("")
+        lines.append(
+            "TOOLS.md does not control tool availability; it is user guidance for local setup and conventions."
+        )
         lines.append("")
         return lines
 
-    def _workspace_files_prompt_lines(self) -> list[str]:
-        context_paths = self._workspace_context_paths()
-        self.last_workspace_context_files = tuple(name for name, _ in context_paths)
-        if not context_paths:
+    def _prompt_file_entries(self) -> tuple[tuple[str, Path], ...]:
+        selected: list[tuple[str, Path]] = []
+        seen: set[str] = set()
+
+        for relative_name in self.settings.prompt_files:
+            normalized = relative_name.strip()
+            if not normalized or normalized in seen:
+                continue
+            seen.add(normalized)
+            path = self._resolve_prompt_file_path(normalized)
+            if path.exists() and path.is_file():
+                selected.append((normalized, path))
+
+        return tuple(selected)
+
+    def _prompt_reference_prompt_lines(self) -> list[str]:
+        entries = [
+            (relative_name, path)
+            for relative_name, path in self._prompt_file_entries()
+            if Path(relative_name).name
+            not in {HEARTBEAT_PROMPT_FILE, BOOTSTRAP_PROMPT_FILE}
+        ]
+        if not entries:
             return []
 
         lines = [
-            "--- BEGIN WORKSPACE CONTEXT ---",
-            "The following workspace files were loaded for this run when present.",
+            "## Prompt References",
+            "",
+            "The following synced prompt reference files were loaded from prompt_dir.",
+            "Treat them as reference guidance, not as the active workspace project context.",
             "",
         ]
-        for relative_name, path in context_paths:
-            lines.append(f"--- BEGIN {relative_name} ---")
-            lines.append(path.read_text(encoding="utf-8"))
-            lines.append(f"--- END {relative_name} ---")
+        for relative_name, path in entries:
+            lines.append(f"### {Path(relative_name).name}")
             lines.append("")
-        lines.append("--- END WORKSPACE CONTEXT ---")
-        lines.append("")
+            lines.append(self._read_prompt_file(relative_name))
+            lines.append("")
         return lines
 
-    def _runtime_prompt_lines(self) -> list[str]:
+    def _conditional_prompt_file_lines(self, prompt_name: str, title: str) -> list[str]:
+        for relative_name, path in self._prompt_file_entries():
+            if Path(relative_name).name != prompt_name:
+                continue
+            return [
+                title,
+                "",
+                self._read_prompt_file(relative_name),
+                "",
+            ]
+        return []
+
+    def _bootstrap_prompt_lines(self) -> list[str]:
+        if not self._bootstrapped_this_run:
+            return []
+        return self._conditional_prompt_file_lines(
+            BOOTSTRAP_PROMPT_FILE,
+            "## Bootstrap",
+        )
+
+    def _heartbeat_prompt_lines(self) -> list[str]:
+        if self.settings.run_mode != "heartbeat":
+            return []
+        return self._conditional_prompt_file_lines(
+            HEARTBEAT_PROMPT_FILE,
+            "## Heartbeat",
+        )
+
+    def _project_context_prompt_lines(self) -> list[str]:
+        context_paths = self._workspace_context_paths()
+        self.last_workspace_context_files = tuple(name for name, _ in context_paths)
+        lines = [
+            "# Project Context",
+            "",
+            "The following project context files have been loaded.",
+            "If SOUL.md is present, embody its tone and style unless higher-priority instructions override it.",
+            "",
+        ]
+
+        for relative_name, path in context_paths:
+            lines.append(f"## {relative_name}")
+            lines.append("")
+            lines.append(path.read_text(encoding="utf-8"))
+            lines.append("")
+        return lines
+
+    def _current_date_time_prompt_lines(self) -> list[str]:
         metadata = self._runtime_metadata()
         self.last_runtime_metadata = dict(metadata)
         return [
-            "--- BEGIN RUNTIME METADATA ---",
+            "## Current Date & Time",
+            "",
             f"Current date/time: {metadata['date_time']}",
             f"Timezone: {metadata['timezone']}",
-            f"Workspace directory: {metadata['workspace_dir']}",
-            f"Model: {metadata['model']}",
-            f"Run mode: {metadata['run_mode']}",
-            "--- END RUNTIME METADATA ---",
             "",
         ]
 
-    def _memory_policy_prompt_lines(self) -> list[str]:
+    def _workspace_prompt_lines(self) -> list[str]:
+        metadata = self.last_runtime_metadata or self._runtime_metadata()
+        self.last_runtime_metadata = dict(metadata)
+        return [
+            "## Workspace",
+            "",
+            f"Your working directory is: {metadata['workspace_dir']}",
+            "Treat this directory as the primary workspace for file operations unless explicitly instructed otherwise.",
+            "",
+        ]
+
+    def _runtime_prompt_lines(self) -> list[str]:
+        metadata = self.last_runtime_metadata or self._runtime_metadata()
+        self.last_runtime_metadata = dict(metadata)
+        return [
+            "## Runtime",
+            "",
+            (
+                "Runtime: "
+                f"model={metadata['model']} | "
+                f"run_mode={metadata['run_mode']} | "
+                f"memory_policy={metadata['memory_policy']}"
+            ),
+            "",
+        ]
+
+    def _tool_call_style_prompt_lines(self) -> list[str]:
+        return [
+            "## Tool Call Style",
+            "",
+            "Default: do not narrate routine, low-risk tool calls; just call the tool.",
+            "Narrate when it helps: multi-step work, sensitive actions, meaningful uncertainty, or when the user explicitly asks.",
+            "Keep narration brief and value-dense.",
+            "",
+        ]
+
+    def _memory_recall_prompt_lines(self) -> list[str]:
         if self.settings.memory_policy == "off":
-            return []
+            return [
+                "## Memory Recall",
+                "",
+                "Memory recall instructions are disabled for this run by runtime policy.",
+                "",
+            ]
 
         recall_instruction = (
-            "Before answering questions about prior work, decisions, dates, preferences, people, or todos, first use memory_search on MEMORY.md and memory/*.md."
+            "Before answering anything about prior work, decisions, dates, people, preferences, or todos: run memory_search on MEMORY.md + memory/*.md; then use memory_get to pull only the needed lines."
         )
         if self.settings.memory_policy == "strict":
             recall_instruction = (
-                "Always use memory_search on MEMORY.md and memory/*.md before answering questions about prior work, decisions, dates, preferences, people, or todos."
+                "Always run memory_search on MEMORY.md + memory/*.md before answering anything about prior work, decisions, dates, people, preferences, or todos; then use memory_get to pull only the needed lines."
             )
 
         return [
-            "--- BEGIN MEMORY POLICY ---",
+            "## Memory Recall",
+            "",
             recall_instruction,
-            "Use memory_get to fetch only the relevant line ranges before relying on remembered details.",
-            "If memory search is inconclusive, say that you checked memory and were inconclusive.",
-            "Use memory_append when the task explicitly asks you to remember something or when you need to persist a notable note into memory files.",
-            "--- END MEMORY POLICY ---",
+            "If low confidence after search, say that you checked memory and were inconclusive.",
+            "Use memory_append only when the user or task explicitly asks you to remember or record something into memory files.",
             "",
         ]
 
+    def _skills_prompt_lines(self) -> list[str]:
+        if not self.available_skills:
+            return []
+
+        lines = [
+            "## Skills (mandatory)",
+            "",
+            "Before replying: scan <available_skills> <description> entries.",
+            "- If exactly one skill clearly applies: read its SKILL.md at <location> with `read`, then follow it.",
+            "- If multiple could apply: choose the most specific one, then read/follow it.",
+            "- If none clearly apply: do not read any SKILL.md.",
+            "Constraints: never read more than one skill up front; only read after selecting.",
+            "",
+            "<available_skills>",
+        ]
+        for skill in self.available_skills:
+            lines.extend(
+                [
+                    "  <skill>",
+                    f"    <name>{skill.slug}</name>",
+                    f"    <description>{skill.description}</description>",
+                    f"    <location>.skills/{skill.slug}/SKILL.md</location>",
+                    "  </skill>",
+                ]
+            )
+        lines.extend(
+            [
+                "</available_skills>",
+                "",
+            ]
+        )
+        return lines
+
     def build_system_prompt(self) -> str:
         chunks = [
-            "You are a self-hosted AI assistant. Follow the rules in the provided context exactly.",
+            "You are a personal assistant running inside nanoclaw.",
+            "nanoclaw implements an experimental OpenClaw-like subset. Follow the provided runtime contract exactly and do not assume unsupported product features exist.",
             "",
         ]
 
         chunks.extend(self._tool_prompt_lines())
+        chunks.extend(self._tool_call_style_prompt_lines())
+        chunks.extend(self._skills_prompt_lines())
+        chunks.extend(self._memory_recall_prompt_lines())
+        chunks.extend(self._bootstrap_prompt_lines())
+        chunks.extend(self._workspace_prompt_lines())
+        chunks.extend(self._current_date_time_prompt_lines())
+        chunks.extend(self._heartbeat_prompt_lines())
         chunks.extend(self._runtime_prompt_lines())
-        chunks.extend(self._memory_policy_prompt_lines())
-
-        for name in self.settings.prompt_files:
-            content = self._read_prompt_file(name)
-            chunks.append(f"--- BEGIN {name} ---")
-            chunks.append(content)
-            chunks.append(f"--- END {name} ---")
-            chunks.append("")
-
-        chunks.extend(self._workspace_files_prompt_lines())
-
-        if self.available_skills:
-            chunks.append("--- BEGIN SKILL CATALOG ---")
-            chunks.append(
-                "Before replying, scan the available skill descriptions below."
-            )
-            chunks.append(
-                "Treat this catalog as task-scoped guidance. When a listed skill is relevant, read only the specific SKILL.md files you need with the read tool."
-            )
-            chunks.append(
-                "Use the smallest helpful subset of skills for the task. You do not need to use every available skill."
-            )
-            if self.activated_skills:
-                chunks.append(
-                    "Some skills may also be pre-activated below for compatibility or explicit user choice."
-                )
-            chunks.append("")
-            for skill in self.available_skills:
-                chunks.append(
-                    f"- {skill.slug}: {skill.description} | location=.skills/{skill.slug}/SKILL.md"
-                )
-            chunks.append("--- END SKILL CATALOG ---")
-            chunks.append("")
-
-        for skill in self.activated_skills:
-            chunks.append(f"--- BEGIN SKILL {skill.slug} ---")
-            chunks.append(f"Name: {skill.name}")
-            chunks.append(f"Description: {skill.description}")
-            chunks.append("")
-            chunks.append(skill.instructions)
-            chunks.append(f"--- END SKILL {skill.slug} ---")
-            chunks.append("")
+        chunks.extend(self._prompt_reference_prompt_lines())
+        chunks.extend(self._project_context_prompt_lines())
 
         return "\n".join(chunks)
 

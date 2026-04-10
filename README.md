@@ -113,6 +113,7 @@ The active snapshot is copied under `workspace/prompts/official/` using the same
 The manifest includes source repo/ref/commit, sha256 checksums, byte counts, generation timestamp, and snapshot version id.
 
 Note: during runtime, nanoclaw strips YAML front matter from synced template markdown so loaded prompt content matches OpenClaw's template loader behavior.
+Also note: synced prompt files are treated as prompt references. They are no longer merged into the active workspace project context by default; `BOOTSTRAP.md` is first-run-only and `HEARTBEAT.md` is heartbeat-mode-only.
 
 ## 3) List and switch prompt versions
 
@@ -464,7 +465,7 @@ active_task.md
 - `NANOCLAW_MODEL`: default `gpt-4o`
 - `NANOCLAW_WORKSPACE_DIR`: default `workspace`
 - `NANOCLAW_PROMPT_DIR`: default `workspace/prompts/official`
-- `NANOCLAW_PROMPT_FILES`: default `docs/reference/templates/AGENTS.md,docs/reference/templates/SOUL.md,docs/reference/templates/TOOLS.md,docs/reference/templates/IDENTITY.md,docs/reference/templates/USER.md,docs/reference/templates/HEARTBEAT.md,docs/reference/templates/BOOTSTRAP.md`
+- `NANOCLAW_PROMPT_FILES`: default `docs/reference/templates/AGENTS.md,docs/reference/templates/SOUL.md,docs/reference/templates/TOOLS.md,docs/reference/templates/IDENTITY.md,docs/reference/templates/USER.md,docs/reference/templates/HEARTBEAT.md,docs/reference/templates/BOOTSTRAP.md`; injected as prompt references, with `BOOTSTRAP.md` only on first-run bootstrap and `HEARTBEAT.md` only in heartbeat mode
 - `NANOCLAW_SKILL_DIRS`: optional extra comma-separated skill directories
 - `NANOCLAW_MAX_STEPS`: default `15`
 - `NANOCLAW_TEMPERATURE`: default `0.2`

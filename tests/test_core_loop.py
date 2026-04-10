@@ -19,6 +19,14 @@ class CoreLoopTest(unittest.TestCase):
             "# Agents\nUse tools carefully.\n",
             encoding="utf-8",
         )
+        (self.prompts / "docs/reference/templates/HEARTBEAT.md").write_text(
+            "# Heartbeat\nReply with HEARTBEAT_OK when idle.\n",
+            encoding="utf-8",
+        )
+        (self.prompts / "docs/reference/templates/BOOTSTRAP.md").write_text(
+            "# Bootstrap\nIntroduce the workspace on first run.\n",
+            encoding="utf-8",
+        )
         (self.workspace / "SOUL.md").write_text("# SOUL\nBe concise.\n", encoding="utf-8")
         (self.workspace / "USER.md").write_text("# USER\nName: Tester\n", encoding="utf-8")
 
@@ -48,11 +56,23 @@ class CoreLoopTest(unittest.TestCase):
 
         prompt = agent.build_system_prompt()
 
-        self.assertIn("--- BEGIN RUNTIME TOOLS ---", prompt)
-        self.assertIn("--- BEGIN RUNTIME METADATA ---", prompt)
-        self.assertIn("--- BEGIN MEMORY POLICY ---", prompt)
-        self.assertIn("--- BEGIN WORKSPACE CONTEXT ---", prompt)
-        self.assertIn("Run mode: interactive", prompt)
+        self.assertIn("## Tooling", prompt)
+        self.assertIn("## Memory Recall", prompt)
+        self.assertIn("## Workspace", prompt)
+        self.assertIn("## Current Date & Time", prompt)
+        self.assertIn("## Runtime", prompt)
+        self.assertIn("## Prompt References", prompt)
+        self.assertIn("# Project Context", prompt)
+        self.assertIn("run_mode=interactive", prompt)
+        self.assertIn(
+            "Use memory_append only when the user or task explicitly asks you to remember or record something into memory files.",
+            prompt,
+        )
+        self.assertIn(
+            "Treat them as reference guidance, not as the active workspace project context.",
+            prompt,
+        )
+        self.assertNotIn("## Heartbeat", prompt)
         self.assertIn("memory_policy", agent.last_runtime_metadata)
 
     def test_final_response_classification(self) -> None:
@@ -82,9 +102,99 @@ class CoreLoopTest(unittest.TestCase):
         agent = MinimalClaw(self.settings, available_skills=(skill,))
         prompt = agent.build_system_prompt()
 
-        self.assertIn("--- BEGIN SKILL CATALOG ---", prompt)
+        self.assertIn("## Skills (mandatory)", prompt)
+        self.assertIn("<available_skills>", prompt)
+        self.assertIn("<name>tutorial-brief-writer</name>", prompt)
         self.assertIn(".skills/tutorial-brief-writer/SKILL.md", prompt)
-        self.assertIn("You do not need to use every available skill.", prompt)
+        self.assertIn("If exactly one skill clearly applies", prompt)
+
+    def test_build_system_prompt_does_not_preinject_activated_skill_instructions(self) -> None:
+        skill_path = self.workspace / ".skills" / "tutorial-brief-writer" / "SKILL.md"
+        skill_path.parent.mkdir(parents=True)
+        skill_path.write_text("Use this skill for tutorial briefs.\n", encoding="utf-8")
+        skill = SkillDefinition(
+            slug="tutorial-brief-writer",
+            name="tutorial-brief-writer",
+            description="Produce concise tutorial-style workspace briefs.",
+            aliases=(),
+            requires=(),
+            homepage=None,
+            instructions="Use this skill for tutorial briefs.",
+            source_path=skill_path,
+            root_dir=skill_path.parent,
+            checksum="abc",
+        )
+
+        agent = MinimalClaw(
+            self.settings,
+            available_skills=(skill,),
+            activated_skills=(skill,),
+        )
+        prompt = agent.build_system_prompt()
+
+        self.assertNotIn("## Pre-Activated Skills", prompt)
+        self.assertNotIn("The following skill instructions were injected up front", prompt)
+
+    def test_bootstrap_prompt_is_first_run_only(self) -> None:
+        bootstrap_settings = Settings(
+            model=self.settings.model,
+            api_key=self.settings.api_key,
+            base_url=self.settings.base_url,
+            workspace_dir=self.settings.workspace_dir,
+            prompt_dir=self.settings.prompt_dir,
+            prompt_files=(
+                "docs/reference/templates/AGENTS.md",
+                "docs/reference/templates/BOOTSTRAP.md",
+            ),
+            workspace_context_files=self.settings.workspace_context_files,
+            extra_skill_dirs=self.settings.extra_skill_dirs,
+            run_mode=self.settings.run_mode,
+            memory_policy=self.settings.memory_policy,
+            session_max_messages=self.settings.session_max_messages,
+            session_max_chars=self.settings.session_max_chars,
+            max_steps=self.settings.max_steps,
+            temperature=self.settings.temperature,
+        )
+
+        first_agent = MinimalClaw(bootstrap_settings)
+        first_agent.bootstrap_workspace()
+        first_prompt = first_agent.build_system_prompt()
+        self.assertIn("## Bootstrap", first_prompt)
+        self.assertIn("Introduce the workspace on first run.", first_prompt)
+
+        second_agent = MinimalClaw(bootstrap_settings)
+        second_agent.bootstrap_workspace()
+        second_prompt = second_agent.build_system_prompt()
+        self.assertNotIn("## Bootstrap", second_prompt)
+        self.assertNotIn("Introduce the workspace on first run.", second_prompt)
+
+    def test_heartbeat_prompt_only_appears_in_heartbeat_mode(self) -> None:
+        heartbeat_settings = Settings(
+            model=self.settings.model,
+            api_key=self.settings.api_key,
+            base_url=self.settings.base_url,
+            workspace_dir=self.settings.workspace_dir,
+            prompt_dir=self.settings.prompt_dir,
+            prompt_files=(
+                "docs/reference/templates/AGENTS.md",
+                "docs/reference/templates/HEARTBEAT.md",
+            ),
+            workspace_context_files=self.settings.workspace_context_files,
+            extra_skill_dirs=self.settings.extra_skill_dirs,
+            run_mode="heartbeat",
+            memory_policy=self.settings.memory_policy,
+            session_max_messages=self.settings.session_max_messages,
+            session_max_chars=self.settings.session_max_chars,
+            max_steps=self.settings.max_steps,
+            temperature=self.settings.temperature,
+        )
+
+        agent = MinimalClaw(heartbeat_settings)
+        agent.bootstrap_workspace()
+        prompt = agent.build_system_prompt()
+
+        self.assertIn("## Heartbeat", prompt)
+        self.assertIn("Reply with HEARTBEAT_OK when idle.", prompt)
 
 
 if __name__ == "__main__":
