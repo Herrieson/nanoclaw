@@ -204,6 +204,16 @@ cython_debug/
 # nanoclaw runtime outputs
 results/
 
+# nanoclaw local workspace state
+workspace/memory/
+workspace/sessions/
+workspace/.agents/
+workspace/SOUL.md
+workspace/IDENTITY.md
+workspace/USER.md
+workspace/TOOLS.md
+workspace/HEARTBEAT.md
+
 # Marimo
 marimo/_static/
 marimo/_lsp/

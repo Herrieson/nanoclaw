@@ -120,14 +120,14 @@ Explicitly out of scope:
 
 ## Phase 0: Freeze Scope
 
-### [ ] 1. Document the supported OpenClaw-inspired subset
+### [x] 1. Document the supported OpenClaw-inspired subset
 
 - Add a short section to `README.md`:
   - what `nanoclaw` borrows from OpenClaw
   - what it intentionally does not implement
 - State clearly that `nanoclaw` is an experiment core, not a messaging runtime.
 
-### [ ] 2. Document tool taxonomy
+### [x] 2. Document tool taxonomy
 
 - Clarify in `README.md`:
   - runtime tools
@@ -137,7 +137,7 @@ Explicitly out of scope:
 
 ## Phase 1: Prompt Assembly
 
-### [ ] 3. Add optional workspace context injection
+### [x] 3. Add optional workspace context injection
 
 Inject existing workspace files if present:
 
@@ -159,7 +159,7 @@ Touchpoints:
 - `nanoclaw/core_loop.py`
 - `nanoclaw/run_store.py`
 
-### [ ] 4. Add runtime metadata injection
+### [x] 4. Add runtime metadata injection
 
 Inject a compact runtime block:
 
@@ -178,7 +178,7 @@ Touchpoints:
 
 ## Phase 2: Tool Protocol
 
-### [ ] 5. Align tool names with the OpenClaw-style subset
+### [x] 5. Align tool names with the OpenClaw-style subset
 
 Move toward:
 
@@ -197,7 +197,7 @@ Touchpoints:
 
 - `nanoclaw/core_loop.py`
 
-### [ ] 6. Add built-in workspace inspection tools
+### [x] 6. Add built-in workspace inspection tools
 
 Implement native tools for:
 
@@ -215,7 +215,7 @@ Touchpoints:
 
 - `nanoclaw/core_loop.py`
 
-### [ ] 7. Add precise editing tools
+### [x] 7. Add precise editing tools
 
 Implement:
 
@@ -233,7 +233,7 @@ Touchpoints:
 - `nanoclaw/core_loop.py`
 - new `nanoclaw/file_edit.py`
 
-### [ ] 8. Refactor command approval into an `exec` policy layer
+### [x] 8. Refactor command approval into an `exec` policy layer
 
 Replace the current naming split with:
 
@@ -252,7 +252,7 @@ Touchpoints:
 
 ## Phase 3: Memory And Skills
 
-### [ ] 9. Add a first-class memory layout
+### [x] 9. Add a first-class memory layout
 
 Standardize:
 
@@ -267,7 +267,7 @@ Touchpoints:
 - `README.md`
 - `assets/`
 
-### [ ] 10. Add dedicated memory tools
+### [x] 10. Add dedicated memory tools
 
 Implement minimal file-backed memory tools:
 
@@ -282,7 +282,7 @@ Touchpoints:
 - `nanoclaw/core_loop.py`
 - new `nanoclaw/memory.py`
 
-### [ ] 11. Add explicit memory recall policy to the system prompt
+### [x] 11. Add explicit memory recall policy to the system prompt
 
 Require memory lookup before answering about:
 
@@ -299,7 +299,7 @@ Touchpoints:
 
 - `nanoclaw/core_loop.py`
 
-### [ ] 12. Make skill loading more selective
+### [x] 12. Make skill loading more selective
 
 For auto-skill loading:
 
@@ -314,7 +314,7 @@ Touchpoints:
 - `nanoclaw/skills.py`
 - `nanoclaw/cli.py`
 
-### [ ] 13. Support richer optional skill metadata
+### [x] 13. Support richer optional skill metadata
 
 Add support for optional fields such as:
 
@@ -330,7 +330,7 @@ Touchpoints:
 
 ## Phase 4: Runtime Semantics
 
-### [ ] 14. Introduce run modes
+### [x] 14. Introduce run modes
 
 Add a small run mode enum:
 
@@ -347,7 +347,7 @@ Touchpoints:
 - `nanoclaw/cli.py`
 - `nanoclaw/task_loader.py`
 
-### [ ] 15. Add special final-response handling
+### [x] 15. Add special final-response handling
 
 Classify final outputs as:
 
@@ -363,7 +363,7 @@ Touchpoints:
 - `nanoclaw/core_loop.py`
 - `nanoclaw/run_store.py`
 
-### [ ] 16. Add lightweight session persistence
+### [x] 16. Add lightweight session persistence
 
 For ad hoc CLI runs, add optional local sessions:
 
@@ -380,7 +380,7 @@ Touchpoints:
 - new `nanoclaw/session_store.py`
 - `nanoclaw/config.py`
 
-### [ ] 17. Extend task YAML only where experiment fidelity needs it
+### [x] 17. Extend task YAML only where experiment fidelity needs it
 
 Optional runtime fields:
 
@@ -398,7 +398,7 @@ Touchpoints:
 
 ## Phase 5: Validation
 
-### [ ] 18. Add tests for the retrofit behaviors
+### [x] 18. Add tests for the retrofit behaviors
 
 Cover:
 
@@ -417,7 +417,7 @@ Suggested modules:
 - `tests/test_skills.py`
 - `tests/test_session_store.py`
 
-### [ ] 19. Add example tasks/assets for the new semantics
+### [x] 19. Add example tasks/assets for the new semantics
 
 Add at least:
 

@@ -20,12 +20,17 @@ _FLOAT_PATTERN = re.compile(r"^-?(?:\d+\.\d+|\d+\.\d*|\.\d+)$")
 @dataclass(frozen=True, slots=True)
 class TaskRuntime:
     model: str
+    mode: str
+    session: str | None
+    memory_policy: str
+    workspace_context_files: tuple[str, ...]
     max_steps: int
     temperature: float
 
 
 @dataclass(frozen=True, slots=True)
 class TaskSkills:
+    available: tuple[str, ...]
     include: tuple[str, ...]
     auto: bool
 
@@ -39,7 +44,7 @@ class TaskDefinition:
     description: str | None
     asset: str
     prompt: str
-    prompt_source: str | None
+    prompt_sources: tuple[str, ...]
     skills: TaskSkills
     runtime: TaskRuntime
 
@@ -53,17 +58,25 @@ class TaskDefinition:
             "name": self.name,
             "description": self.description,
             "asset": self.asset,
-            "task": {
+            "prompts": {
+                "sources": list(self.prompt_sources),
                 "prompt": self.prompt,
-                "task_file": self.prompt_source,
+            },
+            "environment": {
+                "asset": self.asset,
+                "workspace_context_files": list(self.runtime.workspace_context_files),
             },
             "skills": {
+                "available": list(self.skills.available),
                 "include": list(self.skills.include),
                 "auto": self.skills.auto,
                 "activated": list(activated_skills),
             },
             "runtime": {
                 "model": self.runtime.model,
+                "mode": self.runtime.mode,
+                "session": self.runtime.session,
+                "memory_policy": self.runtime.memory_policy,
                 "max_steps": self.runtime.max_steps,
                 "temperature": self.runtime.temperature,
             },
@@ -334,15 +347,138 @@ def _string_tuple(value: Any, field_name: str) -> tuple[str, ...]:
 
 def _load_task_skills(value: Any) -> TaskSkills:
     if value is None:
-        return TaskSkills(include=(), auto=False)
+        return TaskSkills(available=(), include=(), auto=False)
     if isinstance(value, (str, list)):
-        return TaskSkills(include=_string_tuple(value, "skills"), auto=False)
+        return TaskSkills(
+            available=(),
+            include=_string_tuple(value, "skills"),
+            auto=False,
+        )
 
     mapping = _require_mapping(value, "skills")
     return TaskSkills(
+        available=_string_tuple(mapping.get("available"), "skills.available"),
         include=_string_tuple(mapping.get("include"), "skills.include"),
         auto=_optional_bool(mapping.get("auto"), "skills.auto") or False,
     )
+
+
+def _load_prompt_sources(
+    payload: dict[str, Any],
+    *,
+    source_path: Path,
+) -> tuple[str, tuple[str, ...]]:
+    legacy_task = payload.get("task")
+    prompts_block = payload.get("prompts")
+
+    if legacy_task is not None and prompts_block is not None:
+        raise ValueError("Use either top-level 'prompts' or legacy 'task', not both")
+    if legacy_task is None and prompts_block is None:
+        raise ValueError("Task must define either top-level 'prompts' or legacy 'task'")
+
+    if prompts_block is not None:
+        return _load_prompt_bundle(prompts_block, source_path=source_path)
+
+    task_block = _require_mapping(legacy_task, "task")
+    prompt_inline = _optional_string(task_block.get("prompt"), "task.prompt")
+    prompt_file_raw = _optional_string(task_block.get("task_file"), "task.task_file")
+    if bool(prompt_inline) == bool(prompt_file_raw):
+        raise ValueError("Task must define exactly one of 'task.prompt' or 'task.task_file'")
+
+    if prompt_file_raw:
+        prompt_text, prompt_source = _read_prompt_file(source_path, prompt_file_raw)
+        return prompt_text, (prompt_source,)
+    return prompt_inline or "", ("<inline>",)
+
+
+def _load_prompt_bundle(value: Any, *, source_path: Path) -> tuple[str, tuple[str, ...]]:
+    if isinstance(value, str):
+        prompt_text, prompt_source = _read_prompt_file(source_path, value)
+        return prompt_text, (prompt_source,)
+
+    if isinstance(value, list):
+        parts: list[str] = []
+        sources: list[str] = []
+        inline_index = 0
+        for index, item in enumerate(value, start=1):
+            if isinstance(item, str):
+                prompt_text, prompt_source = _read_prompt_file(source_path, item)
+                parts.append(prompt_text)
+                sources.append(prompt_source)
+                continue
+            if not isinstance(item, dict):
+                raise ValueError(
+                    f"Field 'prompts[{index}]' must be a string or mapping"
+                )
+            file_raw = _optional_string(item.get("file"), f"prompts[{index}].file")
+            inline_raw = _optional_string(item.get("inline"), f"prompts[{index}].inline")
+            if bool(file_raw) == bool(inline_raw):
+                raise ValueError(
+                    f"Field 'prompts[{index}]' must define exactly one of 'file' or 'inline'"
+                )
+            if file_raw:
+                prompt_text, prompt_source = _read_prompt_file(source_path, file_raw)
+                parts.append(prompt_text)
+                sources.append(prompt_source)
+                continue
+            inline_index += 1
+            parts.append(inline_raw or "")
+            sources.append(f"<inline:{inline_index}>")
+
+        if not parts:
+            raise ValueError("Field 'prompts' cannot be empty")
+        return "\n\n".join(part.rstrip() for part in parts if part.strip()), tuple(sources)
+
+    if isinstance(value, dict):
+        mapping = _require_mapping(value, "prompts")
+        parts: list[str] = []
+        sources: list[str] = []
+        for file_raw in _string_tuple(mapping.get("files"), "prompts.files"):
+            prompt_text, prompt_source = _read_prompt_file(source_path, file_raw)
+            parts.append(prompt_text)
+            sources.append(prompt_source)
+        for index, inline_text in enumerate(
+            _string_tuple(mapping.get("inline"), "prompts.inline"),
+            start=1,
+        ):
+            parts.append(inline_text)
+            sources.append(f"<inline:{index}>")
+        if not parts:
+            raise ValueError("Field 'prompts' must contain at least one prompt source")
+        return "\n\n".join(part.rstrip() for part in parts if part.strip()), tuple(sources)
+
+    raise ValueError("Field 'prompts' must be a string, list, or mapping")
+
+
+def _read_prompt_file(source_path: Path, relative_path: str) -> tuple[str, str]:
+    prompt_path = (source_path.parent / relative_path).resolve()
+    if not prompt_path.exists():
+        raise FileNotFoundError(
+            f"Task prompt file not found: {relative_path} ({prompt_path})"
+        )
+    return prompt_path.read_text(encoding="utf-8"), str(prompt_path)
+
+
+def _load_environment(
+    payload: dict[str, Any],
+) -> tuple[str, tuple[str, ...]]:
+    environment_block_raw = payload.get("environment")
+    environment_block = (
+        _require_mapping(environment_block_raw, "environment")
+        if environment_block_raw is not None
+        else {}
+    )
+    asset_root = _optional_string(payload.get("asset"), "asset")
+    asset_env = _optional_string(environment_block.get("asset"), "environment.asset")
+    if asset_root and asset_env and asset_root != asset_env:
+        raise ValueError("Top-level 'asset' and 'environment.asset' must match when both set")
+
+    asset = asset_env or asset_root or "empty"
+    workspace_context_files = _string_tuple(
+        environment_block.get("workspace_context_files"),
+        "environment.workspace_context_files",
+    )
+    return asset, workspace_context_files
 
 
 def load_task_definition(task_path: Path, settings: Settings) -> TaskDefinition:
@@ -356,26 +492,8 @@ def load_task_definition(task_path: Path, settings: Settings) -> TaskDefinition:
     task_id = _optional_string(payload.get("id"), "id") or source_path.stem
     name = _optional_string(payload.get("name"), "name") or task_id
     description = _optional_string(payload.get("description"), "description")
-    asset = _optional_string(payload.get("asset"), "asset") or "empty"
-
-    task_block = _require_mapping(payload.get("task"), "task")
-    prompt_inline = _optional_string(task_block.get("prompt"), "task.prompt")
-    prompt_file_raw = _optional_string(task_block.get("task_file"), "task.task_file")
-
-    if bool(prompt_inline) == bool(prompt_file_raw):
-        raise ValueError("Task must define exactly one of 'task.prompt' or 'task.task_file'")
-
-    prompt_source: str | None = None
-    if prompt_file_raw:
-        prompt_path = (source_path.parent / prompt_file_raw).resolve()
-        if not prompt_path.exists():
-            raise FileNotFoundError(
-                f"Task prompt file not found: {prompt_file_raw} ({prompt_path})"
-            )
-        prompt = prompt_path.read_text(encoding="utf-8")
-        prompt_source = str(prompt_path)
-    else:
-        prompt = prompt_inline or ""
+    prompt, prompt_sources = _load_prompt_sources(payload, source_path=source_path)
+    asset, environment_workspace_context = _load_environment(payload)
     skills = _load_task_skills(payload.get("skills"))
 
     runtime_block_raw = payload.get("runtime")
@@ -388,6 +506,20 @@ def load_task_definition(task_path: Path, settings: Settings) -> TaskDefinition:
     runtime = TaskRuntime(
         model=_optional_string(runtime_block.get("model"), "runtime.model")
         or settings.model,
+        mode=_optional_string(runtime_block.get("mode"), "runtime.mode")
+        or settings.run_mode,
+        session=_optional_string(runtime_block.get("session"), "runtime.session"),
+        memory_policy=_optional_string(
+            runtime_block.get("memory_policy"),
+            "runtime.memory_policy",
+        )
+        or settings.memory_policy,
+        workspace_context_files=_string_tuple(
+            runtime_block.get("workspace_context_files"),
+            "runtime.workspace_context_files",
+        )
+        or environment_workspace_context
+        or settings.workspace_context_files,
         max_steps=int(runtime_block.get("max_steps", settings.max_steps)),
         temperature=float(runtime_block.get("temperature", settings.temperature)),
     )
@@ -400,7 +532,7 @@ def load_task_definition(task_path: Path, settings: Settings) -> TaskDefinition:
         description=description,
         asset=asset,
         prompt=prompt,
-        prompt_source=prompt_source,
+        prompt_sources=prompt_sources,
         skills=skills,
         runtime=runtime,
     )

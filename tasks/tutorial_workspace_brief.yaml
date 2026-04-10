@@ -1,0 +1,24 @@
+id: tutorial_workspace_brief
+name: Tutorial Workspace Brief
+description: End-to-end tutorial task showing prompt files, workspace context, skills, memory, and file output.
+
+prompts:
+  - prompts/tutorial_workspace_brief.md
+
+environment:
+  asset: tutorial_workspace_brief
+  workspace_context_files:
+    - TEAM_STYLE.md
+    - PROJECT_OVERVIEW.md
+
+skills:
+  available:
+    - tutorial-brief-writer
+    - memory-preference-checker
+
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  max_steps: 16
+  temperature: 0.1

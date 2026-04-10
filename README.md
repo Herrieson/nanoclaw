@@ -3,13 +3,42 @@
 A minimal, research-oriented agent loop that keeps only core behavior:
 
 - dynamic file-backed context assembly
-- tool-calling loop (read/write, dangerous command gate, ask-human)
+- runtime metadata and optional workspace context injection
+- tool-calling loop with an OpenClaw-like core subset (`read`, `write`, `edit`, `apply_patch`, `grep`, `find`, `ls`, `exec`)
+- file-backed memory helpers (`memory_search`, `memory_get`, `memory_append`)
 - skill discovery plus explicit/automatic skill activation
 - strict official prompt file sync + checksum manifest verification
 - versioned prompt snapshots for reproducible experiments
 - declarative task YAMLs, asset-backed scenario setup, and per-run result capture
 
 This project intentionally excludes non-core engineering concerns like cross-platform packaging, chat platform integrations, rich UI rendering, and retry frameworks.
+
+## Supported Subset
+
+`nanoclaw` references OpenClaw's runtime contract, but it is not trying to reproduce the full OpenClaw product.
+
+Supported concepts:
+
+- prompt assembly from synced official templates plus workspace files
+- explicit runtime tool surface
+- skill discovery and activation
+- approval-gated shell execution
+- file-backed memory/workspace state
+- reproducible task runs and traces
+
+Intentionally not supported:
+
+- messaging channels and provider routing
+- gateway/daemon lifecycle
+- browser/canvas/node/device control
+- full cron infrastructure
+- full multi-session orchestration fabric
+
+## Tool Taxonomy
+
+- Runtime tools are defined by `nanoclaw/core_loop.py` and exposed to the model directly.
+- Workspace files like `TOOLS.md` are guidance files only. They do not grant capabilities.
+- Skills teach the model when and how to use tools, but are not tools themselves.
 
 ## Layout
 
@@ -31,6 +60,12 @@ This project intentionally excludes non-core engineering concerns like cross-pla
 uv run python -m pip install -e .
 ```
 
+## Run Tests
+
+```bash
+uv run python -m unittest discover -s tests -p 'test_*.py'
+```
+
 ## 1) Bootstrap workspace
 
 ```bash
@@ -40,6 +75,8 @@ uv run python main.py bootstrap
 This creates:
 
 - `workspace/MEMORY.md`
+- `workspace/memory/`
+- `workspace/memory/<today>.md`
 - `workspace/active_task.md`
 - `workspace/prompts/official/`
 
@@ -112,6 +149,20 @@ Or from a task file:
 uv run python main.py run --task-file ./workspace/active_task.md
 ```
 
+You can also inject a different runtime mode:
+
+```bash
+uv run python main.py run --run-mode heartbeat --task "Check HEARTBEAT.md and report only if needed."
+```
+
+Or continue an ad hoc local session:
+
+```bash
+uv run python main.py run --session demo --task "Summarize what we decided earlier."
+```
+
+Session history is stored locally under `workspace/sessions/<session-id>.jsonl` and trimmed deterministically by the configured message/character limits.
+
 ## 6) Run a task YAML against an asset
 
 List tasks:
@@ -124,48 +175,210 @@ Run one task:
 
 ```bash
 export OPENAI_API_KEY="<your-key>"
-uv run python main.py run-task --task tasks/summarize_memory.yaml
+uv run python main.py run-task --task tasks/tutorial_workspace_brief.yaml
 ```
 
-A more realistic example in this repo is `tasks/incident_review.yaml`. It uses `task.task_file` to point at a longer prompt file and pulls its starting workspace from `assets/incident_review/`.
+This repo now keeps a single tutorial example: `tasks/tutorial_workspace_brief.yaml`. It shows how a task can combine:
+
+- top-level `prompts` for one or more prompt sources
+- top-level `environment` for asset-backed workspace setup
+- asset-backed workspace files under `assets/tutorial_workspace_brief/`
+- environment-level workspace context injection
+- a task-scoped skill pool where the agent can use the relevant subset
+- memory lookup plus durable memory updates
+- a concrete markdown deliverable written into the run workspace
 
 Task definition:
 
 ```yaml
-id: incident_review
-name: Incident Review
-asset: incident_review
+id: tutorial_workspace_brief
+name: Tutorial Workspace Brief
 
-task:
-  task_file: prompts/incident_review.md
+prompts:
+  - prompts/tutorial_workspace_brief.md
+
+environment:
+  asset: tutorial_workspace_brief
+  workspace_context_files:
+    - TEAM_STYLE.md
+    - PROJECT_OVERVIEW.md
 
 skills:
-  include:
-    - incident-review-handoff
+  available:
+    - tutorial-brief-writer
+    - memory-preference-checker
 
 runtime:
   model: gpt-4o
-  max_steps: 18
+  mode: interactive
+  memory_policy: default
+  max_steps: 16
   temperature: 0.1
 ```
 
 Asset contents:
 
 ```text
-assets/incident_review/
+assets/tutorial_workspace_brief/
   MEMORY.md
   active_task.md
-  reports/
-    incident_report.md
-    timeline.md
+  TEAM_STYLE.md
+  PROJECT_OVERVIEW.md
+  docs/
+    briefing_notes.md
+    open_questions.md
+  inbox/
+    user_request.md
+  deliverables/
+    README.md
+  memory/
+    2026-04-09.md
 ```
 
 Run it:
 
 ```bash
 export OPENAI_API_KEY="<your-key>"
-uv run python main.py run-task --task tasks/incident_review.yaml
+uv run python main.py run-task --task tasks/tutorial_workspace_brief.yaml
 ```
+
+The run output will include:
+
+- `results/tutorial_workspace_brief/<run-id>/workspace_before/`
+- `results/tutorial_workspace_brief/<run-id>/workspace_after/`
+- `results/tutorial_workspace_brief/<run-id>/final_answer.md`
+- `results/tutorial_workspace_brief/<run-id>/trace.jsonl`
+
+Task runtime fields can also declare experiment semantics such as:
+
+- `runtime.mode`
+- `runtime.session`
+- `runtime.memory_policy`
+- `runtime.workspace_context_files`
+
+## 6.1) Write Your Own Task
+
+There is also a standalone task-writing guide at `nanoclaw/doc/task_tutorial.md`.
+
+A task in `nanoclaw` is usually made of three parts:
+
+- a YAML file under `tasks/`
+- one or more prompt files under `tasks/prompts/`
+- an asset directory under `assets/<asset-name>/`
+
+Recommended layout:
+
+```text
+tasks/
+  my_task.yaml
+  prompts/
+    my_task.md
+
+assets/
+  my_task_asset/
+    MEMORY.md
+    active_task.md
+    TEAM_STYLE.md
+    docs/
+      notes.md
+```
+
+Minimal recommended task:
+
+```yaml
+id: my_task
+name: My Task
+description: Short explanation of what this task is testing.
+
+prompts:
+  - prompts/my_task.md
+
+environment:
+  asset: my_task_asset
+  workspace_context_files:
+    - TEAM_STYLE.md
+
+skills:
+  available:
+    - tutorial-brief-writer
+    - memory-preference-checker
+
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  max_steps: 12
+  temperature: 0.1
+```
+
+Field guide:
+
+- `id`: unique task id. This becomes the result group directory under `results/<id>/`.
+- `name`: human-readable label for summaries and logs.
+- `description`: optional note describing the scenario or what you want to evaluate.
+- `prompts`: the task instruction sources. Use a single file, a list of files, or a `files` plus `inline` mapping when you want to compose the final task text from multiple parts.
+- `environment.asset`: which asset directory should be copied into the run workspace before execution.
+- `environment.workspace_context_files`: workspace files to inject directly into the system prompt when present.
+- `skills.available`: the task-scoped skill pool. The agent can use the relevant subset; it does not need to use every listed skill.
+- `skills.include`: optional forced pre-activation list. Use this only when you want a skill injected up front.
+- `skills.auto`: optional boolean. When `true`, nanoclaw will auto-pick the best matching skill from the available pool.
+- `runtime.model`: model used for this task run.
+- `runtime.mode`: run mode injected into runtime metadata, such as `interactive` or `heartbeat`.
+- `runtime.session`: optional local session id if you want continuity across repeated task runs.
+- `runtime.memory_policy`: memory behavior hint. `default` is normal, `strict` pushes the agent to check memory before answering, and `off` removes memory-policy instructions from the system prompt.
+- `runtime.workspace_context_files`: runtime-level override for injected workspace files. If set, it takes precedence over `environment.workspace_context_files`.
+- `runtime.max_steps`: maximum tool-calling steps before the loop stops.
+- `runtime.temperature`: sampling temperature for the model.
+
+Prompt-writing advice:
+
+- Put the concrete success criteria in the prompt file, not in the YAML metadata.
+- Tell the agent exactly what files to read or write when the task is about file manipulation.
+- If the task depends on remembered facts, say so explicitly in the prompt so the memory tools are relevant.
+- Prefer short, testable instructions over broad open-ended requests.
+
+Prompt file example:
+
+```md
+Read the workspace materials and prepare a short brief.
+
+Requirements:
+
+1. Read `MEMORY.md` and `docs/notes.md`.
+2. Write `deliverables/brief.md`.
+3. Use these sections:
+   - Goal
+   - Context
+   - Next Step
+4. Mention user preferences only if memory supports them.
+```
+
+Asset-writing advice:
+
+- `MEMORY.md` should contain durable facts or preferences you want the agent to be able to recall.
+- `active_task.md` is useful for scenario flavor, but the real task instruction should live in `prompts/...`.
+- Add only the files the scenario actually needs. Small assets are easier to reason about and reproduce.
+- Include an empty `deliverables/` directory when the task is supposed to generate files.
+
+Skill usage in tasks:
+
+- Put candidate skills in `skills.available`.
+- At runtime, nanoclaw mirrors those skills into `.skills/<slug>/SKILL.md` inside the run workspace.
+- The system prompt tells the agent to scan the skill catalog first, then `read` only the relevant `SKILL.md` files.
+- This means one task can expose multiple skills while still expecting the agent to use only the ones that matter.
+
+Running your task:
+
+```bash
+export OPENAI_API_KEY="<your-key>"
+uv run python main.py run-task --task tasks/my_task.yaml
+```
+
+After the run, inspect:
+
+- `results/my_task/<run-id>/resolved_task.json` to see the fully resolved task payload
+- `results/my_task/<run-id>/trace.jsonl` to see tool calls and loop events
+- `results/my_task/<run-id>/workspace_after/` to inspect generated files
 
 ## 7) Discover and activate skills
 
@@ -179,15 +392,17 @@ Activate a skill for an ad hoc run:
 
 ```bash
 export OPENAI_API_KEY="<your-key>"
-uv run python main.py run --task "Review the incident notes and prepare a handoff." --skill incident-review-handoff
+uv run python main.py run --task "Prepare a short tutorial brief for this workspace." --skill tutorial-brief-writer
 ```
 
 Or ask nanoclaw to auto-select skills from the task text:
 
 ```bash
 export OPENAI_API_KEY="<your-key>"
-uv run python main.py run --task "Review the incident notes and prepare a handoff." --auto-skills
+uv run python main.py run --task "Prepare a short tutorial brief for this workspace." --auto-skills
 ```
+
+`--auto-skills` now selects the single best matching skill by metadata, instead of loading every plausible skill.
 
 Skill search roots are checked in this order:
 
@@ -199,18 +414,21 @@ Each skill lives in its own directory with a `SKILL.md` file that starts with YA
 
 ```md
 ---
-name: incident-review-handoff
-description: Prepare concise internal incident summaries and customer-facing updates from workspace incident materials.
+name: tutorial-brief-writer
+description: Produce concise tutorial-style workspace briefs from memory and local markdown sources.
+aliases:
+  - tutorial-brief
+  - workspace-brief
 ---
-Use this skill when the task asks for an incident handoff, executive summary, customer update, or timeline synthesis.
+Use this skill when the task asks for a tutorial brief, workspace handoff, or compact project summary.
 ```
 
-That run asks the agent to:
+The tutorial run asks the agent to:
 
-- read the incident notes and timeline
-- write `deliverables/executive_summary.md`
-- write `deliverables/customer_update.md`
-- update `active_task.md` with the completed handoff
+- read the tutorial workspace materials
+- check memory before mentioning stable preferences
+- write `deliverables/tutorial_brief.md`
+- append a durable note to `MEMORY.md`
 
 Each run creates a directory like:
 
@@ -231,11 +449,11 @@ The selected `assets/<asset-name>/` tree is copied into `results/.../workspace/`
 
 If skills are activated, both `resolved_task.json` and `summary.json` record the requested/auto-selected skill metadata and checksums for that run.
 
-For the incident example, a successful run would leave files like these under `results/incident_review/<run-id>/workspace_after/`:
+For the tutorial example, a successful run would leave files like these under `results/tutorial_workspace_brief/<run-id>/workspace_after/`:
 
 ```text
-deliverables/executive_summary.md
-deliverables/customer_update.md
+deliverables/tutorial_brief.md
+MEMORY.md
 active_task.md
 ```
 

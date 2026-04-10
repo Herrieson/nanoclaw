@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 from dataclasses import replace
 from pathlib import Path
 
@@ -20,7 +21,9 @@ from .run_store import (
     write_final_answer,
     write_summary,
 )
+from .session_store import append_session_message, load_session_messages
 from .skills import (
+    SkillDefinition,
     auto_select_skills,
     discover_skills,
     resolve_requested_skills,
@@ -58,6 +61,7 @@ def _select_skills(
     task_text: str,
     settings: Settings,
     workspace_dir: Path | None = None,
+    available_skill_names: tuple[str, ...] = (),
     requested_skill_names: tuple[str, ...],
     auto_skills: bool,
 ):
@@ -65,17 +69,38 @@ def _select_skills(
         workspace_dir or settings.workspace_dir,
         settings.extra_skill_dirs,
     )
-    selected = list(resolve_requested_skills(catalog.skills, requested_skill_names))
+    available_skills = catalog.skills
+    if available_skill_names:
+        available_skills = resolve_requested_skills(catalog.skills, available_skill_names)
+
+    selected = list(resolve_requested_skills(available_skills, requested_skill_names))
     selected_slugs = {skill.slug for skill in selected}
 
     if auto_skills:
-        for skill in auto_select_skills(catalog.skills, task_text):
+        for skill in auto_select_skills(available_skills, task_text):
             if skill.slug in selected_slugs:
                 continue
             selected.append(skill)
             selected_slugs.add(skill.slug)
 
-    return catalog, tuple(selected)
+    return catalog, available_skills, tuple(selected)
+
+
+def _materialize_skill_pool(
+    workspace_dir: Path,
+    available_skills: tuple[SkillDefinition, ...],
+) -> None:
+    skill_root = workspace_dir / ".skills"
+    if skill_root.exists():
+        shutil.rmtree(skill_root)
+    if not available_skills:
+        return
+
+    skill_root.mkdir(parents=True, exist_ok=True)
+    for skill in available_skills:
+        source_dir = skill.source_path.parent
+        destination_dir = skill_root / skill.slug
+        shutil.copytree(source_dir, destination_dir)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -140,6 +165,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--max-steps", type=int, default=None, help="Override max tool steps"
     )
     run_parser.add_argument(
+        "--run-mode",
+        default=None,
+        help="Runtime mode to inject into the system prompt (default: from env/settings)",
+    )
+    run_parser.add_argument(
+        "--session",
+        default=None,
+        help="Optional local session id for ad hoc conversation continuity",
+    )
+    run_parser.add_argument(
         "--skill",
         action="append",
         default=[],
@@ -177,6 +212,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--results-dir",
         default="results",
         help="Directory used to store run outputs",
+    )
+    run_task_parser.add_argument(
+        "--run-mode",
+        default=None,
+        help="Override runtime mode for this task run",
+    )
+    run_task_parser.add_argument(
+        "--session",
+        default=None,
+        help="Override local session id for this task run",
     )
     run_task_parser.add_argument(
         "--skill",
@@ -278,11 +323,17 @@ def main() -> None:
 
     if args.command == "run":
         task = _load_task(args.task, args.task_file)
-        if args.max_steps is not None:
-            settings = replace(settings, max_steps=args.max_steps)
+        if args.max_steps is not None or args.run_mode is not None:
+            settings = replace(
+                settings,
+                max_steps=(
+                    args.max_steps if args.max_steps is not None else settings.max_steps
+                ),
+                run_mode=args.run_mode or settings.run_mode,
+            )
 
         requested_skills = _unique_strings(tuple(args.skill))
-        catalog, activated_skills = _select_skills(
+        catalog, available_skills, activated_skills = _select_skills(
             task_text=task,
             settings=settings,
             requested_skill_names=requested_skills,
@@ -291,10 +342,18 @@ def main() -> None:
 
         agent = MinimalClaw(
             settings,
-            available_skills=catalog.skills,
+            available_skills=available_skills,
             activated_skills=activated_skills,
         )
         agent.bootstrap_workspace()
+        prior_messages = ()
+        if args.session:
+            prior_messages = load_session_messages(
+                settings.workspace_dir,
+                args.session,
+                max_messages=settings.session_max_messages,
+                max_chars=settings.session_max_chars,
+            )
         if catalog.errors:
             print("Skill discovery warnings:")
             for error in catalog.errors:
@@ -303,7 +362,28 @@ def main() -> None:
             print("Activated skills:")
             for skill in activated_skills:
                 print(f"- {skill.slug} ({skill.source_path})")
-        agent.run(task, echo=True)
+        final_text = agent.run(task, echo=True, prior_messages=prior_messages)
+        report = agent.last_run_report
+        if (
+            args.session
+            and report
+            and report.status == "completed"
+            and report.result_type == "final_answer"
+        ):
+            append_session_message(
+                settings.workspace_dir,
+                args.session,
+                role="user",
+                content=task,
+            )
+            if final_text:
+                append_session_message(
+                    settings.workspace_dir,
+                    args.session,
+                    role="assistant",
+                    content=final_text,
+                    result_type=report.result_type,
+                )
         return
 
     if args.command == "list-tasks":
@@ -342,13 +422,15 @@ def main() -> None:
     if args.command == "run-task":
         task = load_task_definition(Path(args.task), settings)
         task_assets_root = Path(args.assets_dir).expanduser().resolve()
+        results_root = Path(args.results_dir).expanduser().resolve()
         skill_workspace_dir = task_assets_root / task.asset
         requested_skills = _unique_strings(task.skills.include + tuple(args.skill))
         auto_skills = task.skills.auto or bool(args.auto_skills)
-        catalog, activated_skills = _select_skills(
+        catalog, available_skills, activated_skills = _select_skills(
             task_text=task.prompt,
             settings=settings,
             workspace_dir=skill_workspace_dir,
+            available_skill_names=task.skills.available,
             requested_skill_names=requested_skills,
             auto_skills=auto_skills,
         )
@@ -358,34 +440,50 @@ def main() -> None:
         layout = create_task_run(
             task,
             assets_root=task_assets_root,
-            results_root=Path(args.results_dir),
+            results_root=results_root,
             resolved_payload=resolved_payload,
         )
+        run_mode = args.run_mode or task.runtime.mode
+        task_session = args.session or task.runtime.session
         task_settings = replace(
             settings,
             workspace_dir=layout.workspace_dir,
             model=task.runtime.model,
+            workspace_context_files=task.runtime.workspace_context_files,
+            run_mode=run_mode,
+            memory_policy=task.runtime.memory_policy,
             max_steps=task.runtime.max_steps,
             temperature=task.runtime.temperature,
         )
 
         agent = MinimalClaw(
             task_settings,
-            available_skills=catalog.skills,
+            available_skills=available_skills,
             activated_skills=activated_skills,
         )
+        _materialize_skill_pool(layout.workspace_dir, available_skills)
         agent.bootstrap_workspace()
         snapshot_workspace(layout.workspace_dir, layout.before_dir)
 
         recorder = RunRecorder(layout)
         started_at = utc_now_iso()
         run_error: Exception | None = None
+        prior_messages = ()
+        session_root = results_root / task.task_id
+        if task_session:
+            prior_messages = load_session_messages(
+                session_root,
+                task_session,
+                max_messages=settings.session_max_messages,
+                max_chars=settings.session_max_chars,
+            )
 
         try:
             final_text = agent.run(
                 task.prompt,
                 echo=True,
                 event_handler=recorder.record_event,
+                prior_messages=prior_messages,
             )
             write_final_answer(layout.final_answer_path, final_text)
         except Exception as exc:
@@ -396,6 +494,26 @@ def main() -> None:
             snapshot_workspace(layout.workspace_dir, layout.after_dir)
             finished_at = utc_now_iso()
             report = agent.last_run_report
+            if (
+                task_session
+                and report
+                and report.status == "completed"
+                and report.result_type == "final_answer"
+            ):
+                append_session_message(
+                    session_root,
+                    task_session,
+                    role="user",
+                    content=task.prompt,
+                )
+                if report.final_answer:
+                    append_session_message(
+                        session_root,
+                        task_session,
+                        role="assistant",
+                        content=report.final_answer,
+                        result_type=report.result_type,
+                    )
             summary = {
                 "task_id": task.task_id,
                 "task_name": task.name,
@@ -406,11 +524,20 @@ def main() -> None:
                 "run_id": layout.run_id,
                 "result_dir": str(layout.run_dir),
                 "status": report.status if report else "failed",
+                "result_type": report.result_type if report else "failure",
                 "error": report.error if report else None,
                 "model": task_settings.model,
                 "max_steps": task_settings.max_steps,
                 "temperature": task_settings.temperature,
+                "run_mode": task_settings.run_mode,
+                "memory_policy": task_settings.memory_policy,
+                "session": task_session,
+                "workspace_context_files": list(agent.last_workspace_context_files),
+                "runtime_metadata": agent.last_runtime_metadata,
                 "skills": {
+                    "available": [
+                        serialize_skill(skill) for skill in available_skills
+                    ],
                     "requested": list(requested_skills),
                     "auto": auto_skills,
                     "activated": [
