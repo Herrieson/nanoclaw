@@ -1,0 +1,24 @@
+{
+  "week_of": "2026-04-13",
+  "priority_slots": [
+    {
+      "day": "Wednesday",
+      "local_time": "19:30",
+      "priority": 1,
+      "reason": "下班后浏览与收藏意愿更高，适合预算类/通勤类内容"
+    },
+    {
+      "day": "Sunday",
+      "local_time": "11:00",
+      "priority": 2,
+      "reason": "周末上午适合生活方式类浏览，但转化通常略弱于周中晚间"
+    }
+  ],
+  "avoid_slots": [
+    {
+      "day": "Monday",
+      "local_time": "08:00",
+      "reason": "通勤时段竞争高，停留时间有限"
+    }
+  ]
+}
