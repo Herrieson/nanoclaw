@@ -1,0 +1,5 @@
+name,email,role,valid,notes
+Lin PR,lin.partner@nova-brand.cn,partner,true,当前有效合作对接邮箱
+Nova Brands Shared Inbox,brands@nova-brand.cn,legacy,false,历史共享邮箱，已不再监控
+Momo Creator,creator.momo@xmail.com,creator,true,博主本人邮箱
+Old PR,pr.old@nova-brand.cn,legacy,false,上一季度已停用

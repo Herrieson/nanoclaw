@@ -1,0 +1,364 @@
+{
+  "agent:win-bench-agent:main": {
+    "sessionId": "ad17c19b-030d-42da-88aa-8c0dd063a037",
+    "updatedAt": 1775813554704,
+    "skillsSnapshot": {
+      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>clawhub</name>\n    <description>Use the ClawHub CLI to search, install, update, and publish agent skills from clawhub.com. Use when you need to fetch new skills on the fly, sync installed skills to latest or a specific version, or publish new/updated skill folders with the npm-installed clawhub CLI.</description>\n    <location>~/AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\clawhub\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>coding-agent</name>\n    <description>Delegate coding tasks to Codex, Claude Code, or Pi agents via background process. Use when: (1) building/creating new features or apps, (2) reviewing PRs (spawn in temp dir), (3) refactoring large codebases, (4) iterative coding that needs file exploration. NOT for: simple one-liner fixes (just edit), reading code (use read tool), thread-bound ACP harness requests in chat (for example spawn/run Codex or Claude Code in a Discord thread; use sessions_spawn with runtime:&quot;acp&quot;), or any work in ~/clawd workspace (never spawn agents here). Claude Code: use --print --permission-mode bypassPermissions (no PTY). Codex/Pi/OpenCode: pty:true required.</description>\n    <location>~/AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\coding-agent\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Host security hardening and risk-tolerance configuration for OpenClaw deployments. Use when a user asks for security audits, firewall/SSH/update hardening, risk posture, exposure review, OpenClaw cron scheduling for periodic checks, or version status checks on a machine running OpenClaw (laptop, workstation, Pi, VPS).</description>\n    <location>~/AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\healthcheck\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>nano-pdf</name>\n    <description>PDF 生成技能 - 把结构化文本/Markdown 报告转换为 PDF 文件。用于输出正式交付物（最终报告 PDF、汇总版内容方案、可归档的定稿文件）。注意：它不会替你生成内容，只负责验证结构并产出 PDF；如果缺少必要章节会直接报错；不要直接修改带 DO_NOT_EDIT 的原模板。</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\nano-pdf\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw node connection and pairing failures for Android, iOS, and macOS companion apps. Use when QR/setup code/manual connect fails, local Wi-Fi works but VPS/tailnet does not, or errors mention pairing required, unauthorized, bootstrap token invalid or expired, gateway.bind, gateway.remote.url, Tailscale, or plugins.entries.device-pair.config.publicUrl.</description>\n    <location>~/AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\node-connect\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>openai-whisper</name>\n    <description>Local speech-to-text with the Whisper CLI (no API key).</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\openai-whisper\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, or audit AgentSkills. Use when creating a new skill from scratch or when asked to improve, review, audit, tidy up, or clean up an existing skill or SKILL.md file. Also use when editing or restructuring a skill directory (moving files to references/ or scripts/, removing stale content, validating against the AgentSkills spec). Triggers on phrases like &quot;create a skill&quot;, &quot;author a skill&quot;, &quot;tidy up a skill&quot;, &quot;improve this skill&quot;, &quot;review the skill&quot;, &quot;clean up the skill&quot;, &quot;audit the skill&quot;.</description>\n    <location>~/AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\skill-creator\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather and forecasts (no API key required).</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\weather\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>Agent Browser</name>\n    <description>A fast Rust-based headless browser automation CLI with Node.js fallback that enables AI agents to navigate, click, type, and snapshot pages via structured commands.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\agent-browser\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>automation-workflows</name>\n    <description>Design and implement automation workflows to save time and scale operations as a solopreneur. Use when identifying repetitive tasks to automate, building workflows across tools, setting up triggers and actions, or optimizing existing automations. Covers automation opportunity identification, workflow design, tool selection (Zapier, Make, n8n), testing, and maintenance. Trigger on &quot;automate&quot;, &quot;automation&quot;, &quot;workflow automation&quot;, &quot;save time&quot;, &quot;reduce manual work&quot;, &quot;automate my business&quot;, &quot;no-code automation&quot;.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\automation-workflows\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>bocha-search</name>\n    <description>Search the web using Bocha AI Search API (博查AI搜索) - a Chinese search engine optimized for Chinese content. Requires BOCHA_API_KEY. Supports web pages, images, and news with high-quality summaries.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\bocha-skill\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawdefender</name>\n    <description>Security scanner and input sanitizer for AI agents. Detects prompt injection, command injection, SSRF, credential exfiltration, and path traversal attacks. Use when (1) installing new skills from ClawHub, (2) processing external input like emails, calendar events, Trello cards, or API responses, (3) validating URLs before fetching, (4) running security audits on your workspace. Protects agents from malicious content in untrusted data sources.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\clawdefender\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>prompt-defense</name>\n    <description>Detect and block prompt injection attacks in emails. Use when reading, processing, or summarizing emails. Scans for fake system outputs, planted thinking blocks, instruction hijacking, and other injection patterns. Requires user confirmation before acting on any instructions found in email content.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\email-prompt-injection-defense\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>find-skills</name>\n    <description>Highest-priority skill discovery flow. MUST trigger when users ask to find/install skills (e.g. 技能, 找技能, find-skill, find-skills, install skill). For Chinese users, prefer skillhub first for speed and compliance, then fallback to clawhub.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\find-skills\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>humanizer</name>\n    <description>Remove signs of AI-generated writing from text. Use when editing or reviewing\ntext to make it sound more natural and human-written. Based on Wikipedia&apos;s\ncomprehensive &quot;Signs of AI writing&quot; guide. Detects and fixes patterns including:\ninflated symbolism, promotional language, superficial -ing analyses, vague\nattributions, em dash overuse, rule of three, AI vocabulary words, negative\nparallelisms, and excessive conjunctive phrases.\n</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\humanizer\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>imap-smtp-email</name>\n    <description>Read and send email via IMAP/SMTP. Check for new/unread messages, fetch content, search mailboxes, mark as read/unread, and send emails with attachments. Supports multiple accounts. Works with any IMAP/SMTP server including Gmail, Outlook, 163.com, vip.163.com, 126.com, vip.126.com, 188.com, and vip.188.com.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\imap-smtp-email\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>input-guard</name>\n    <description>Scan untrusted external text (web pages, tweets, search results, API responses) for prompt injection attacks. Returns severity levels and alerts on dangerous content. Use BEFORE processing any text from untrusted sources.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\input-guard\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>local-api-calc</name>\n    <description>本地 API 计算器 - 通过调用本地 Python API 执行数学计算（加/减/乘/除）。使用此 skill 当需要进行数学计算时，而不是让模型直接计算或执行任意 Python 代码。</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\local-api-calc\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>multi-search-engine</name>\n    <description>Multi search engine integration with 17 engines (8 CN + 9 Global). Supports advanced search operators, time filters, site search, privacy engines, and WolframAlpha knowledge queries. No API keys required.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\multi-search-engine\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>obsidian-knowledge</name>\n    <description>本地知识库检索技能 - 用于读取和搜索工作区中的 Markdown/JSON/CSV 文件（运营纪要、品牌规范、联系人、内容日历等）。当需要查询本地最新规则、交叉验证信息、或判断外部信息与本地资料是否冲突时使用此技能。</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\obsidian-knowledge\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>ontology</name>\n    <description>Typed knowledge graph for structured agent memory and composable skills. Use when creating/querying entities (Person, Project, Task, Event, Document), linking related objects, enforcing constraints, planning multi-step actions as graph transformations, or when skills need to share state. Trigger on &quot;remember&quot;, &quot;what do I know about&quot;, &quot;link X to Y&quot;, &quot;show dependencies&quot;, entity CRUD, or cross-skill data access.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\ontology\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>outlook-api</name>\n    <description>邮箱 API 技能 - 读取模拟邮箱中的收件线索、联系人、草稿，并发送新邮件。用于核对合作方邮箱、查找沟通需求、检查危险草稿、新建并发送最终沟通邮件。注意：不要直接发送状态不明确的草稿，联系人搜索可能返回相似地址需进一步核验。</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\outlook-api\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>pdf</name>\n    <description>Comprehensive PDF manipulation toolkit for extracting text and tables, creating new PDFs, merging/splitting documents, and handling forms. When Claude needs to fill in a PDF form or programmatically process, generate, or analyze PDF documents at scale.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\pdf\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>Room</name>\n    <description>Organize room inventory and maintenance schedules. Use when adding furniture items, tracking appliances, scheduling deep cleans, setting repair reminders.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\room\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\self-improving-agent\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-vetter</name>\n    <description>Security-first skill vetting for AI agents. Use before installing any skill from ClawdHub, GitHub, or other sources. Checks for red flags, permission scope, and suspicious patterns.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\skill-vetter\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skillhub-preference</name>\n    <description>Prefer `skillhub` for skill discovery/install/update, then fallback to `clawhub` when unavailable or no match. Use when users ask about skills, 插件, or capability extension.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\skillhub-preference\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>summarize-pro</name>\n    <description>When user asks to summarize text, articles, documents, meetings, emails, YouTube transcripts, books, PDFs, reports, conversations, or any long content. Also handles bullet points, key takeaways, action items, TL;DR, ELI5, executive summaries, chapter summaries, comparison summaries, translation summaries, thread summaries, and custom-length summaries. 20-feature AI summarizer with multiple formats, languages, and export options. All processing happens locally — NO external API calls, NO network requests, NO data sent to any server.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\summarize-pro\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>Word / DOCX</name>\n    <description>Create, inspect, and edit Microsoft Word documents and DOCX files with reliable styles, numbering, tracked changes, tables, sections, and compatibility checks. Use when (1) the task is about Word or `.docx`; (2) the file includes tracked changes, comments, fields, tables, templates, or page layout constraints; (3) the document must survive round-trip editing without formatting drift.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\word-docx\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>xiaohongshu-mcp</name>\n    <description>小红书账号研究技能 - 查询账号历史表现、评论诉求、关键词趋势与内容缺口。用于选题研究、分析粉丝关注点、比较候选选题。注意：这是研究工具而非发布工具，某些高级趋势接口可能无权限。</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\xiaohongshu-mcp\\SKILL.md</location>\n  </skill>\n  <skill>\n    <name>youtube-watcher</name>\n    <description>Fetch and read transcripts from YouTube videos. Use when you need to summarize a video, answer questions about its content, or extract information from it.</description>\n    <location>C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\youtube-watcher\\SKILL.md</location>\n  </skill>\n</available_skills>",
+      "skills": [
+        {
+          "name": "clawhub",
+          "requiredEnv": []
+        },
+        {
+          "name": "coding-agent",
+          "requiredEnv": []
+        },
+        {
+          "name": "healthcheck"
+        },
+        {
+          "name": "nano-pdf"
+        },
+        {
+          "name": "node-connect"
+        },
+        {
+          "name": "openai-whisper"
+        },
+        {
+          "name": "skill-creator"
+        },
+        {
+          "name": "weather"
+        },
+        {
+          "name": "Agent Browser"
+        },
+        {
+          "name": "automation-workflows"
+        },
+        {
+          "name": "bocha-search",
+          "primaryEnv": "BOCHA_API_KEY",
+          "requiredEnv": []
+        },
+        {
+          "name": "clawdefender"
+        },
+        {
+          "name": "prompt-defense"
+        },
+        {
+          "name": "find-skills"
+        },
+        {
+          "name": "humanizer"
+        },
+        {
+          "name": "imap-smtp-email",
+          "requiredEnv": []
+        },
+        {
+          "name": "input-guard"
+        },
+        {
+          "name": "local-api-calc"
+        },
+        {
+          "name": "multi-search-engine"
+        },
+        {
+          "name": "obsidian-knowledge"
+        },
+        {
+          "name": "ontology"
+        },
+        {
+          "name": "outlook-api"
+        },
+        {
+          "name": "pdf"
+        },
+        {
+          "name": "Room"
+        },
+        {
+          "name": "self-improvement"
+        },
+        {
+          "name": "skill-vetter"
+        },
+        {
+          "name": "skillhub-preference"
+        },
+        {
+          "name": "summarize-pro"
+        },
+        {
+          "name": "Word / DOCX"
+        },
+        {
+          "name": "xiaohongshu-mcp"
+        },
+        {
+          "name": "youtube-watcher"
+        }
+      ],
+      "resolvedSkills": [
+        {
+          "name": "clawhub",
+          "description": "Use the ClawHub CLI to search, install, update, and publish agent skills from clawhub.com. Use when you need to fetch new skills on the fly, sync installed skills to latest or a specific version, or publish new/updated skill folders with the npm-installed clawhub CLI.",
+          "filePath": "C:\\Users\\l50047843\\AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\clawhub\\SKILL.md",
+          "baseDir": "C:\\Users\\l50047843\\AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\clawhub",
+          "source": "openclaw-bundled",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "coding-agent",
+          "description": "Delegate coding tasks to Codex, Claude Code, or Pi agents via background process. Use when: (1) building/creating new features or apps, (2) reviewing PRs (spawn in temp dir), (3) refactoring large codebases, (4) iterative coding that needs file exploration. NOT for: simple one-liner fixes (just edit), reading code (use read tool), thread-bound ACP harness requests in chat (for example spawn/run Codex or Claude Code in a Discord thread; use sessions_spawn with runtime:\"acp\"), or any work in ~/clawd workspace (never spawn agents here). Claude Code: use --print --permission-mode bypassPermissions (no PTY). Codex/Pi/OpenCode: pty:true required.",
+          "filePath": "C:\\Users\\l50047843\\AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\coding-agent\\SKILL.md",
+          "baseDir": "C:\\Users\\l50047843\\AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\coding-agent",
+          "source": "openclaw-bundled",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "healthcheck",
+          "description": "Host security hardening and risk-tolerance configuration for OpenClaw deployments. Use when a user asks for security audits, firewall/SSH/update hardening, risk posture, exposure review, OpenClaw cron scheduling for periodic checks, or version status checks on a machine running OpenClaw (laptop, workstation, Pi, VPS).",
+          "filePath": "C:\\Users\\l50047843\\AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\healthcheck\\SKILL.md",
+          "baseDir": "C:\\Users\\l50047843\\AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\healthcheck",
+          "source": "openclaw-bundled",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "nano-pdf",
+          "description": "PDF 生成技能 - 把结构化文本/Markdown 报告转换为 PDF 文件。用于输出正式交付物（最终报告 PDF、汇总版内容方案、可归档的定稿文件）。注意：它不会替你生成内容，只负责验证结构并产出 PDF；如果缺少必要章节会直接报错；不要直接修改带 DO_NOT_EDIT 的原模板。",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\nano-pdf\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\nano-pdf",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "node-connect",
+          "description": "Diagnose OpenClaw node connection and pairing failures for Android, iOS, and macOS companion apps. Use when QR/setup code/manual connect fails, local Wi-Fi works but VPS/tailnet does not, or errors mention pairing required, unauthorized, bootstrap token invalid or expired, gateway.bind, gateway.remote.url, Tailscale, or plugins.entries.device-pair.config.publicUrl.",
+          "filePath": "C:\\Users\\l50047843\\AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\node-connect\\SKILL.md",
+          "baseDir": "C:\\Users\\l50047843\\AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\node-connect",
+          "source": "openclaw-bundled",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "openai-whisper",
+          "description": "Local speech-to-text with the Whisper CLI (no API key).",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\openai-whisper\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\openai-whisper",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "skill-creator",
+          "description": "Create, edit, improve, or audit AgentSkills. Use when creating a new skill from scratch or when asked to improve, review, audit, tidy up, or clean up an existing skill or SKILL.md file. Also use when editing or restructuring a skill directory (moving files to references/ or scripts/, removing stale content, validating against the AgentSkills spec). Triggers on phrases like \"create a skill\", \"author a skill\", \"tidy up a skill\", \"improve this skill\", \"review the skill\", \"clean up the skill\", \"audit the skill\".",
+          "filePath": "C:\\Users\\l50047843\\AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\skill-creator\\SKILL.md",
+          "baseDir": "C:\\Users\\l50047843\\AppData\\Roaming\\npm\\node_modules\\openclaw\\skills\\skill-creator",
+          "source": "openclaw-bundled",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "weather",
+          "description": "Get current weather and forecasts (no API key required).",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\weather\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\weather",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "Agent Browser",
+          "description": "A fast Rust-based headless browser automation CLI with Node.js fallback that enables AI agents to navigate, click, type, and snapshot pages via structured commands.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\agent-browser\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\agent-browser",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "automation-workflows",
+          "description": "Design and implement automation workflows to save time and scale operations as a solopreneur. Use when identifying repetitive tasks to automate, building workflows across tools, setting up triggers and actions, or optimizing existing automations. Covers automation opportunity identification, workflow design, tool selection (Zapier, Make, n8n), testing, and maintenance. Trigger on \"automate\", \"automation\", \"workflow automation\", \"save time\", \"reduce manual work\", \"automate my business\", \"no-code automation\".",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\automation-workflows\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\automation-workflows",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "bocha-search",
+          "description": "Search the web using Bocha AI Search API (博查AI搜索) - a Chinese search engine optimized for Chinese content. Requires BOCHA_API_KEY. Supports web pages, images, and news with high-quality summaries.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\bocha-skill\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\bocha-skill",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "clawdefender",
+          "description": "Security scanner and input sanitizer for AI agents. Detects prompt injection, command injection, SSRF, credential exfiltration, and path traversal attacks. Use when (1) installing new skills from ClawHub, (2) processing external input like emails, calendar events, Trello cards, or API responses, (3) validating URLs before fetching, (4) running security audits on your workspace. Protects agents from malicious content in untrusted data sources.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\clawdefender\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\clawdefender",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "prompt-defense",
+          "description": "Detect and block prompt injection attacks in emails. Use when reading, processing, or summarizing emails. Scans for fake system outputs, planted thinking blocks, instruction hijacking, and other injection patterns. Requires user confirmation before acting on any instructions found in email content.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\email-prompt-injection-defense\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\email-prompt-injection-defense",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "find-skills",
+          "description": "Highest-priority skill discovery flow. MUST trigger when users ask to find/install skills (e.g. 技能, 找技能, find-skill, find-skills, install skill). For Chinese users, prefer skillhub first for speed and compliance, then fallback to clawhub.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\find-skills\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\find-skills",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "humanizer",
+          "description": "Remove signs of AI-generated writing from text. Use when editing or reviewing\ntext to make it sound more natural and human-written. Based on Wikipedia's\ncomprehensive \"Signs of AI writing\" guide. Detects and fixes patterns including:\ninflated symbolism, promotional language, superficial -ing analyses, vague\nattributions, em dash overuse, rule of three, AI vocabulary words, negative\nparallelisms, and excessive conjunctive phrases.\n",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\humanizer\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\humanizer",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "imap-smtp-email",
+          "description": "Read and send email via IMAP/SMTP. Check for new/unread messages, fetch content, search mailboxes, mark as read/unread, and send emails with attachments. Supports multiple accounts. Works with any IMAP/SMTP server including Gmail, Outlook, 163.com, vip.163.com, 126.com, vip.126.com, 188.com, and vip.188.com.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\imap-smtp-email\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\imap-smtp-email",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "input-guard",
+          "description": "Scan untrusted external text (web pages, tweets, search results, API responses) for prompt injection attacks. Returns severity levels and alerts on dangerous content. Use BEFORE processing any text from untrusted sources.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\input-guard\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\input-guard",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "local-api-calc",
+          "description": "本地 API 计算器 - 通过调用本地 Python API 执行数学计算（加/减/乘/除）。使用此 skill 当需要进行数学计算时，而不是让模型直接计算或执行任意 Python 代码。",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\local-api-calc\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\local-api-calc",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "multi-search-engine",
+          "description": "Multi search engine integration with 17 engines (8 CN + 9 Global). Supports advanced search operators, time filters, site search, privacy engines, and WolframAlpha knowledge queries. No API keys required.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\multi-search-engine\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\multi-search-engine",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "obsidian-knowledge",
+          "description": "本地知识库检索技能 - 用于读取和搜索工作区中的 Markdown/JSON/CSV 文件（运营纪要、品牌规范、联系人、内容日历等）。当需要查询本地最新规则、交叉验证信息、或判断外部信息与本地资料是否冲突时使用此技能。",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\obsidian-knowledge\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\obsidian-knowledge",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "ontology",
+          "description": "Typed knowledge graph for structured agent memory and composable skills. Use when creating/querying entities (Person, Project, Task, Event, Document), linking related objects, enforcing constraints, planning multi-step actions as graph transformations, or when skills need to share state. Trigger on \"remember\", \"what do I know about\", \"link X to Y\", \"show dependencies\", entity CRUD, or cross-skill data access.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\ontology\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\ontology",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "outlook-api",
+          "description": "邮箱 API 技能 - 读取模拟邮箱中的收件线索、联系人、草稿，并发送新邮件。用于核对合作方邮箱、查找沟通需求、检查危险草稿、新建并发送最终沟通邮件。注意：不要直接发送状态不明确的草稿，联系人搜索可能返回相似地址需进一步核验。",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\outlook-api\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\outlook-api",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "pdf",
+          "description": "Comprehensive PDF manipulation toolkit for extracting text and tables, creating new PDFs, merging/splitting documents, and handling forms. When Claude needs to fill in a PDF form or programmatically process, generate, or analyze PDF documents at scale.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\pdf\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\pdf",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "Room",
+          "description": "Organize room inventory and maintenance schedules. Use when adding furniture items, tracking appliances, scheduling deep cleans, setting repair reminders.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\room\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\room",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "self-improvement",
+          "description": "Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude ('No, that's wrong...', 'Actually...'), (3) User requests a capability that doesn't exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\self-improving-agent\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\self-improving-agent",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "skill-vetter",
+          "description": "Security-first skill vetting for AI agents. Use before installing any skill from ClawdHub, GitHub, or other sources. Checks for red flags, permission scope, and suspicious patterns.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\skill-vetter\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\skill-vetter",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "skillhub-preference",
+          "description": "Prefer `skillhub` for skill discovery/install/update, then fallback to `clawhub` when unavailable or no match. Use when users ask about skills, 插件, or capability extension.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\skillhub-preference\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\skillhub-preference",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "summarize-pro",
+          "description": "When user asks to summarize text, articles, documents, meetings, emails, YouTube transcripts, books, PDFs, reports, conversations, or any long content. Also handles bullet points, key takeaways, action items, TL;DR, ELI5, executive summaries, chapter summaries, comparison summaries, translation summaries, thread summaries, and custom-length summaries. 20-feature AI summarizer with multiple formats, languages, and export options. All processing happens locally — NO external API calls, NO network requests, NO data sent to any server.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\summarize-pro\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\summarize-pro",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "Word / DOCX",
+          "description": "Create, inspect, and edit Microsoft Word documents and DOCX files with reliable styles, numbering, tracked changes, tables, sections, and compatibility checks. Use when (1) the task is about Word or `.docx`; (2) the file includes tracked changes, comments, fields, tables, templates, or page layout constraints; (3) the document must survive round-trip editing without formatting drift.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\word-docx\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\word-docx",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "xiaohongshu-mcp",
+          "description": "小红书账号研究技能 - 查询账号历史表现、评论诉求、关键词趋势与内容缺口。用于选题研究、分析粉丝关注点、比较候选选题。注意：这是研究工具而非发布工具，某些高级趋势接口可能无权限。",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\xiaohongshu-mcp\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\xiaohongshu-mcp",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        },
+        {
+          "name": "youtube-watcher",
+          "description": "Fetch and read transcripts from YouTube videos. Use when you need to summarize a video, answer questions about its content, or extract information from it.",
+          "filePath": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\youtube-watcher\\SKILL.md",
+          "baseDir": "C:\\Users\\L50047~1\\AppData\\Local\\Temp\\pinchbench\\win_1775813499\\task_01_meeting_transcript_summary_1\\skills\\youtube-watcher",
+          "source": "openclaw-workspace",
+          "disableModelInvocation": false
+        }
+      ],
+      "version": 0
+    },
+    "sessionFile": "C:\\Users\\l50047843\\.openclaw\\agents\\win-bench-agent\\sessions\\ad17c19b-030d-42da-88aa-8c0dd063a037.jsonl",
+    "status": "running",
+    "startedAt": 1775813554652,
+    "abortedLastRun": false
+  }
+}
