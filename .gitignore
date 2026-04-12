@@ -214,6 +214,18 @@ workspace/USER.md
 workspace/TOOLS.md
 workspace/HEARTBEAT.md
 
+# OpenClaw / local agent workspace files at repo root
+SOUL.md
+IDENTITY.md
+USER.md
+TOOLS.md
+HEARTBEAT.md
+BOOTSTRAP.md
+MEMORY.md
+memory/
+AGENTS.md
+.openclaw/
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
