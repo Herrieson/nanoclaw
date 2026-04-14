@@ -61,7 +61,7 @@ def _select_skills(
     task_text: str,
     settings: Settings,
     workspace_dir: Path | None = None,
-    available_skill_names: tuple[str, ...] = (),
+    available_skill_names: tuple[str, ...] | None = None,
     requested_skill_names: tuple[str, ...],
     auto_skills: bool,
 ):
@@ -70,8 +70,11 @@ def _select_skills(
         settings.extra_skill_dirs,
     )
     available_skills = catalog.skills
-    if available_skill_names:
-        available_skills = resolve_requested_skills(catalog.skills, available_skill_names)
+    if available_skill_names is not None:
+        if available_skill_names:
+            available_skills = resolve_requested_skills(catalog.skills, available_skill_names)
+        else:
+            available_skills = ()
 
     selected = list(resolve_requested_skills(available_skills, requested_skill_names))
     selected_slugs = {skill.slug for skill in selected}
@@ -430,7 +433,9 @@ def main() -> None:
             task_text=task.prompt,
             settings=settings,
             workspace_dir=skill_workspace_dir,
-            available_skill_names=task.skills.available,
+            available_skill_names=(
+                task.skills.available if task.skills.available_explicit else None
+            ),
             requested_skill_names=requested_skills,
             auto_skills=auto_skills,
         )

@@ -366,12 +366,17 @@ results/
 - `prompts`
 - `environment.asset`
 - `environment.workspace_context_files`
-- `skills.available`
+- `skills.available`（仅当你需要显式控制技能可见集时）
 - `runtime.model`
 - `runtime.mode`
 - `runtime.memory_policy`
 - `runtime.max_steps`
 - `runtime.temperature`
+
+关于 `skills.available` 的推荐语义，请统一遵守：
+- **缺省（不写 `skills.available`）**：保持当前默认技能发现行为；
+- **显式空值（例如 `skills:\n  available:`）**：表示零技能，可见 skill 集为空；
+- **显式列表**：表示白名单模式，Agent 只能看到列出的 skills。
 
 额外建议增加内部元信息（即使当前 loader 不直接消费，也建议写进 report 或独立 metadata 文件）：
 - `family_id`

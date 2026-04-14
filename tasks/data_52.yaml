@@ -19,7 +19,7 @@ skills:
     - briefing-deliverable
 
 runtime:
-  model: gpt-4o
+  model: gpt-5.4
   mode: interactive
   memory_policy: default
   max_steps: 18

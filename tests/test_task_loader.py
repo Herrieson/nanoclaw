@@ -60,6 +60,7 @@ class TaskLoaderTest(unittest.TestCase):
         self.assertEqual(task.prompt_sources, (str(prompt_path.resolve()),))
         self.assertEqual(task.skills.include, ("tutorial-brief-writer",))
         self.assertEqual(task.skills.available, ())
+        self.assertFalse(task.skills.available_explicit)
 
     def test_loads_prompt_environment_and_skill_pool_schema(self) -> None:
         prompt_a = self.root / "prompts" / "intro.md"
@@ -105,11 +106,59 @@ class TaskLoaderTest(unittest.TestCase):
             task.skills.available,
             ("tutorial-brief-writer", "memory-preference-checker"),
         )
+        self.assertTrue(task.skills.available_explicit)
         self.assertEqual(task.skills.include, ())
         self.assertIn("Intro prompt.", task.prompt)
         self.assertIn("Body prompt.", task.prompt)
         self.assertIn("Extra constraint.", task.prompt)
         self.assertEqual(len(task.prompt_sources), 3)
+
+    def test_missing_available_means_default_skill_discovery_mode(self) -> None:
+        task_path = self.root / "missing_available.yaml"
+        task_path.write_text(
+            "\n".join(
+                [
+                    "id: missing_available",
+                    "asset: empty",
+                    "prompts:",
+                    "  inline:",
+                    "    - Prompt.",
+                    "skills:",
+                    "  include:",
+                    "    - tutorial-brief-writer",
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        task = load_task_definition(task_path, self.settings)
+
+        self.assertEqual(task.skills.available, ())
+        self.assertFalse(task.skills.available_explicit)
+
+    def test_explicit_empty_available_means_zero_skills(self) -> None:
+        task_path = self.root / "explicit_empty.yaml"
+        task_path.write_text(
+            "\n".join(
+                [
+                    "id: explicit_empty",
+                    "asset: empty",
+                    "prompts:",
+                    "  inline:",
+                    "    - Prompt.",
+                    "skills:",
+                    "  available:",
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        task = load_task_definition(task_path, self.settings)
+
+        self.assertEqual(task.skills.available, ())
+        self.assertTrue(task.skills.available_explicit)
 
 
 if __name__ == "__main__":

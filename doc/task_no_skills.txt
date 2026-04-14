@@ -66,7 +66,13 @@
      - `runtime.memory_policy`
      - `runtime.max_steps`
      - `runtime.temperature`
-   - 对于 no-skills 任务，`skills` 段应省略，或明确写成空可用集；不要依赖任何 task-scoped skill 才能读懂任务。
+   - 对于 no-skills 任务，建议显式写出空技能集，例如：
+     ```yaml
+     skills:
+       available:
+     ```
+     这表示零技能、可见 skill 集为空。
+   - 不要依赖任何 task-scoped skill 才能读懂任务。
 
 2. 底层环境与基础设施伪造 (Infrastructure Mocking Setup)
    - 编写 `tasks/data_xx/env_builder.py`。

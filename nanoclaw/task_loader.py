@@ -31,6 +31,7 @@ class TaskRuntime:
 @dataclass(frozen=True, slots=True)
 class TaskSkills:
     available: tuple[str, ...]
+    available_explicit: bool
     include: tuple[str, ...]
     auto: bool
 
@@ -68,6 +69,7 @@ class TaskDefinition:
             },
             "skills": {
                 "available": list(self.skills.available),
+                "available_explicit": self.skills.available_explicit,
                 "include": list(self.skills.include),
                 "auto": self.skills.auto,
                 "activated": list(activated_skills),
@@ -347,17 +349,23 @@ def _string_tuple(value: Any, field_name: str) -> tuple[str, ...]:
 
 def _load_task_skills(value: Any) -> TaskSkills:
     if value is None:
-        return TaskSkills(available=(), include=(), auto=False)
+        return TaskSkills(available=(), available_explicit=False, include=(), auto=False)
     if isinstance(value, (str, list)):
         return TaskSkills(
             available=(),
+            available_explicit=False,
             include=_string_tuple(value, "skills"),
             auto=False,
         )
 
     mapping = _require_mapping(value, "skills")
+    available_explicit = "available" in mapping
+    available_value = mapping.get("available")
+    if available_explicit and available_value == {}:
+        available_value = None
     return TaskSkills(
-        available=_string_tuple(mapping.get("available"), "skills.available"),
+        available=_string_tuple(available_value, "skills.available"),
+        available_explicit=available_explicit,
         include=_string_tuple(mapping.get("include"), "skills.include"),
         auto=_optional_bool(mapping.get("auto"), "skills.auto") or False,
     )

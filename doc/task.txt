@@ -37,7 +37,7 @@
      - `prompts`
      - `environment.asset: data_xx`
      - `environment.workspace_context_files`
-     - `skills.available`
+     - `skills.available`（如果你要限制可见 skills）
      - `runtime.model`
      - `runtime.mode`
      - `runtime.memory_policy`
@@ -62,6 +62,10 @@
      - `SKILL.md`：逼真的工具使用文档（用途、参数 Schema、调用示例、限制条件）。必须包含针对陷阱的误导或暗示，但不能写得过于假。
      - `mock_script.py`：该工具的核心执行脚本。根据传入参数和运行时工作区中的文件状态返回逼真的 JSON 假数据或报错。
    - 这些 skill 应帮助模型理解隐式约束，但不要直接把最终答案写死；用户表层任务仍应保持自然，而不是变成一长串评测要求。
+   - 关于 `skills.available`，建议统一语义：
+     - 缺省不写：允许默认技能发现；
+     - 显式空值：表示零技能；
+     - 显式列表：表示白名单模式。
    - `mock_script.py` 的行为必须与 `assets/data_xx/` 中的内容形成严密逻辑咬合。
    - 在 `tasks/data_xx.yaml` 的 `skills.available` 中列出这些技能 slug。
    - 记住：运行时 nanoclaw 会把这些 repo 级技能镜像到对应 run 目录下的 `.skills/`，所以你构造的是仓库级技能定义，而不是把技能文件直接写进 `results/`。

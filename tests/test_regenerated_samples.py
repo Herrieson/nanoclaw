@@ -48,6 +48,18 @@ class RegeneratedSamplesTest(unittest.TestCase):
             self.assertNotIn("rejection_reasons", prompt)
             self.assertIn("deliverables", prompt)
 
+        skills_task_yaml = (REPO_ROOT / "tasks" / "data_52.yaml").read_text(encoding="utf-8")
+        no_skills_task_yaml = (REPO_ROOT / "tasks" / "data_53.yaml").read_text(encoding="utf-8")
+        self.assertIn("\nskills:\n  available:\n    - venue-fallback-audit", skills_task_yaml)
+        self.assertIn("\nskills:\n  available:\n", no_skills_task_yaml)
+
+        skills_task = load_task_definition(REPO_ROOT / "tasks" / "data_52.yaml", settings)
+        no_skills_task = load_task_definition(REPO_ROOT / "tasks" / "data_53.yaml", settings)
+        self.assertTrue(skills_task.skills.available_explicit)
+        self.assertEqual(skills_task.skills.available, ("venue-fallback-audit", "current-contact-check", "briefing-deliverable"))
+        self.assertTrue(no_skills_task.skills.available_explicit)
+        self.assertEqual(no_skills_task.skills.available, ())
+
     def test_new_samples_build_assets_and_verifiers_import(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_root = Path(tmpdir)
