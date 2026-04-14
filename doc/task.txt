@@ -1,0 +1,194 @@
+你是一个顶级的 AI Agent 评测架构师、编剧与全栈工程师。
+当前目录下有 `skillhub-skills-crawl.md`，记录了 600+ 工具的摘要信息。
+
+你的终极目标是：自主抽样产生灵感，并从零开始为一个编号为 `data_xx`（xx 为你随机生成的两位数字）的数据集生成一整套复杂、易错且多维可评测的 Tool-learning 关卡任务。
+
+注意：本说明已经按当前 `nanoclaw` 仓库结构改写。不要再把所有文件都塞进单个 `data_xx/` 目录；而是要按 `tasks/`、`tasks/prompts/`、`assets/`、`skills/`、`results/` 的现有约定分别落盘。
+
+你必须先确定一个任务 ID，例如 `data_42`，然后后续所有产物都围绕这个 ID 组织。
+
+统一采用以下路径约定：
+- 任务 YAML：`tasks/data_xx.yaml`
+- 任务 Prompt：`tasks/prompts/data_xx.md`
+- 任务辅助文件目录：`tasks/data_xx/`
+- 环境生成脚本：`tasks/data_xx/env_builder.py`
+- 校验脚本（方法一）：`tasks/data_xx/verify.py`
+- 评分 Prompt（方法二）：`tasks/data_xx/verify_prompt.md`
+- 自测/复盘报告：`tasks/data_xx/report.md`
+- 初始资产目录：`assets/data_xx/`
+- 任务专属技能：`skills/<tool-slug>/`（建议对 slug 加上 `data-xx-` 前缀，避免与仓库已有技能冲突）
+- 运行结果：`results/data_xx/<run-id>/`
+
+请严格按照以下步骤顺序执行。如果中途代码运行报错，请自行读取日志并反思修复。
+
+1. 灵感抽样与宏观设计 (Brainstorming & Architecture)
+   - 编写一个 Python 简短脚本，从 `skillhub-skills-crawl.md` 中随机抽取 10 个工具块信息打印到终端；不要直接把大文件全文一次性读入并原样展开到输出。
+   - 从中挑选 3-4 个工具，构思一个包含陷阱、且需要工具间联动的评测剧本。
+   - 先写“真实用户会怎么提这个需求”，再写“场景里真正隐藏的约束是什么”。
+   - 最终给模型的 `tasks/prompts/data_xx.md` 应优先采用真实用户口吻：
+     - 任务目标自然、简短、像真实请求；
+     - 不要把评测要求直接写成用户口吻；
+     - 不要把 accepted/rejected source、trace 审计、模板污染等评测要求直接写成用户口吻；
+     - 这些要求应更多下沉到 workspace 文件、模板、约束说明和 verifier 中。
+   - 同时生成 `tasks/data_xx.yaml`，至少包含：
+     - `id: data_xx`
+     - `name`
+     - `description`
+     - `prompts`
+     - `environment.asset: data_xx`
+     - `environment.workspace_context_files`
+     - `skills.available`
+     - `runtime.model`
+     - `runtime.mode`
+     - `runtime.memory_policy`
+     - `runtime.max_steps`
+     - `runtime.temperature`
+
+2. 底层环境伪造 (Setup / Asset Engine)
+   - 编写 `tasks/data_xx/env_builder.py`。
+   - 该脚本执行后，必须在 `assets/data_xx/` 下生成剧情所需的初始资产文件，而不是写到临时的自定义 `data_xx/workspace/`。
+   - 这些文件应覆盖剧情所需的物理环境，例如：
+     - 虚假的日志
+     - 带加密或混淆内容的文本
+     - 旧草稿 / 历史签名 / 误导性说明
+     - 配置文件、联系人、清单、模板、收件箱、研究记录等
+   - 必须填入真实有效的干扰或支撑内容，严禁空文件或纯占位符。
+   - 立即执行该脚本，确保 `assets/data_xx/` 已准备就绪。
+   - 设计时要牢记：真正运行任务时，nanoclaw 会把 `assets/data_xx/` 复制到 `results/data_xx/<run-id>/workspace/`，并在运行前后分别生成 `workspace_before/` 与 `workspace_after/` 快照。
+
+3. OpenClaw / NanoClaw 风格技能构建 (Skill & Mock Engine)
+   - 在 `skills/` 下为你设计的每个工具创建独立文件夹，例如 `skills/data-42-weather-cli/`。
+   - 一步到位完成工具构建，每个工具目录内至少包含：
+     - `SKILL.md`：逼真的工具使用文档（用途、参数 Schema、调用示例、限制条件）。必须包含针对陷阱的误导或暗示，但不能写得过于假。
+     - `mock_script.py`：该工具的核心执行脚本。根据传入参数和运行时工作区中的文件状态返回逼真的 JSON 假数据或报错。
+   - 这些 skill 应帮助模型理解隐式约束，但不要直接把最终答案写死；用户表层任务仍应保持自然，而不是变成一长串评测要求。
+   - `mock_script.py` 的行为必须与 `assets/data_xx/` 中的内容形成严密逻辑咬合。
+   - 在 `tasks/data_xx.yaml` 的 `skills.available` 中列出这些技能 slug。
+   - 记住：运行时 nanoclaw 会把这些 repo 级技能镜像到对应 run 目录下的 `.skills/`，所以你构造的是仓库级技能定义，而不是把技能文件直接写进 `results/`。
+
+4. 混合多维度校验脚本编写 (The Hybrid Judge)
+
+   这里保留两种方法，但都要改为适配 nanoclaw 的结果结构。
+
+   方法一：传统 verify.py
+   - 编写 `tasks/data_xx/verify.py`。
+   - 该脚本不能只返回 0 或 1。必须设计一个多维度评分机制（总分 100 分），例如：
+     - 成功调用某个关键技能或形成关键中间结果得 20 分；
+     - 找到隐藏信息并处理冲突得 30 分；
+     - 完成最终交付且内容质量达标得 50 分。
+   - 校验逻辑必须结合：
+     - 代码硬规则检测：
+       - 检查 `results/data_xx/<run-id>/workspace_after/` 中是否生成了目标文件；
+       - 检查生成文件内容、JSON 字段、日志 token、邮件收件人、证据列表等；
+       - 检查是否错误修改了带 `DO_NOT_EDIT` 标记的源文件；
+       - 检查 `trace.jsonl`、`summary.json`、`final_answer.md` 中的行为证据。
+     - LLM 语义检测：
+       - 评估最终报告质量是否达标；
+       - 是否存在幻觉；
+       - 是否正确解释了冲突信息；
+       - 是否遵守了任务约束。
+   - 允许在脚本中调用指定的大模型 API 进行语义评判；请使用通用的 OpenAI SDK 形式，并预留 `BASE_URL` 与 `API_KEY` 环境变量。
+   - 调用 API 时要关闭 SSL 校验（`verify=False`）；运行环境会提供 `BASE_URL` 和 `API_KEY`。
+   - 脚本输入应至少支持：
+     - `--result-dir results/data_xx/<run-id>`
+     - 或显式传入 `trace.jsonl`、`workspace_after/`、`summary.json`、`final_answer.md`
+   - 输出必须是结构化 JSON 打分结果及扣分理由；建议默认写到 `results/data_xx/<run-id>/verify_result.json`。
+
+   方法二：启动一个 nanoclaw 评分任务
+   - 编写 `tasks/data_xx/verify_prompt.md`，把它作为“评分 Prompt”。
+   - 评分时，将模型执行后的：
+     - `results/data_xx/<run-id>/workspace_after/`
+     - `results/data_xx/<run-id>/trace.jsonl`
+     - `results/data_xx/<run-id>/summary.json`
+     - `results/data_xx/<run-id>/final_answer.md`
+     作为评分输入上下文。
+   - 然后让 nanoclaw 根据 `verify_prompt.md` 打分；可选择：
+     - 仅使用评分 Prompt 做纯语义评估；
+     - 或先做代码检测，再把检测结果作为额外上下文注入评分任务。
+   - 无论采用哪种方式，最终也应产出结构化评分 JSON，建议同样写到 `results/data_xx/<run-id>/verify_result.json`。
+
+5. 沙盒多轮自测与报告生成 (Self-Testing & Reflection)
+   - 使用当前仓库里的 nanoclaw 任务运行方式进行测试，而不是发明新的执行协议。
+   - 至少采样两次完整轨迹，例如：
+     - `python main.py run-task --task tasks/data_xx.yaml`
+     - 再重复至少一次，得到两个不同的 `<run-id>`。
+   - 注意：当前仓库不会生成 `trajectories/run_1/trajectory.jsonl` 这种旧结构；真实轨迹位于：
+     - `results/data_xx/<run-id>/trace.jsonl`
+   - 每次运行后，都要对对应的 `results/data_xx/<run-id>/` 执行评分，并写入：
+     - `results/data_xx/<run-id>/verify_result.json`
+   - 在 `tasks/data_xx/report.md` 中记录：
+     - 剧本设计目标
+     - 陷阱点与预期错误模式
+     - 至少两次 run 的真实 `run-id`
+     - 每次 run 的得分与扣分原因
+     - 你对任务难度、区分度、可复现性的反思
+     - 该任务还可以如何继续增强
+
+6. 最终输出要求
+   - 全部完成后，在终端打印以下内容：
+     - 本次任务涉及的关键文件树
+     - 至少两次 run 的 `<run-id>`
+     - 各自的结构化打分结果摘要
+   - 输出的文件树必须基于 nanoclaw 当前结构，而不是旧版单目录结构。
+
+你的预期目录树结构应接近如下形式：
+
+```text
+tasks/
+├── data_42.yaml                    # 任务定义
+├── prompts/
+│   └── data_42.md                  # 最终给模型的任务指令
+└── data_42/
+    ├── env_builder.py             # 生成 assets/data_42/ 的脚本
+    ├── verify.py                  # 方法一：代码 + LLM 混合校验
+    ├── verify_prompt.md           # 方法二：nanoclaw 评分 prompt
+    └── report.md                  # 自测复盘报告
+
+assets/
+└── data_42/
+    ├── README.txt
+    ├── MEMORY.md
+    ├── active_task.md
+    ├── deliverables/
+    ├── notes/
+    │   ├── ...
+    └── mailbox/
+        └── ...
+
+skills/
+├── data-42-summarize-pro/
+│   ├── SKILL.md
+│   └── mock_script.py
+└── data-42-weather-cli/
+    ├── SKILL.md
+    └── mock_script.py
+
+results/
+└── data_42/
+    ├── <run-id-1>/
+    │   ├── task.yaml
+    │   ├── resolved_task.json
+    │   ├── trace.jsonl
+    │   ├── summary.json
+    │   ├── final_answer.md
+    │   ├── verify_result.json
+    │   ├── workspace/
+    │   ├── workspace_before/
+    │   └── workspace_after/
+    └── <run-id-2>/
+        ├── task.yaml
+        ├── resolved_task.json
+        ├── trace.jsonl
+        ├── summary.json
+        ├── final_answer.md
+        ├── verify_result.json
+        ├── workspace/
+        ├── workspace_before/
+        └── workspace_after/
+```
+
+额外约束：
+- 不要沿用旧版 `data_xx/user_prompt.txt`、`data_xx/workspace/`、`data_xx/trajectories/` 这种组织方式。
+- 不要把评测结果只停留在终端输出，必须落成结构化文件。
+- 不要只验证“文件是否存在”；要验证“轨迹是否合理、结论是否真实、是否踩中陷阱、是否避免幻觉”。
+- 你的目标不是单纯出一道题，而是生成一个可重复运行、可对比、可打分、可沉淀训练数据的 nanoclaw 任务样本。

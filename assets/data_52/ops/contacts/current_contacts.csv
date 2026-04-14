@@ -1,0 +1,4 @@
+name,email,role,valid,notes
+Maya Chen,maya.chen@northlight-events.com,client_lead,true,Current decision-maker for this event
+Northlight Shared Inbox,events@northlight-events.com,legacy,false,Legacy inbox from old kickoff email; do not use
+Noa Park,noa@harborstudio.cn,venue_lead,true,Must be copied when changing room assignment

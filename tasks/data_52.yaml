@@ -1,0 +1,26 @@
+id: data_52
+name: Sponsor Workshop Venue Decision
+description: "A skills-based benchmark sample with a natural user request and implicit scene constraints in workspace files."
+
+prompts:
+  - prompts/data_52.md
+
+environment:
+  asset: data_52
+  workspace_context_files:
+    - README.txt
+    - ops/contacts/README.md
+    - deliverables/README.md
+
+skills:
+  available:
+    - venue-fallback-audit
+    - current-contact-check
+    - briefing-deliverable
+
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  max_steps: 18
+  temperature: 0.1

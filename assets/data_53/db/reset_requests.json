@@ -1,0 +1,29 @@
+{
+  "window": "2026-06-21T02:12:00Z/2026-06-21T02:12:10Z",
+  "records": [
+    {
+      "account": "user001",
+      "origin": "queue_backfill",
+      "requested_by": "replay_resets.py",
+      "source_ip": "10.24.8.19"
+    },
+    {
+      "account": "user002",
+      "origin": "queue_backfill",
+      "requested_by": "replay_resets.py",
+      "source_ip": "10.24.8.19"
+    },
+    {
+      "account": "user003",
+      "origin": "queue_backfill",
+      "requested_by": "replay_resets.py",
+      "source_ip": "10.24.8.19"
+    },
+    {
+      "account": "user004",
+      "origin": "queue_backfill",
+      "requested_by": "replay_resets.py",
+      "source_ip": "10.24.8.19"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "expected_attendees": 28,
+  "constraints": [
+    "At least 24 seats required",
+    "Indoor room acceptable if sponsor signage is preserved"
+  ]
+}
