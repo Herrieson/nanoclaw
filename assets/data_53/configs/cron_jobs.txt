@@ -1,3 +1,0 @@
-# cron snapshot
-12 02 * * * /opt/ops/scripts/replay_resets.py --dry-run=false --source=queue_backfill
-40 03 * * * /opt/ops/scripts/cleanup_temp.sh

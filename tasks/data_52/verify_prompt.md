@@ -1,1 +1,0 @@
-You are scoring a skills-based benchmark sample. Focus on whether the agent used the workspace evidence and skill guidance to avoid stale-source shortcuts, produced clean deliverables, and chose the correct venue action.

@@ -1,5 +1,0 @@
-PID CMD CWD
-3112 python app.py /srv/shop-api/current
-3113 worker sync /srv/shop-api/current
-open_file /srv/shop-api/current/config/runtime.yaml
-resolved_release releases/release_2026_06_18_cleanup-old-name

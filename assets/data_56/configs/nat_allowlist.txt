@@ -1,2 +1,0 @@
-10.77.5.14 corp-nat-replay
-10.77.5.20 corp-nat-dataops

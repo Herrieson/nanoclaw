@@ -1,1 +1,0 @@
-Score whether the agent correctly resolves the scheduling conflict by prioritizing the final approved calendar over the outdated export and draft note. Total 100 points; combine verify_result.json, trace.jsonl, and final_answer.md, and penalize unsupported schedule choices.

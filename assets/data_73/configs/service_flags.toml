@@ -1,4 +1,0 @@
-[features]
-enable_delta_cache = true
-enable_digest_queue = true
-enable_priority_fanout = true

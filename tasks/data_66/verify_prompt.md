@@ -1,1 +1,0 @@
-Score whether the agent correctly attributes the apparent campaign drop to a metric-schema mismatch rather than creative underperformance. Total 100 points; combine verify_result.json, trace.jsonl, and final_answer.md, and penalize unsupported performance diagnoses.

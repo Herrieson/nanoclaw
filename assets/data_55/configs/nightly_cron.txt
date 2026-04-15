@@ -1,3 +1,0 @@
-# cron snapshot
-15 01 * * * /opt/pipelines/nightly_etl.sh
-40 01 * * * /opt/pipelines/cleanup_tmp.sh

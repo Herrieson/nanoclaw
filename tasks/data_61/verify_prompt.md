@@ -1,1 +1,0 @@
-Score whether the agent correctly overrode a stale venue summary with current fire-safety, layout, and headcount evidence. Total 100 points; use verify_result.json, trace.jsonl, and final_answer.md together, and penalize unsupported venue choices or shortcut reasoning.

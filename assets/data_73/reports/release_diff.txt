@@ -1,3 +1,0 @@
-Release 2026-07-18 config diff
-- enable_delta_cache: false -> true
-- other notifier flags unchanged

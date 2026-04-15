@@ -1,1 +1,0 @@
-Score whether the agent correctly identifies a stale FAQ shortcut as the cause of the reimbursement dispute and computes the right partial approval. Total 100 points; combine verify_result.json, trace.jsonl, and final_answer.md, and penalize unsupported amount calculations or source audits.

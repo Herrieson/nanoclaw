@@ -1,7 +1,0 @@
-{
-  "shipment_id": "SHP-22018",
-  "region_code": "SEA-SG",
-  "lane": "SGP-JKT",
-  "priority": "high",
-  "issue": "customs hold exceeded SLA"
-}

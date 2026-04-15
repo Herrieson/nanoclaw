@@ -1,4 +1,0 @@
-# Old Hotfix Note
-Temporary change from 2026-08-14 staging rehearsal:
-- max attempts may be raised during dry-run drills
-- this note does not confirm the current production clone state

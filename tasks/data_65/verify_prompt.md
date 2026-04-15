@@ -1,1 +1,0 @@
-Score whether the agent correctly uses the current rebaseline and approved vendor-switch delta to explain the apparent budget overrun. Total 100 points; combine verify_result.json, trace.jsonl, and final_answer.md, and penalize conclusions that rely on the stale baseline.

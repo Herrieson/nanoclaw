@@ -1,4 +1,0 @@
-consumer: support_sync
-mode: observe_only
-ttl_seconds: 0
-owner: support-platform
