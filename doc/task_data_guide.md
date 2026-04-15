@@ -454,6 +454,81 @@ results/
 - workspace 负责表达“现实环境里有哪些隐式约束”；
 - verifier 负责表达“评测系统如何判断你是不是偷懒”。
 
+### 9.1.1 `doc/persona500.jsonl` 应作为“用户表层任务种子库”
+后续批量造数据时，推荐把：
+- `doc/persona500.jsonl`
+作为默认的表层用户种子来源。
+
+这个文件最适合用来生成：
+- 用户会怎么提需求
+- 用户最关心什么
+- 用户会偏向什么交付风格
+- 同一 family 下的近邻“用户外衣”变体
+
+它不适合直接决定：
+- 题目的正确答案
+- verifier 规则
+- 冲突优先级
+- benchmark 的底层逻辑结构
+
+换句话说：
+- `persona500.jsonl` 负责生成 **surface prompt layer**；
+- `family / variant / difficulty / workspace / verifier` 负责生成 **benchmark logic layer**。
+
+推荐的使用方式不是“先抽 persona 再硬凑题”，而是：
+1. 先选定 family；
+2. 再从 `persona500.jsonl` 中挑选一个合适 persona；
+3. 用 persona 来生成自然用户请求；
+4. 再把底层场景逻辑、冲突源和 verifier 挂到这个表层请求之下。
+
+### 9.1.2 Persona 该用哪些字段，不该用哪些字段
+优先使用这些字段生成用户表层请求：
+- `occupation category`
+- `detailed job description`
+- `industry category`
+- `education`
+- `household language`
+- `defining quirks`
+- `mannerisms`
+- `personal time`
+- `lifestyle`
+
+这些字段适合影响：
+- 请求措辞
+- 关注点
+- 交付偏好
+- 沟通风格
+
+不建议把这些字段直接绑定到任务本质：
+- `race`
+- `religion`
+- `political views`
+- `disability`
+- `sex`
+
+这些属性最多只能作为弱背景噪音，
+不要让它们直接决定：
+- 正确答案
+- 任务类型
+- 难度
+- verifier 标准
+
+### 9.1.3 Persona seed 的最佳工程角色
+推荐把 `persona500.jsonl` 视为三种东西的来源：
+
+1. **表层用户请求生成器**
+   - 让 prompt 更像真实人类请求
+2. **交付偏好生成器**
+   - 有些 persona 更偏 summary
+   - 有些 persona 更偏 checklist / memo / note
+3. **近邻用户变体生成器**
+   - 在同一个 family / variant 下，仅改变用户外衣
+   - 用来测试表层表达变化是否影响模型稳定性
+
+因此，在正式方法里：
+- persona 是“表层真实感种子”
+- 不是“底层逻辑答案种子”
+
 ### 9.2 不要直接泄露正确策略
 反例：
 - “如果天气不好且室内可用，应优先切室内”
@@ -713,6 +788,21 @@ skill 应帮助模型：
 
 ## 13. 批量造数据的正式生产流程
 
+### 阶段 0：先从 `doc/persona500.jsonl` 选表层种子
+正式批量生产时，推荐先把：
+- `doc/persona500.jsonl`
+作为表层用户种子库。
+
+推荐流程：
+1. 先确定你这条题要属于哪个 family；
+2. 再从 `persona500.jsonl` 中选一个适合该 family 的 persona；
+3. 用这个 persona 生成自然用户请求、关注点和交付偏好；
+4. 再把底层 benchmark 逻辑挂到这个表层请求下。
+
+注意：
+- persona 用来决定“用户怎么说”；
+- 不是用来决定“答案是什么”。
+
 ### 阶段 1：先定义 family，而不是先写单题
 建议先定 3-5 个 family，例如：
 - `event_ops`
@@ -769,6 +859,10 @@ skill 应帮助模型：
 我非常建议每条 task 维护元数据，哪怕是通过 `report.md` 或单独 `metadata.json` 存。
 
 推荐字段：
+- `persona_seed_id`
+- `persona_features`
+- `surface_prompt_style`
+- `family_mapping_reason`
 - `family_id`
 - `variant_id`
 - `difficulty`
@@ -824,6 +918,17 @@ skill 应帮助模型：
 解决：
 - 至少弱模型 + 强模型双配置
 - 看 verifier 是否真的有区分度
+
+### 错误 7：把 persona 直接当成答案生成器
+症状：
+- 看到某条 persona 是金融经理，就机械生成金融题
+- 看到某条 persona 是教师，就机械生成教育题
+- persona 的背景字段直接决定正确答案或难度
+
+解决：
+- 先定 family，再映射 persona
+- persona 只负责用户表层请求、关注点和交付偏好
+- 底层逻辑仍由 family / variant / workspace / verifier 决定
 
 --------------------------------------------------
 
