@@ -1,0 +1,5 @@
+service: partner_webhook
+desired_max_attempts: 3
+desired_backoff_seconds: 60
+stop_on_success: true
+owner: integrations-sre

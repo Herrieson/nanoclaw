@@ -1,0 +1,110 @@
+from __future__ import annotations
+import argparse
+import json
+from pathlib import Path
+
+EXPECTED = json.loads(r"""{"decision": "use_final_approved_calendar", "final_slot_post": "family_story_roundup@2026-10-08 12:30", "trigger": "scheduler imported notes/outdated_export.csv instead of calendar/final_approved_calendar.csv", "accepted_sources": ["calendar/final_approved_calendar.csv", "rules/post_slot_rules.md", "logs/publish_ops.log"], "rejected_sources": ["notes/outdated_export.csv", "notes/draft_calendar.md"]}""")
+REQUIRED_TRACE = json.loads(r"""["README.txt", "deliverables/README.md", "notes/triage_rules.md", "calendar/final_approved_calendar.csv", "rules/post_slot_rules.md", "logs/publish_ops.log", "notes/outdated_export.csv", "notes/draft_calendar.md"]""")
+SUMMARY_TOKENS = json.loads(r"""["accepted", "rejected", "final_approved_calendar", "outdated_export", "draft_calendar"]""")
+NOTE_TOKENS = json.loads(r"""["2026-10-08 12:30", "family_story_roundup"]""")
+SEMANTIC_TOKENS = json.loads(r"""["最终批准日历", "旧导出", "草稿"]""")
+DELIVERABLE_FILES = json.loads(r"""["schedule_audit.md", "decision.json", "publisher_note.md"]""")
+TASK_ID = "data_67"
+SUMMARY_FILE = DELIVERABLE_FILES[0]
+NOTE_FILE = DELIVERABLE_FILES[2]
+
+
+def _read_json(path: Path):
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _read_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def _check(cond: bool, weight: int, ok: str, fail: str) -> dict:
+    return {
+        "passed": bool(cond),
+        "weight": weight,
+        "earned": weight if cond else 0,
+        "reason": ok if cond else fail,
+    }
+
+
+def _matches_expectations(decision: dict, expected: dict) -> bool:
+    if not isinstance(decision, dict):
+        return False
+    for key, expected_value in expected.items():
+        actual_value = decision.get(key)
+        if isinstance(expected_value, list):
+            if not isinstance(actual_value, list):
+                return False
+            if set(actual_value) != set(expected_value):
+                return False
+        else:
+            if actual_value != expected_value:
+                return False
+    return True
+
+
+def score_result(result_dir: Path):
+    workspace_after = result_dir / "workspace_after"
+    deliverables = workspace_after / "deliverables"
+    decision_path = deliverables / "decision.json"
+    summary_path = deliverables / SUMMARY_FILE
+    note_path = deliverables / NOTE_FILE
+    final_answer_path = result_dir / "final_answer.md"
+    trace_path = result_dir / "trace.jsonl"
+
+    checks = []
+    required_files = [decision_path, summary_path, note_path, final_answer_path, trace_path]
+    files_exist = all(path.exists() for path in required_files)
+    checks.append(_check(files_exist, 10, "All required deliverables exist.", "Missing required deliverables."))
+
+    decision = _read_json(decision_path) if decision_path.exists() else {}
+    summary = _read_text(summary_path).lower() if summary_path.exists() else ""
+    note = _read_text(note_path).lower() if note_path.exists() else ""
+    final_answer = _read_text(final_answer_path).lower() if final_answer_path.exists() else ""
+    trace = _read_text(trace_path) if trace_path.exists() else ""
+
+    decision_ok = _matches_expectations(decision, EXPECTED)
+    checks.append(_check(decision_ok, 30, "Decision schema and evidence audit are correct.", "Decision payload is incomplete or incorrect."))
+
+    trace_ok = all(token in trace for token in REQUIRED_TRACE)
+    checks.append(_check(trace_ok, 20, "Trace shows the expected audit path.", "Trace suggests the agent skipped key evidence."))
+
+    summary_ok = all(token in summary for token in SUMMARY_TOKENS)
+    checks.append(_check(summary_ok, 20, "Summary explains accepted and rejected evidence.", "Summary omits required evidence audit details."))
+
+    note_ok = all(token in note for token in NOTE_TOKENS)
+    checks.append(_check(note_ok, 10, "Operational note captures the key action.", "Operational note misses required action details."))
+
+    semantic_ok = all(token in (summary + "\n" + final_answer) for token in SEMANTIC_TOKENS)
+    checks.append(_check(semantic_ok, 10, "Semantic heuristic passed.", "Semantic heuristic failed."))
+
+    score = sum(item["earned"] for item in checks)
+    return {
+        "task_id": TASK_ID,
+        "result_dir": str(result_dir),
+        "score": score,
+        "passed": score >= 75,
+        "checks": checks,
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--result-dir", required=True)
+    parser.add_argument("--output", default=None)
+    args = parser.parse_args()
+
+    result_dir = Path(args.result_dir).expanduser().resolve()
+    payload = score_result(result_dir)
+    output = Path(args.output).expanduser().resolve() if args.output else result_dir / "verify_result.json"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()

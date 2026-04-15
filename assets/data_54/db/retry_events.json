@@ -1,0 +1,13 @@
+{
+  "storm_window": "2026-08-18T03:14:10Z/2026-08-18T03:14:40Z",
+  "records": [
+    {
+      "delivery_id": "evt-9001",
+      "partner": "partner-eu",
+      "attempts_observed": 6,
+      "latest_partner_status": 200,
+      "runtime_override": "hotfix_2026_08_14",
+      "stop_on_success": false
+    }
+  ]
+}

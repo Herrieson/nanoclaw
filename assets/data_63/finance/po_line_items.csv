@@ -1,0 +1,3 @@
+line_item,net_amount_cny,expected_tax_rate_from_po
+monthly_subscription,2000,0.13
+implementation_support,1000,0.13

@@ -1,0 +1,3 @@
+# batch schedule snapshot
+10 03 * * * /opt/jobs/archive_replay.sh --source=history_export --limit=120
+45 03 * * * /opt/jobs/purge_temp.sh

@@ -1,0 +1,23 @@
+id: data_67
+name: Approved Calendar Scheduling Conflict Audit
+description: "A no-skills family seed about resolving post scheduling conflicts using the final approved calendar instead of an outdated export and a draft calendar note."
+
+prompts:
+  - prompts/data_67.md
+
+environment:
+  asset: data_67
+  workspace_context_files:
+    - README.txt
+    - deliverables/README.md
+    - notes/triage_rules.md
+
+skills:
+  available:
+
+runtime:
+  model: gpt-5.4
+  mode: interactive
+  memory_policy: default
+  max_steps: 20
+  temperature: 0.1

@@ -1,0 +1,23 @@
+id: data_71
+name: Stale Deployment Cleanup Decision
+description: "A no-skills family seed about deciding cleanup scope using symlink and process evidence instead of misleading release folder names."
+
+prompts:
+  - prompts/data_71.md
+
+environment:
+  asset: data_71
+  workspace_context_files:
+    - README.txt
+    - deliverables/README.md
+    - notes/triage_rules.md
+
+skills:
+  available:
+
+runtime:
+  model: gpt-5.4
+  mode: interactive
+  memory_policy: default
+  max_steps: 20
+  temperature: 0.1

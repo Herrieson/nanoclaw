@@ -1,0 +1,23 @@
+id: data_72
+name: Cron Drift Investigation
+description: "A no-skills family seed about distinguishing a bad cron expression from an incorrect clock-drift guess."
+
+prompts:
+  - prompts/data_72.md
+
+environment:
+  asset: data_72
+  workspace_context_files:
+    - README.txt
+    - deliverables/README.md
+    - notes/triage_rules.md
+
+skills:
+  available:
+
+runtime:
+  model: gpt-5.4
+  mode: interactive
+  memory_policy: default
+  max_steps: 20
+  temperature: 0.1

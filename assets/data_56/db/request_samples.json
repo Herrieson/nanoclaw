@@ -1,0 +1,12 @@
+{
+  "window": "2026-09-10T03:10:10Z/2026-09-10T03:10:20Z",
+  "samples": [
+    {
+      "path": "/download/report",
+      "source_ip": "10.77.5.14",
+      "user_agent": "history-replay/2.1",
+      "actor": "svc-analytics",
+      "internal_replay": true
+    }
+  ]
+}

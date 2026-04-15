@@ -1,0 +1,29 @@
+{
+  "window": "2026-07-04/2026-07-10",
+  "clusters": [
+    {
+      "topic": "uv_commute_layers",
+      "comment_count": 46,
+      "signals": [
+        "求通勤防晒穿法",
+        "空调房叠穿不闷",
+        "想看显瘦外套"
+      ]
+    },
+    {
+      "topic": "spring_capsule",
+      "comment_count": 9,
+      "signals": [
+        "去年收藏翻出来了",
+        "适合春天参考"
+      ]
+    },
+    {
+      "topic": "linen_vacation",
+      "comment_count": 7,
+      "signals": [
+        "周末旅行穿搭"
+      ]
+    }
+  ]
+}

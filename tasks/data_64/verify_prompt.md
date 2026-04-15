@@ -1,0 +1,1 @@
+Score whether the agent correctly classifies the chargebacks as a billing regression caused by duplicated renewal attempts rather than normal churn. Total 100 points; combine verify_result.json, trace.jsonl, and final_answer.md, and penalize unsupported fraud or churn claims.

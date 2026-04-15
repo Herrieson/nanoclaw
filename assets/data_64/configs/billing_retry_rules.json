@@ -1,0 +1,7 @@
+{
+  "release": "2026.09.03",
+  "retry_guard_minutes": 0,
+  "intended_retry_guard_minutes": 1440,
+  "catch_up_mode": "enabled",
+  "idempotency_override": "suppressed"
+}

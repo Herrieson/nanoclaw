@@ -1,0 +1,23 @@
+id: data_55
+name: Nightly ETL Gap Investigation
+description: "A no-skills family seed about telling upstream data absence apart from a local scheduler or timezone gap using local manifests and runner traces."
+
+prompts:
+  - prompts/data_55.md
+
+environment:
+  asset: data_55
+  workspace_context_files:
+    - README.txt
+    - deliverables/README.md
+    - notes/triage_rules.md
+
+skills:
+  available:
+
+runtime:
+  model: gpt-5.4
+  mode: interactive
+  memory_policy: default
+  max_steps: 20
+  temperature: 0.1

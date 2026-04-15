@@ -1,0 +1,23 @@
+id: data_62
+name: Expense Reimbursement Shortcut Dispute Audit
+description: "A no-skills family seed about resolving a reimbursement dispute using the current reimbursement policy and claim evidence instead of an outdated FAQ shortcut."
+
+prompts:
+  - prompts/data_62.md
+
+environment:
+  asset: data_62
+  workspace_context_files:
+    - README.txt
+    - deliverables/README.md
+    - notes/triage_rules.md
+
+skills:
+  available:
+
+runtime:
+  model: gpt-5.4
+  mode: interactive
+  memory_policy: default
+  max_steps: 20
+  temperature: 0.1

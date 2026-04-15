@@ -1,0 +1,23 @@
+id: data_63
+name: Invoice Tax Adjustment Root Cause Audit
+description: "A no-skills family seed about resolving an invoice mismatch using the current tax adjustment note and invoice lines instead of a stale manual and accounting guess."
+
+prompts:
+  - prompts/data_63.md
+
+environment:
+  asset: data_63
+  workspace_context_files:
+    - README.txt
+    - deliverables/README.md
+    - notes/triage_rules.md
+
+skills:
+  available:
+
+runtime:
+  model: gpt-5.4
+  mode: interactive
+  memory_policy: default
+  max_steps: 20
+  temperature: 0.1

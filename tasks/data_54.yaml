@@ -1,0 +1,23 @@
+id: data_54
+name: Webhook Retry Storm Triage
+description: "A no-skills family seed about separating downstream webhook outage signals from an internal retry policy regression using only local evidence."
+
+prompts:
+  - prompts/data_54.md
+
+environment:
+  asset: data_54
+  workspace_context_files:
+    - README.txt
+    - deliverables/README.md
+    - notes/triage_rules.md
+
+skills:
+  available:
+
+runtime:
+  model: gpt-5.4
+  mode: interactive
+  memory_policy: default
+  max_steps: 20
+  temperature: 0.1

@@ -1,0 +1,14 @@
+{
+  "feed": "atlas-feed",
+  "generated_at": "2026-09-04T00:19:00Z",
+  "partitions": [
+    {
+      "partition_date": "2026-09-04",
+      "files": [
+        "orders_2026-09-04.csv",
+        "refunds_2026-09-04.csv",
+        "adjustments_2026-09-04.csv"
+      ]
+    }
+  ]
+}

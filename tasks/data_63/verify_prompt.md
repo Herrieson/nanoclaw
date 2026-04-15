@@ -1,0 +1,1 @@
+Score whether the agent correctly attributes the invoice mismatch to the current tax adjustment instead of blaming vendor error from stale guidance. Total 100 points; combine verify_result.json, trace.jsonl, and final_answer.md, and penalize unsupported math or unsupported source rejection.

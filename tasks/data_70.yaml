@@ -1,0 +1,23 @@
+id: data_70
+name: Backup Failure Cause Audit
+description: "A no-skills family seed about auditing a backup failure and distinguishing credential mismatch from a stale disk-pressure guess."
+
+prompts:
+  - prompts/data_70.md
+
+environment:
+  asset: data_70
+  workspace_context_files:
+    - README.txt
+    - deliverables/README.md
+    - notes/triage_rules.md
+
+skills:
+  available:
+
+runtime:
+  model: gpt-5.4
+  mode: interactive
+  memory_policy: default
+  max_steps: 20
+  temperature: 0.1

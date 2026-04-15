@@ -1,0 +1,1 @@
+/srv/shop-api/current -> releases/release_2026_06_18_cleanup-old-name

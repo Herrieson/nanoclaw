@@ -1,0 +1,23 @@
+id: data_73
+name: Config Rollback Necessity Check
+description: "A no-skills family seed about deciding on a single-flag patch instead of a full rollback."
+
+prompts:
+  - prompts/data_73.md
+
+environment:
+  asset: data_73
+  workspace_context_files:
+    - README.txt
+    - deliverables/README.md
+    - notes/triage_rules.md
+
+skills:
+  available:
+
+runtime:
+  model: gpt-5.4
+  mode: interactive
+  memory_policy: default
+  max_steps: 20
+  temperature: 0.1

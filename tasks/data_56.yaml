@@ -1,0 +1,23 @@
+id: data_56
+name: Access Spike Classification
+description: "A no-skills family seed about classifying a traffic spike as external attack or internal replay by cross-checking access logs, batch jobs, and internal source metadata."
+
+prompts:
+  - prompts/data_56.md
+
+environment:
+  asset: data_56
+  workspace_context_files:
+    - README.txt
+    - deliverables/README.md
+    - notes/triage_rules.md
+
+skills:
+  available:
+
+runtime:
+  model: gpt-5.4
+  mode: interactive
+  memory_policy: default
+  max_steps: 20
+  temperature: 0.1

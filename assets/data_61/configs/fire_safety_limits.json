@@ -1,0 +1,15 @@
+{
+  "updated_at": "2026-07-14",
+  "venues": [
+    {
+      "name": "Harbor Hall",
+      "legal_max": 160,
+      "inspector_note": "stroller lane and photo wall reduce standing overflow"
+    },
+    {
+      "name": "Riverside Studio",
+      "legal_max": 188,
+      "inspector_note": "current setup cleared"
+    }
+  ]
+}

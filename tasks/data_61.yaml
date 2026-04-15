@@ -1,0 +1,23 @@
+id: data_61
+name: Family Day Venue Capacity Reaudit
+description: "A no-skills family seed about resolving a venue plan conflict using current fire-safety limits, layout capacity, and latest headcount instead of a stale venue summary."
+
+prompts:
+  - prompts/data_61.md
+
+environment:
+  asset: data_61
+  workspace_context_files:
+    - README.txt
+    - deliverables/README.md
+    - notes/triage_rules.md
+
+skills:
+  available:
+
+runtime:
+  model: gpt-5.4
+  mode: interactive
+  memory_policy: default
+  max_steps: 20
+  temperature: 0.1

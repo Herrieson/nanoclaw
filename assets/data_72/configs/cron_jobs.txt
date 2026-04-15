@@ -1,0 +1,3 @@
+# cron snapshot
+*/17 * * * * /opt/feed-sync/run_sync.sh
+10 3 * * * /opt/feed-sync/cleanup.sh
