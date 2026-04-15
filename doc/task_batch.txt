@@ -71,7 +71,7 @@
 6. 不要只检查最终答案；verifier 必须检查结构、内容、过程和 shortcut。
 7. 不要用旧版单目录结构；必须使用当前仓库的 `tasks/`、`tasks/prompts/`、`assets/`、`skills/`、`results/` 结构。
 8. 不要只在脑内自洽；每条任务都要真实运行并根据 trace 做 hardening。
-9. 不要把 persona 当成答案生成器；persona 只负责“用户怎么说”。
+9. 不要专门引入 persona 语料库占用上下文；用户表层请求应直接从 family 世界观、基础任务和当前 variant 的目标自然生成。
 10. 每个文件都必须有角色；严禁空文件、纯占位符、无意义噪音。
 
 ==================================================
@@ -119,6 +119,14 @@
 - `incident_response`
 - `compliance_review`
 - `research_synthesis`
+
+如果用户已经手工创建了一些基础任务，优先把这些基础任务当作 family seed，而不是重新从零虚构 family。
+
+family seed 的推荐用法：
+- 把基础任务中稳定不变的部分抽成 Base World
+- 把决定答案的关键变化点抽成 Overlay slots
+- 把原任务的 verifier 要点提炼成 family 级验证骨架
+- 后续新任务优先通过“改 family seed”得到，而不是整题重写
 
 第 2 步：决定该 family 是哪条任务线
 - `skills-family`
@@ -295,29 +303,47 @@ skills:
 - 不允许的 shortcut
 
 ==================================================
-十一、persona 的用途：只负责表层真实感
+十一、基础任务作为 family seed 的优先策略
 ==================================================
 
-当仓库里存在 `doc/persona500.jsonl` 时，优先把它作为用户表层请求种子库。
+如果用户已经提前创建了一些基础任务，不要再引入 `persona500.jsonl` 或额外的人设种子。
+优先做法是直接把这些基础任务视为 family seed。
 
-正确做法：
-1. 先定 family
-2. 再选 persona
-3. 用 persona 生成自然用户请求、关注点和交付偏好
-4. 再把底层逻辑、冲突源和 verifier 挂到这个表层请求之下
+推荐流程：
+1. 先识别每个基础任务对应的 family
+2. 把基础任务里稳定不变的世界部分抽成 Base World
+3. 把会影响答案的关键证据、联系人、约束、交付要求抽成 Overlay slots
+4. 把原任务 prompt 改写成更短、更自然的 family-level 用户请求模板
+5. 基于同一个 family seed 派生多个 variants 和 difficulty 版本
 
-persona 适合影响：
-- 请求措辞
-- 关注点
-- 交付偏好
-- 沟通风格
+family seed 最适合提供：
+- 稳定目录结构
+- 稳定角色与联系人体系
+- 长期背景文件
+- 典型冲突模式
+- 交付物骨架
+- verifier 的核心检查点
 
-persona 不适合直接决定：
-- 正确答案
-- 任务类型
-- 难度
-- verifier 标准
-- 冲突优先级
+从 family seed 派生新任务时，优先改这些东西：
+- 最新事实
+- 当前联系人表
+- amendment / policy / handoff
+- 风险约束
+- 输出 schema
+- 收件规则
+- 是否需要额外交付物
+
+不要每次都重写这些东西：
+- 世界观底座
+- 目录结构
+- 长期模板
+- verifier 主体框架
+
+表层用户请求的生成原则：
+- 直接根据基础任务和当前 variant 目标写自然请求
+- 不必引入额外 persona 数据
+- 保持真实、短、像人会说的话
+- 重点是让底层逻辑由 workspace 和 verifier 决定，而不是让“人设”决定题目
 
 ==================================================
 十二、asset 设计：每个文件都要有角色
@@ -506,7 +532,7 @@ persona 不适合直接决定：
 - `common_shortcuts`
 - `expected_failure_modes`
 - `verifier_version`
-- `persona_seed_id`（如果使用了 persona）
+- `family_seed_task_id`（如果该任务是从某个基础任务扩出来的）
 - `surface_prompt_style`
 
 ==================================================
@@ -587,10 +613,11 @@ verifier 质量：
 - 至少弱模型 + 强模型双配置
 - 看 verifier 是否有区分度
 
-错误 7：把 persona 直接当答案生成器
+错误 7：没有把现成基础任务当作 family seed，导致每条题都从零重写
 修复：
-- 先定 family，再映射 persona
-- persona 只控制用户外衣，不控制底层答案
+- 先识别哪些基础任务能沉淀为 family
+- 抽出 Base World、Overlay slots、公共 verifier 骨架
+- 后续 variant 优先通过改 seed task 派生，而不是重造全新世界
 
 ==================================================
 十八、输出时必须给出的批次总结
