@@ -1,0 +1,25 @@
+id: data_205
+name: Beauty Salon Tax Mess Cleanup
+description: Help a disorganized salon owner reconcile messy financial logs, identify duplicate charges, and filter personal/non-taxable items from business income.
+prompts:
+- prompts/data_205.md
+environment:
+  asset: data_205
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Data Science & System Operations
+difficulty: 4
+metadata:
+  persona: Female, 50, Self-employed, Low conscientiousness, Feminist.
+  skills:
+  - Log Parsing
+  - Data Cleaning
+  - Fraud Detection
+  - JSON Serialization

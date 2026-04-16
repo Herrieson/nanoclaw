@@ -1,0 +1,15 @@
+id: data_199
+name: Messy Inventory and Bird Log Extraction
+prompts:
+- prompts/data_199.md
+environment:
+  asset: data_199
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

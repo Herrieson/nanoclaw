@@ -1,0 +1,20 @@
+id: data_105
+name: Ransomware Decryption Challenge
+description: Reverse engineer a simple ransomware script to decrypt comic book summaries.
+prompts:
+- prompts/data_105.md
+environment:
+  asset: data_105
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+tags:
+- reverse-engineering
+- scripting
+- file-system

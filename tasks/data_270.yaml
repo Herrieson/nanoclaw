@@ -1,0 +1,20 @@
+id: data_270
+name: Urgent Patient Referral Extraction and Anonymization
+description: Extract specific patient referral needs from a messy text dump, anonymize SSNs, and format into a CSV.
+prompts:
+- prompts/data_270.md
+environment:
+  asset: data_270
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+tags:
+- data-processing
+- regex
+- text-extraction

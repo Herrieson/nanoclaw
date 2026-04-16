@@ -1,0 +1,16 @@
+id: data_358
+name: Eco Club Data Cleaning (Teen Persona)
+description: Fix a broken Python script to parse bilingual survey data and extract a list of highly interested participants into a CSV.
+prompts:
+- prompts/data_358.md
+environment:
+  asset: data_358
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

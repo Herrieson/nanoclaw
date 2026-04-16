@@ -1,0 +1,23 @@
+id: data_92
+name: Landscaping Database Recovery and Logic Restoration
+description: Repair a corrupted SQLite database and restore pricing logic based on system logs and broken script analysis.
+prompts:
+- prompts/data_92.md
+environment:
+  asset: data_92
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Data Recovery & Logic Repair
+difficulty: Hard
+persona:
+  age: 34
+  occupation: Administrative Assistant - Landscaping
+  agreeableness: Extremely Low
+  conscientiousness: Low

@@ -1,0 +1,16 @@
+id: data_214
+name: EcoWeave 3000 Log Analysis
+description: Parse machine logs to calculate downtime, identify failing components, and list error codes based on a persona's instructions.
+prompts:
+- prompts/data_214.md
+environment:
+  asset: data_214
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

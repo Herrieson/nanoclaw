@@ -1,0 +1,18 @@
+id: data_54
+name: 'Eagle Eye: Federal Investigation of Illegal Wildlife Trade'
+description: 调查一起涉及非法野生动物贸易的联邦案件，通过分析系统日志和交互式 API 获取犯罪证据。
+prompts:
+- prompts/data_54.md
+environment:
+  asset: data_54
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: System Administration & Cybersecurity
+persona: 31-year-old female Federal Police Officer, Montana. Social justice oriented, community active.

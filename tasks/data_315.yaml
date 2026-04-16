@@ -1,0 +1,21 @@
+id: data_315
+name: Federal Cafeteria Environmental Audit
+prompts:
+- prompts/data_315.md
+environment:
+  asset: data_315
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Data Analysis & System Investigation
+difficulty: hard
+persona:
+  age: 21
+  occupation: Food Preparation Worker (Federal)
+  traits: Detail-oriented, Environmentalist, Introverted

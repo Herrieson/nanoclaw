@@ -1,0 +1,18 @@
+id: data_207
+name: Master Mechanic's Digital Diagnosis
+description: Help Mike, a master mechanic, recover corrupted vehicle diagnostic data and find the repair procedure for a high-priority customer.
+prompts:
+- prompts/data_207.md
+environment:
+  asset: data_207
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: System Administration & Data Recovery
+difficulty: 4

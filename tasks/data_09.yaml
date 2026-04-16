@@ -1,0 +1,16 @@
+id: data_09
+name: Mixed Media Artist's Tech Chaos
+description: A freelance mixed media artist needs help parsing scattered color notes into a specific JSON format,  fixing a buggy Python script to compile a configuration file for a digital art frame,  and extracting specific local gallery emails from a messy text dump using regex.
+prompts:
+- prompts/data_09.md
+environment:
+  asset: data_09
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

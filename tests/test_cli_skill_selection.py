@@ -40,6 +40,7 @@ Use this skill for {slug}.
             extra_skill_dirs=(),
             run_mode="interactive",
             memory_policy="default",
+            approval_mode="interactive",
             session_max_messages=10,
             session_max_chars=1000,
             max_steps=12,

@@ -1,0 +1,16 @@
+id: data_26
+name: Bookkeeper's Nightmare - Messy Log Reconciliation
+description: Parse poorly formatted, typo-ridden text logs, extract financial data, reconcile with a master CSV list, and generate a deficit report under strict persona constraints.
+prompts:
+- prompts/data_26.md
+environment:
+  asset: data_26
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

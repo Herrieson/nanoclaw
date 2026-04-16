@@ -1,0 +1,16 @@
+id: data_370
+name: Urgent Customer Service Routing Fix
+prompts:
+- prompts/data_370.md
+environment:
+  asset: data_370
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'

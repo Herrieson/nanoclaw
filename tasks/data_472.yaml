@@ -1,0 +1,16 @@
+id: data_472
+name: Model Airplane Parts Inventory
+description: Cross-reference inventory files across different formats to determine missing model airplane parts and calculate total replacement cost based on a vendor catalog.
+prompts:
+- prompts/data_472.md
+environment:
+  asset: data_472
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

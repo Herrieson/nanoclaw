@@ -1,0 +1,26 @@
+id: data_379
+name: Acquisition Financial Forensic Analysis
+description: A high-stakes financial forensic task requiring log parsing, database querying, and reversing a custom encryption to identify revenue inflation in a startup.
+prompts:
+- prompts/data_379.md
+environment:
+  asset: data_379
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Financial/Data Analysis
+metadata:
+  persona: Financial and Investment Analyst in Telecommunications
+  difficulty: Hard
+  tags:
+  - Forensics
+  - Python
+  - SQL
+  - Cryptography
+  - Data Analysis

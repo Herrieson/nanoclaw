@@ -1,0 +1,16 @@
+id: data_68
+name: Daycare Billing and Craft Kits
+description: Parse messy attendance logs and a corrupted CSV to generate billing and craft activity emails for a daycare provider.
+prompts:
+- prompts/data_68.md
+environment:
+  asset: data_68
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

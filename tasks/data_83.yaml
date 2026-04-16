@@ -1,0 +1,17 @@
+id: data_83
+name: The Walkout Organizer
+description: A multi-step log parsing and SQLite database querying task disguised as a high school student organizing a protest.
+prompts:
+- prompts/data_83.md
+environment:
+  asset: data_83
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: 1.0

@@ -1,0 +1,25 @@
+id: data_405
+name: Fast Food Shift Recovery
+description: Recovery of a deleted restaurant schedule from fragmented logs, scanned napkin doodles (text representations), and raw POS CSV data.
+prompts:
+- prompts/data_405.md
+environment:
+  asset: data_405
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Data Recovery & Logic Reasoning
+difficulty: 3
+metadata:
+  persona: 16-year-old fast food worker with cognitive difficulty and low conscientiousness.
+  skills:
+  - Python
+  - Data Cleaning
+  - Log Parsing
+  - Logical Inference

@@ -1,0 +1,23 @@
+id: data_295
+name: Logistics Recovery and XOR Decryption
+prompts:
+- prompts/data_295.md
+environment:
+  asset: data_295
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: System Administration & Data Engineering
+difficulty: hard
+tags:
+- bash
+- python
+- cryptography
+- log-analysis
+- logistics

@@ -4,6 +4,7 @@ import argparse
 import shutil
 from dataclasses import replace
 from pathlib import Path
+import yaml
 
 from .config import DEFAULT_PROMPT_FILES, Settings
 from .core_loop import MinimalClaw
@@ -104,6 +105,34 @@ def _materialize_skill_pool(
         source_dir = skill.source_path.parent
         destination_dir = skill_root / skill.slug
         shutil.copytree(source_dir, destination_dir)
+
+
+def _task_source_with_effective_runtime(task) -> str:
+    payload = yaml.safe_load(task.source_text) or {}
+    if not isinstance(payload, dict):
+        return task.source_text
+
+    runtime = payload.get("runtime")
+    if not isinstance(runtime, dict):
+        runtime = {}
+        payload["runtime"] = runtime
+
+    runtime["model"] = task.runtime.model
+    runtime["mode"] = task.runtime.mode
+    runtime["memory_policy"] = task.runtime.memory_policy
+    runtime["approval_mode"] = task.runtime.approval_mode
+    runtime["max_steps"] = task.runtime.max_steps
+    runtime["temperature"] = task.runtime.temperature
+    if task.runtime.session is not None:
+        runtime["session"] = task.runtime.session
+    elif "session" in runtime:
+        del runtime["session"]
+    if task.runtime.workspace_context_files:
+        runtime["workspace_context_files"] = list(task.runtime.workspace_context_files)
+    elif "workspace_context_files" in runtime:
+        del runtime["workspace_context_files"]
+
+    return yaml.safe_dump(payload, sort_keys=False, allow_unicode=True, width=1000)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -220,6 +249,17 @@ def build_parser() -> argparse.ArgumentParser:
         "--run-mode",
         default=None,
         help="Override runtime mode for this task run",
+    )
+    run_task_parser.add_argument(
+        "--model",
+        default=None,
+        help="Override runtime model for this task run",
+    )
+    run_task_parser.add_argument(
+        "--approval-mode",
+        default=None,
+        choices=("interactive", "reject", "approve-all"),
+        help="Override command approval behavior for this task run",
     )
     run_task_parser.add_argument(
         "--session",
@@ -424,6 +464,20 @@ def main() -> None:
 
     if args.command == "run-task":
         task = load_task_definition(Path(args.task), settings)
+        task_runtime = replace(
+            task.runtime,
+            model=args.model or task.runtime.model,
+            mode=args.run_mode or task.runtime.mode,
+            approval_mode=args.approval_mode or task.runtime.approval_mode,
+            session=args.session or task.runtime.session,
+        )
+        task = replace(
+            task,
+            runtime=task_runtime,
+            source_text=_task_source_with_effective_runtime(
+                replace(task, runtime=task_runtime)
+            ),
+        )
         task_assets_root = Path(args.assets_dir).expanduser().resolve()
         results_root = Path(args.results_dir).expanduser().resolve()
         skill_workspace_dir = task_assets_root / task.asset
@@ -448,8 +502,8 @@ def main() -> None:
             results_root=results_root,
             resolved_payload=resolved_payload,
         )
-        run_mode = args.run_mode or task.runtime.mode
-        task_session = args.session or task.runtime.session
+        run_mode = task.runtime.mode
+        task_session = task.runtime.session
         task_settings = replace(
             settings,
             workspace_dir=layout.workspace_dir,
@@ -457,6 +511,7 @@ def main() -> None:
             workspace_context_files=task.runtime.workspace_context_files,
             run_mode=run_mode,
             memory_policy=task.runtime.memory_policy,
+            approval_mode=task.runtime.approval_mode,
             max_steps=task.runtime.max_steps,
             temperature=task.runtime.temperature,
         )
@@ -536,6 +591,7 @@ def main() -> None:
                 "temperature": task_settings.temperature,
                 "run_mode": task_settings.run_mode,
                 "memory_policy": task_settings.memory_policy,
+                "approval_mode": task_settings.approval_mode,
                 "session": task_session,
                 "workspace_context_files": list(agent.last_workspace_context_files),
                 "runtime_metadata": agent.last_runtime_metadata,

@@ -1,0 +1,21 @@
+id: data_102
+name: Family and Client Shuttle Organizer
+description: Parse messy bilingual notes and extract flight arrival times to schedule airport shuttles according to specific business rules.
+prompts:
+- prompts/data_102.md
+environment:
+  asset: data_102
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+tags:
+- text-processing
+- regex
+- logical-reasoning
+- csv-manipulation

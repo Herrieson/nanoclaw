@@ -1,0 +1,16 @@
+id: data_37
+name: Vintage Postcard Filter
+description: Filter vintage postcards metadata based on specific strict conservative criteria and generate a template letter.
+prompts:
+- prompts/data_37.md
+environment:
+  asset: data_37
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

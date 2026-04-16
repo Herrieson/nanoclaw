@@ -1,0 +1,17 @@
+id: data_484
+name: Welder's Buggy Parts Extraction
+description: Parse noisy diagnostic logs, cross-reference a parts catalog, and calculate discounted prices for a disorganized self-employed welder.
+prompts:
+- prompts/data_484.md
+environment:
+  asset: data_484
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: 1.0

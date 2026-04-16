@@ -1,0 +1,20 @@
+id: data_89
+name: Mixed-Format Financial Log Parsing and Compliance Auditing
+description: The agent must parse a directory of mixed-format, dirty financial logs (CSV and JSONL), extract data based on complex compliance rules defined in a text memo, and output a standardized CSV report. Tests file system traversal, format inference, robust parsing, and logic application.
+prompts:
+- prompts/data_89.md
+environment:
+  asset: data_89
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+tags:
+- data-processing
+- file-parsing
+- logic-reasoning

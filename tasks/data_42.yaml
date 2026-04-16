@@ -1,0 +1,22 @@
+id: data_42
+name: Construction Site Sensor Data Recovery and Audit
+prompts:
+- prompts/data_42.md
+environment:
+  asset: data_42
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+persona: 31-year-old artistically-inclined construction foreman
+difficulty: medium
+tags:
+- data_recovery
+- log_analysis
+- python
+- bash

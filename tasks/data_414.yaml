@@ -1,0 +1,16 @@
+id: data_414
+name: Q1 Financial Reconciliation
+description: Parse heterogeneous financial records (CSV, JSON, unstructured text) to calculate a specific category total across multiple languages, handle refunds, and generate a reconciliation report against a ledger.
+prompts:
+- prompts/data_414.md
+environment:
+  asset: data_414
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,15 @@
+id: data_301
+name: Vintage French Military Gear Extraction
+prompts:
+- prompts/data_301.md
+environment:
+  asset: data_301
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

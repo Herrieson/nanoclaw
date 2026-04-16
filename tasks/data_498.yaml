@@ -1,0 +1,17 @@
+id: data_498
+name: Community Fun Run Data Aggregation
+description: Parse heterogeneous data sources (CSV and free text), filter out excluded entries, and generate a structured JSON summary.
+prompts:
+- prompts/data_498.md
+environment:
+  asset: data_498
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: 1.0

@@ -1,0 +1,7 @@
+Hey there. I know it's late, but I really need some help. I brought some data home from the pharma plant on a flash drive—probably shouldn't have, but I couldn't finish the incident report on my shift. I'm operating the main mixers on the production line, and my head is just spinning trying to read these raw machine dumps. I’ve got my lucky pen tucked behind my ear, but my brain is just refusing to process these numbers right now. Plus, my youngest is acting up in the other room and honestly, I just want to go outside and check on my garden to decompress.
+
+I dumped a compressed archive called `logs_backup.tar.gz` in the workspace. It's got the sensor readings from today's batches. The SOP says a batch is completely ruined if the internal temperature hits 102.5 degrees (or higher) for 3 or more readings in a row. 
+
+I need you to dig through those logs and find the bad batch. Once you find it, I need to know the exact Batch ID, and I also need you to calculate the average pressure *only* during those specific consecutive overheating moments so I can enter the compensation value into the system tomorrow. 
+
+Can you please just do the math and save it in a file called `calibration_fix.json`? I need it to have exactly two things: `"faulty_batch_id"` (the ID string) and `"avg_pressure"` (the average pressure rounded to two decimal places). I'm too tired to look at a spreadsheet right now. Thank you.

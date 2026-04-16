@@ -1,0 +1,19 @@
+id: data_95
+name: Vintage Records Sorting
+description: Sort out mixed medical and vintage clothing appraisal records, and calculate total value, while dealing with a highly anxious user prompt.
+prompts:
+- prompts/data_95.md
+environment:
+  asset: data_95
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+verify:
+  script: tasks/data_95/verify_rules.py
+  prompt: tasks/data_95/verify_prompt.md

@@ -1,0 +1,16 @@
+id: data_310
+name: Factory Soap Batch Forensics
+description: An agent must parse a messy log file, a CSV shift schedule, and an SQLite employee database to identify workers responsible for faulty soap batches, based on the narrative of a disorganized, health-conscious factory worker.
+prompts:
+- prompts/data_310.md
+environment:
+  asset: data_310
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

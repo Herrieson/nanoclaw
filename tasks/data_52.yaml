@@ -1,0 +1,16 @@
+id: data_52
+name: Meticulous Retail Inventory Recovery
+description: A highly neurotic retail worker needs help recovering a monthly inventory summary by parsing messy receipts and interacting with an undocumented local mock server.
+prompts:
+- prompts/data_52.md
+environment:
+  asset: data_52
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,21 @@
+id: data_356
+name: Eco-Friendly Retail Supplier Analysis
+description: Parse messy customer feedback logs and cross-reference with a supplier database to identify top-rated, genuinely eco-certified products.
+prompts:
+- prompts/data_356.md
+environment:
+  asset: data_356
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+tags:
+- data-processing
+- python
+- regex
+- text-extraction

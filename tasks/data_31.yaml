@@ -1,0 +1,16 @@
+id: data_31
+name: Messy Recipe Rescue
+description: Traverse a messy directory of mixed-format files, extract highly rated recipes based on vague criteria, and compile them into a unified Markdown file.
+prompts:
+- prompts/data_31.md
+environment:
+  asset: data_31
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,15 @@
+id: data_76
+name: Eco-Club & Babysitting Data Recovery
+prompts:
+- prompts/data_76.md
+environment:
+  asset: data_76
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

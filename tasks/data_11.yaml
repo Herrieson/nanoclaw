@@ -1,0 +1,16 @@
+id: data_11
+name: Utility Relief Fund Calculation
+description: Parse unstructured text and CSV files to calculate net financial needs and rank them, handling a broken legacy script.
+prompts:
+- prompts/data_11.md
+environment:
+  asset: data_11
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

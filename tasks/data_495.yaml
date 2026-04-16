@@ -1,0 +1,15 @@
+id: data_495
+name: Guitar Class Grade Aggregation
+prompts:
+- prompts/data_495.md
+environment:
+  asset: data_495
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,15 @@
+id: data_115
+name: Sustainable Fashion Donation Tally
+prompts:
+- prompts/data_115.md
+environment:
+  asset: data_115
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

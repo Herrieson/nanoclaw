@@ -1,0 +1,20 @@
+id: data_262
+name: The Meticulous Supervisor's Scheduling Nightmare
+description: Parse poorly formatted staff schedules, filter out doodle notes, and calculate actual working hours after deducting absences.
+prompts:
+- prompts/data_262.md
+environment:
+  asset: data_262
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+tags:
+- data-cleaning
+- log-parsing
+- json-generation

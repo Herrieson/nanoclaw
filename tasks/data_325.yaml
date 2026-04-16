@@ -1,0 +1,16 @@
+id: data_325
+name: Midwestern Meltdown Data Recovery
+description: Extract and process data from a disorganized set of files belonging to a stressed, unemployed construction supervisor.
+prompts:
+- prompts/data_325.md
+environment:
+  asset: data_325
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

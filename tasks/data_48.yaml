@@ -1,0 +1,23 @@
+id: data_48
+name: Grumpy Welder's Truck Diagnostic
+description: Help a visually impaired, highly stressed veteran mechanic diagnose a complex vehicle sensor failure by navigating a messy filesystem, parsing raw CAN bus logs, and matching hardware compatibility.
+prompts:
+- prompts/data_48.md
+environment:
+  asset: data_48
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: System Administration & Data Analysis
+difficulty: Hard
+tags:
+- bash
+- python
+- data-processing
+- file-recovery

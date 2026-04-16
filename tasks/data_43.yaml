@@ -1,0 +1,17 @@
+id: data_43
+name: retail_inventory_audit_repair
+description: Simulate a retail supervisor's task to reconcile legacy CSV data with cloud JSON exports, fix negative inventory using logs, and generate a formatted XML restock order.
+prompts:
+- prompts/data_43.md
+environment:
+  asset: data_43
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Data Management & System Recovery

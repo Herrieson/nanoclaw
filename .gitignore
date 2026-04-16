@@ -203,6 +203,11 @@ cython_debug/
 
 # nanoclaw runtime outputs
 results/
+.task_normalizer_backups/
+.invalid_generated/
+
+# generated task builder outputs
+assets/data_*/
 
 # nanoclaw local workspace state
 workspace/memory/

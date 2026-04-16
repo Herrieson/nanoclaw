@@ -1,0 +1,16 @@
+id: data_13
+name: Country Music and Shift Logs Cleanup
+description: Extract specific text files based on content keywords to a new directory and aggregate numerical data from remaining log files.
+prompts:
+- prompts/data_13.md
+environment:
+  asset: data_13
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

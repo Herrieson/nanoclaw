@@ -1,0 +1,17 @@
+id: data_254
+name: The Supervisor's Literary Inventory
+description: Process a mixed inventory log to separate personal literature from building materials, calculate totals, and sync with a corporate mock script using a hidden token.
+prompts:
+- prompts/data_254.md
+environment:
+  asset: data_254
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'

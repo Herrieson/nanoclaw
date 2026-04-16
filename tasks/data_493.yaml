@@ -1,0 +1,16 @@
+id: data_493
+name: Community Impact Data Parsing
+description: Parse a messy text file containing mixed-format financial transaction logs to calculate specific metrics and output a JSON report.
+prompts:
+- prompts/data_493.md
+environment:
+  asset: data_493
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

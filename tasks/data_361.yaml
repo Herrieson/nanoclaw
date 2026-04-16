@@ -1,0 +1,15 @@
+id: data_361
+name: Panic at the Insurance Agency
+prompts:
+- prompts/data_361.md
+environment:
+  asset: data_361
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

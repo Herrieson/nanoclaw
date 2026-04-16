@@ -1,0 +1,18 @@
+id: data_449
+name: non_profit_data_chaos_recovery
+description: Recover and aggregate service data from a chaotic filesystem managed by a disorganized social worker.
+prompts:
+- prompts/data_449.md
+environment:
+  asset: data_449
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: data_processing_system_operations
+difficulty: hard

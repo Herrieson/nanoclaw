@@ -1,0 +1,17 @@
+id: data_67
+name: Student Privacy Data Leak Investigation
+prompts:
+- prompts/data_67.md
+environment:
+  asset: data_67
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: System Security & Data Analysis
+difficulty: Hard

@@ -1,0 +1,17 @@
+id: data_251
+name: Disorganized Construction Safety Audit
+description: An agent must navigate a deeply disorganized file system, extract critical safety violations from various text formats and archives, and compile them into a structured CSV file.
+prompts:
+- prompts/data_251.md
+environment:
+  asset: data_251
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'

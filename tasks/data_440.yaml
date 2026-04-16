@@ -1,0 +1,16 @@
+id: data_440
+name: Auto Parts Inventory Panic
+description: Navigate messy inventory logs to find the correct part ID and calculate remaining stock for a stressed auto shop supervisor.
+prompts:
+- prompts/data_440.md
+environment:
+  asset: data_440
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

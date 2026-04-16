@@ -1,0 +1,24 @@
+id: data_483
+name: Medical Records Data Integrity Restoration
+description: Restore corrupted HIPAA-sensitive medical records by fixing column shifts, decoding Base64 fragments, and enforcing strict formatting rules.
+prompts:
+- prompts/data_483.md
+environment:
+  asset: data_483
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Data Engineering
+difficulty: hard
+persona_id: data_483
+tags:
+- data_cleaning
+- base64
+- regex
+- medical_records

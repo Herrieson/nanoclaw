@@ -1,0 +1,21 @@
+id: data_329
+name: Salon Accounting Mess
+description: Calculate total earnings and identify unpaid customers from messy salon notes.
+prompts:
+- prompts/data_329.md
+environment:
+  asset: data_329
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+tags:
+- data processing
+- regex
+- scripting

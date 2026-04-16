@@ -1,0 +1,24 @@
+id: data_05
+name: Elena's Inventory Crisis
+description: 帮助一名餐馆收银员修复损坏的库存数据库并解决由于系统升级导致的账目差异。
+prompts:
+- prompts/data_05.md
+environment:
+  asset: data_05
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+metadata:
+  persona: Mexican immigrant, female householder, fast-food cashier, low conscientiousness (struggles with organization), extremely low neuroticism (calm under pressure but direct).
+  difficulty: High
+  tags:
+  - database-repair
+  - log-analysis
+  - python-debugging
+  - file-system-forensics

@@ -1,0 +1,16 @@
+id: data_29
+name: Financial Data Consolidation and Forecasting
+description: Parse messy financial data across different formats, calculate projected annual profit for a shortlisted set of local businesses, and generate a sorted CSV report.
+prompts:
+- prompts/data_29.md
+environment:
+  asset: data_29
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

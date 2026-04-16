@@ -1,0 +1,18 @@
+id: data_475
+name: Mechanics_Messy_Diagnostic_Recovery
+description: 帮助一名由于尽责性较低而导致资料混乱的修理工，从原始 OBD 原始日志和零散的收据文件中提取信息，生成一份完整的车辆维修总结报告。
+prompts:
+- prompts/data_475.md
+environment:
+  asset: data_475
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Data Processing & Forensic Reconstruction
+difficulty: Intermediate

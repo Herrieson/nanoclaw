@@ -1,0 +1,19 @@
+id: data_425
+name: Restaurant Financial Forensic Audit
+description: Audit procurement logs to identify forensic accounting discrepancies involving foreign exchange errors and unauthorized vendors.
+prompts:
+- prompts/data_425.md
+environment:
+  asset: data_425
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Financial Engineering
+complexity: 4
+persona_id: data_425

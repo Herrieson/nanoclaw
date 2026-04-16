@@ -1,0 +1,17 @@
+id: data_77
+name: The Irritated Avian Advisor
+description: Process noisy bird observation logs to extract and filter specific endangered bird species data based on strict, irritable constraints.
+prompts:
+- prompts/data_77.md
+environment:
+  asset: data_77
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'

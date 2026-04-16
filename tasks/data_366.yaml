@@ -1,0 +1,16 @@
+id: data_366
+name: Alejandro's Church Data Cleanup
+description: Clean up messy donation logs and filter a playlist for traditional Mexican music based on instructions from a hardworking, blunt construction worker.
+prompts:
+- prompts/data_366.md
+environment:
+  asset: data_366
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

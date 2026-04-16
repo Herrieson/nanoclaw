@@ -1,0 +1,16 @@
+id: data_429
+name: Vintage Tool Data Recovery
+description: Extract and decode vintage tool specifications from corrupted hex dumps.
+prompts:
+- prompts/data_429.md
+environment:
+  asset: data_429
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,16 @@
+id: data_323
+name: Nursing Facility Data Extraction & Journal Parsing
+description: A highly conscientious registered nurse needs help parsing unstructured patient records for high-risk dietary/medication flags and extracting journal DOIs from notes to match with a local index.
+prompts:
+- prompts/data_323.md
+environment:
+  asset: data_323
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,16 @@
+id: data_232
+name: Independent Music Festival Data Harmonization
+description: Cleanup and correlate fragmented music artist data into a professional dashboard for a community festival.
+prompts:
+- prompts/data_232.md
+environment:
+  asset: data_232
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

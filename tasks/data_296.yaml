@@ -1,0 +1,15 @@
+id: data_296
+name: Teacher's Reading Logs Processing
+prompts:
+- prompts/data_296.md
+environment:
+  asset: data_296
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

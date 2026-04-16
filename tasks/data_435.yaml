@@ -1,0 +1,16 @@
+id: data_435
+name: Adventure Hike Organizer
+description: Parse unstructured diary entries to extract book titles and coordinates (handling both Decimal and DMS formats), then calculate Haversine distance to a target location and output a strictly formatted CSV.
+prompts:
+- prompts/data_435.md
+environment:
+  asset: data_435
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

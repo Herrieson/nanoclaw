@@ -1,0 +1,16 @@
+id: data_347
+name: Community Clinic Log Extraction
+description: Extract patient IDs with pediatric asthma and find volunteer scheduling conflicts from a corrupted system log file.
+prompts:
+- prompts/data_347.md
+environment:
+  asset: data_347
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

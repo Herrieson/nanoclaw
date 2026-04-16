@@ -1,0 +1,21 @@
+id: data_328
+name: The Disorganized Therapist's Reconciliation
+description: Extract and reconcile patient billing and personal expenses from a highly unstructured, anxiety-filled desk note dump.
+prompts:
+- prompts/data_328.md
+environment:
+  asset: data_328
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+tags:
+- data-extraction
+- regex
+- json-processing
+- file-system

@@ -1,0 +1,15 @@
+id: data_93
+name: Real Estate Ledger Reconciliation
+prompts:
+- prompts/data_93.md
+environment:
+  asset: data_93
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

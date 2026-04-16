@@ -1,0 +1,19 @@
+id: data_27
+name: State Government HR Insurance Recovery Task
+description: Recover corrupted COBRA insurance data from damaged databases and fragmented XML/Log files, then process according to strict HR compliance rules.
+prompts:
+- prompts/data_27.md
+environment:
+  asset: data_27
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Data Recovery and Processing
+difficulty: 4
+persona: 51-year-old female state government clerk, high conscientiousness, low openness.

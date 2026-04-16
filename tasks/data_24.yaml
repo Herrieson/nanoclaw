@@ -1,0 +1,24 @@
+id: data_24
+name: Wholesale Inventory and Route Recovery
+prompts:
+- prompts/data_24.md
+environment:
+  asset: data_24
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: System Administration & Data Engineering
+meta:
+  persona: 20-year-old Sales Rep, Wholesale Grocery, Idaho
+  difficulty: High
+  tags:
+  - log analysis
+  - sqlite
+  - python script
+  - data recovery

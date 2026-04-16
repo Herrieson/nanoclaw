@@ -23,6 +23,7 @@ class TaskRuntime:
     mode: str
     session: str | None
     memory_policy: str
+    approval_mode: str
     workspace_context_files: tuple[str, ...]
     max_steps: int
     temperature: float
@@ -79,6 +80,7 @@ class TaskDefinition:
                 "mode": self.runtime.mode,
                 "session": self.runtime.session,
                 "memory_policy": self.runtime.memory_policy,
+                "approval_mode": self.runtime.approval_mode,
                 "max_steps": self.runtime.max_steps,
                 "temperature": self.runtime.temperature,
             },
@@ -522,6 +524,11 @@ def load_task_definition(task_path: Path, settings: Settings) -> TaskDefinition:
             "runtime.memory_policy",
         )
         or settings.memory_policy,
+        approval_mode=_optional_string(
+            runtime_block.get("approval_mode"),
+            "runtime.approval_mode",
+        )
+        or settings.approval_mode,
         workspace_context_files=_string_tuple(
             runtime_block.get("workspace_context_files"),
             "runtime.workspace_context_files",

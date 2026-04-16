@@ -1,0 +1,17 @@
+id: data_430
+name: Manufacturing Order Recovery
+description: Recover and calculate specific supplier orders from corrupted log files in a manufacturing setting.
+prompts:
+- prompts/data_430.md
+environment:
+  asset: data_430
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: 1.0

@@ -1,9 +1,14 @@
-import os
+import argparse
 import json
+from pathlib import Path
 import re
 
 
-def restore_files_from_jsonl(jsonl_file_path):
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent.parent
+
+
+def restore_files_from_jsonl(jsonl_file_path, output_root=REPO_ROOT):
     """
     读取打包好的 jsonl 文件，解析其中的 markdown 代码块，并还原为本地文件系统目录树。
     """
@@ -11,15 +16,17 @@ def restore_files_from_jsonl(jsonl_file_path):
     # 匹配 ```语言(可选)\n路径\n内容\n```
     # 使用 re.DOTALL 让 .*? 能够跨行匹配内容
     pattern = re.compile(r'```[a-zA-Z]*\n(tasks/[^\n]+)\n(.*?)```', re.DOTALL)
+    jsonl_path = Path(jsonl_file_path).expanduser()
+    output_root = Path(output_root).expanduser().resolve()
 
-    if not os.path.exists(jsonl_file_path):
-        print(f"错误: 找不到文件 {jsonl_file_path}")
+    if not jsonl_path.exists():
+        print(f"错误: 找不到文件 {jsonl_path}")
         return
 
     success_count = 0
     total_lines = 0
 
-    with open(jsonl_file_path, 'r', encoding='utf-8') as f:
+    with jsonl_path.open("r", encoding="utf-8") as f:
         for line_num, line in enumerate(f, 1):
             line = line.strip()
             if not line:
@@ -54,14 +61,16 @@ def restore_files_from_jsonl(jsonl_file_path):
                     print(f"  [跳过] 异常路径: {filepath}")
                     continue
 
+                target_path = output_root / filepath
+
                 # 自动创建多级目录
-                os.makedirs(os.path.dirname(filepath), exist_ok=True)
+                target_path.parent.mkdir(parents=True, exist_ok=True)
 
                 # 写入文件内容
-                with open(filepath, "w", encoding="utf-8") as out_file:
+                with target_path.open("w", encoding="utf-8") as out_file:
                     out_file.write(content.strip() + "\n")
 
-                print(f"  -> 已生成: {filepath}")
+                print(f"  -> 已生成: {target_path.relative_to(output_root)}")
 
             success_count += 1
             print("-" * 40)
@@ -69,7 +78,24 @@ def restore_files_from_jsonl(jsonl_file_path):
     print(f"\n还原完成！共扫描 {total_lines} 条记录，成功解析并落盘了 {success_count} 套关卡数据。")
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="从 jsonl 里的 raw_output 代码块还原 nanoclaw 任务文件。"
+    )
+    parser.add_argument(
+        "jsonl",
+        nargs="?",
+        default=str(SCRIPT_DIR / "claude.jsonl"),
+        help="输入的 jsonl 文件路径。默认使用 doc/todo/claude.jsonl。",
+    )
+    parser.add_argument(
+        "--output-root",
+        default=str(REPO_ROOT),
+        help="还原输出的根目录。默认使用仓库根目录。",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    # 替换为你实际复制带出来的那个 JSONL 文件名
-    TARGET_JSONL = "claude.jsonl"
-    restore_files_from_jsonl(TARGET_JSONL)
+    args = parse_args()
+    restore_files_from_jsonl(args.jsonl, args.output_root)

@@ -1,0 +1,16 @@
+id: data_321
+name: The Pharmacist's Chaotic Clinic
+description: Parse messy inventory logs, allocate medical supplies, and fix a buggy safety script.
+prompts:
+- prompts/data_321.md
+environment:
+  asset: data_321
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

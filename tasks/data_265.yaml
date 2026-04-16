@@ -1,0 +1,16 @@
+id: data_265
+name: The Busy Hospital Manager's Vintage Collection
+description: Process messy inventory logs and maintenance records to extract specific vintage medical equipment and identify a broken machine's serial number.
+prompts:
+- prompts/data_265.md
+environment:
+  asset: data_265
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,16 @@
+id: data_34
+name: Trail Route Mapping for the Traditional Guide
+description: Process spatial coordinates, filter out restricted ecological zones, and calculate a nearest-neighbor itinerary using the Haversine formula.
+prompts:
+- prompts/data_34.md
+environment:
+  asset: data_34
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

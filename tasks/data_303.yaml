@@ -1,0 +1,16 @@
+id: data_303
+name: The Bake Sale Reverse Engineering
+description: Extract and scale a recipe from a raw SQLite database based on specific flavor profile clues.
+prompts:
+- prompts/data_303.md
+environment:
+  asset: data_303
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

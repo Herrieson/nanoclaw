@@ -1,0 +1,16 @@
+id: data_416
+name: Real Estate Appraiser's Data Crunch
+description: Calculate an adjusted property appraisal value based on messy public data and specific neighborhood demographic criteria.
+prompts:
+- prompts/data_416.md
+environment:
+  asset: data_416
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

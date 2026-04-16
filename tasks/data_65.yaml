@@ -1,0 +1,16 @@
+id: data_65
+name: Poetry Portfolio Recovery
+description: Decode base64 files, extract poetry based on content filters, sort chronologically, and perform string replacements based on persona constraints.
+prompts:
+- prompts/data_65.md
+environment:
+  asset: data_65
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

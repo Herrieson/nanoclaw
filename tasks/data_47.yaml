@@ -1,0 +1,15 @@
+id: data_47
+name: Fitness Instructor Star Athlete Report
+prompts:
+- prompts/data_47.md
+environment:
+  asset: data_47
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

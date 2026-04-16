@@ -1,0 +1,16 @@
+id: data_309
+name: Nursing Facility Vitals and Medication Cross-Reference
+description: Parse a vitals log file, extract patients with low systolic blood pressure, cross-reference an SQLite database to check for a specific medication, and output a JSON alert list.
+prompts:
+- prompts/data_309.md
+environment:
+  asset: data_309
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

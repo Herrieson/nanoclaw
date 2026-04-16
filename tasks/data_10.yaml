@@ -1,0 +1,20 @@
+id: data_10
+name: Bird Sighting Data Consolidation
+prompts:
+- prompts/data_10.md
+environment:
+  asset: data_10
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: 1.0
+tags:
+- data-processing
+- sqlite
+- regex

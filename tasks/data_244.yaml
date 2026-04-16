@@ -1,0 +1,15 @@
+id: data_244
+name: Inventory Log Automation & DIY Dashboard
+prompts:
+- prompts/data_244.md
+environment:
+  asset: data_244
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

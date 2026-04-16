@@ -25,6 +25,7 @@ DEFAULT_WORKSPACE_CONTEXT_FILES = (
 
 DEFAULT_RUN_MODE = "interactive"
 DEFAULT_MEMORY_POLICY = "default"
+DEFAULT_APPROVAL_MODE = "interactive"
 DEFAULT_SESSION_MAX_MESSAGES = 40
 DEFAULT_SESSION_MAX_CHARS = 12000
 
@@ -50,6 +51,7 @@ class Settings:
     extra_skill_dirs: tuple[Path, ...]
     run_mode: str
     memory_policy: str
+    approval_mode: str
     session_max_messages: int
     session_max_chars: int
     max_steps: int
@@ -98,6 +100,11 @@ class Settings:
                 DEFAULT_MEMORY_POLICY,
             ).strip()
             or DEFAULT_MEMORY_POLICY,
+            approval_mode=os.getenv(
+                "NANOCLAW_APPROVAL_MODE",
+                DEFAULT_APPROVAL_MODE,
+            ).strip()
+            or DEFAULT_APPROVAL_MODE,
             session_max_messages=int(
                 os.getenv(
                     "NANOCLAW_SESSION_MAX_MESSAGES",

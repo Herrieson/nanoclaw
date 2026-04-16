@@ -1,0 +1,16 @@
+id: data_113
+name: Endangered Bird Sightings Aggregation
+description: Parse messy unstructured notes, CSV, and JSON data, cross-reference with an SQLite database of endangered species, and aggregate sightings.
+prompts:
+- prompts/data_113.md
+environment:
+  asset: data_113
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

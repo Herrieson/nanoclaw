@@ -1,0 +1,15 @@
+id: data_129
+name: The Anxious Stocker's Gadget Mess
+prompts:
+- prompts/data_129.md
+environment:
+  asset: data_129
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

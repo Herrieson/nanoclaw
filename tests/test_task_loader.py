@@ -23,6 +23,7 @@ class TaskLoaderTest(unittest.TestCase):
             extra_skill_dirs=(),
             run_mode="interactive",
             memory_policy="default",
+            approval_mode="interactive",
             session_max_messages=10,
             session_max_chars=1000,
             max_steps=12,
@@ -89,6 +90,7 @@ class TaskLoaderTest(unittest.TestCase):
                     "    - memory-preference-checker",
                     "runtime:",
                     "  memory_policy: strict",
+                    "  approval_mode: reject",
                 ]
             )
             + "\n",
@@ -102,6 +104,7 @@ class TaskLoaderTest(unittest.TestCase):
             task.runtime.workspace_context_files,
             ("TEAM_STYLE.md",),
         )
+        self.assertEqual(task.runtime.approval_mode, "reject")
         self.assertEqual(
             task.skills.available,
             ("tutorial-brief-writer", "memory-preference-checker"),

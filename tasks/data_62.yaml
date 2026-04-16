@@ -1,0 +1,16 @@
+id: data_62
+name: Green Grocery Inventory Parsing
+description: Parse mixed log data and CSV to calculate costs for eco-friendly products based on supplier sustainability scores.
+prompts:
+- prompts/data_62.md
+environment:
+  asset: data_62
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

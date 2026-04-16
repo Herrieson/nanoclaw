@@ -1,0 +1,16 @@
+id: data_259
+name: The Teacher's Portfolio Reorganization
+description: Parse a messy CSV, decode base64 filenames, and reorganize student data into a strict directory structure based on a highly organized teacher's instructions.
+prompts:
+- prompts/data_259.md
+environment:
+  asset: data_259
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

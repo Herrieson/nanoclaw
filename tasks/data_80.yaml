@@ -1,0 +1,20 @@
+id: data_80
+name: Persistence Hunt and Remediation
+prompts:
+- prompts/data_80.md
+environment:
+  asset: data_80
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Cybersecurity & Systems Engineering
+complexity: 5
+persona:
+  role: Senior Information Security Analyst
+  traits: Technical, sardonic humor, busy, minimalist instructions.

@@ -1,0 +1,16 @@
+id: data_257
+name: Skate Video Decryption
+description: Fix a broken Python script to read a hint from an SQLite database, compute an MD5 hash, and XOR decrypt a secret file.
+prompts:
+- prompts/data_257.md
+environment:
+  asset: data_257
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

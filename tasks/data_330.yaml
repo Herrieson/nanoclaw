@@ -1,0 +1,16 @@
+id: data_330
+name: Local Indie Music Showcase Data Cleanup
+description: Parse messy chat logs, fix corrupted JSON, and extract specific music artists to create a festival schedule.
+prompts:
+- prompts/data_330.md
+environment:
+  asset: data_330
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

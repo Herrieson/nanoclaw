@@ -1,0 +1,18 @@
+id: data_491
+name: Retail Supervisor's Accidental Leak Cleanup
+description: Help a panicked retail supervisor locate a password in chaotic logs, decrypt a sensitive database, and sanitize leaked pricing data before a mock synchronization script executes.
+prompts:
+- prompts/data_491.md
+environment:
+  asset: data_491
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: System Administration & Data Manipulation
+difficulty: 4

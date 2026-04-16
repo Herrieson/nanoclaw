@@ -349,6 +349,7 @@ class MinimalClaw:
             "model": self.settings.model,
             "run_mode": self.settings.run_mode,
             "memory_policy": self.settings.memory_policy,
+            "approval_mode": self.settings.approval_mode,
         }
 
     def _workspace_context_paths(self) -> tuple[tuple[str, Path], ...]:
@@ -944,7 +945,12 @@ class MinimalClaw:
                 )
                 print(f"\n[Agent asks human] {reason}")
                 print(f"Command for one-time approval: {normalized_command}")
-                human_response = input("Your response (Approve/Reject/Modify): ").strip()
+                if self.settings.approval_mode == "approve-all":
+                    human_response = "Approve (auto)"
+                elif self.settings.approval_mode == "reject":
+                    human_response = "Reject (auto)"
+                else:
+                    human_response = input("Your response (Approve/Reject/Modify): ").strip()
                 lowered = human_response.lower()
 
                 self._emit_event(

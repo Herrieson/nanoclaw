@@ -1,0 +1,16 @@
+id: data_456
+name: Construction Worker's Backup Extraction
+description: Extract specific work expenses and traditional Mexican recipes from a messy folder dump.
+prompts:
+- prompts/data_456.md
+environment:
+  asset: data_456
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

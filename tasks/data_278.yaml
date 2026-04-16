@@ -1,0 +1,20 @@
+id: data_278
+name: The Irritated Pianist's File Cleanup
+prompts:
+- prompts/data_278.md
+environment:
+  asset: data_278
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: 1.0
+tags:
+- file-system
+- bash-scripting
+- text-processing

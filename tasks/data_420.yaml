@@ -1,0 +1,20 @@
+id: data_420
+name: industrial_extruder_repair
+prompts:
+- prompts/data_420.md
+environment:
+  asset: data_420
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+difficulty: 4
+category: system_integration
+meta:
+  persona: 26yo Male, MFG-Plastics Product, Low Agreeableness, Extremely Low Neuroticism
+  objective: Restore industrial machine parameters by analyzing logs and a mock database, then verify production.

@@ -1,0 +1,16 @@
+id: data_322
+name: The Furious Tutor's Skydiving & Exam Crisis
+prompts:
+- prompts/data_322.md
+environment:
+  asset: data_322
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: 1.0

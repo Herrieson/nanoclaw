@@ -1,0 +1,16 @@
+id: data_463
+name: Urgent Case Follow-up Compilation
+description: The agent must help a disorganized, anxious social worker compile an urgent follow-up list from a messy directory of CSV schedules and plain text notes. The task requires cross-referencing structured and unstructured data based on specific criteria (age, appointment status, and keyword extraction from notes).
+prompts:
+- prompts/data_463.md
+environment:
+  asset: data_463
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,16 @@
+id: data_56
+name: Operation Red Eagle Intel Processing
+description: Parse military logistics intel, extract specific squad loadouts, and calculate updated grid coordinates based on navigation offsets.
+prompts:
+- prompts/data_56.md
+environment:
+  asset: data_56
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,15 @@
+id: data_277
+name: Equidad Familiar Grant Processing
+prompts:
+- prompts/data_277.md
+environment:
+  asset: data_277
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

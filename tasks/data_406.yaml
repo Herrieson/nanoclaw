@@ -1,0 +1,16 @@
+id: data_406
+name: The Singing Dental Assistant's Data Chore
+description: A two-part task involving unstructured text parsing for file renaming and JSON data filtering, set in a highly specific persona context.
+prompts:
+- prompts/data_406.md
+environment:
+  asset: data_406
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

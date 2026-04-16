@@ -1,0 +1,17 @@
+id: data_40
+name: Gas Station Reconciler & Home Project Calculator
+description: A practical logic reasoning task requiring data extraction from mixed formats (custom logs, JSON, unstructured text) and basic mathematical reconciliation, framed from the perspective of a family-oriented gas station cashier.
+prompts:
+- prompts/data_40.md
+environment:
+  asset: data_40
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: 1.0

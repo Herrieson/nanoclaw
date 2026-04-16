@@ -1,0 +1,16 @@
+id: data_60
+name: Disorganized Nature Walk RSVPs
+description: Extract RSVP information from disorganized unstructured text files and correlate with a JSON directory to generate a structured CSV.
+prompts:
+- prompts/data_60.md
+environment:
+  asset: data_60
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

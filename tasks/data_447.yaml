@@ -1,0 +1,19 @@
+id: data_447
+name: Property Management Audit
+description: Audit tenant records, maintenance logs, and complaints to identify lease violations regarding unauthorized pets.
+prompts:
+- prompts/data_447.md
+environment:
+  asset: data_447
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+assets:
+- source: assets/data_447
+  destination: /workspace

@@ -1,0 +1,22 @@
+id: data_408
+name: Sustainable Warehouse Environmental Logic Recovery
+prompts:
+- prompts/data_408.md
+environment:
+  asset: data_408
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+persona: A 50-year-old Lebanese-American small business owner in the repair industry, calm and nature-loving, needing help with a failing automated inventory environment system.
+tags:
+- system-administration
+- data-recovery
+- python-debugging
+- regex
+- mock-services

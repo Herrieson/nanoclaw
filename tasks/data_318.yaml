@@ -1,0 +1,21 @@
+id: data_318
+name: Phlebotomist Data Recovery
+description: Extract and join fragmented clinical data across multiple messy files to reconstruct a blood sample mapping CSV before a deadline.
+prompts:
+- prompts/data_318.md
+environment:
+  asset: data_318
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+tags:
+- data-processing
+- python
+- regex
+- low-conscientiousness-persona

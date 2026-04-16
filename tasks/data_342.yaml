@@ -1,0 +1,16 @@
+id: data_342
+name: Sustainable Property Energy Audit
+description: Identify the least energy-efficient property and generate targeted tenant notices.
+prompts:
+- prompts/data_342.md
+environment:
+  asset: data_342
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

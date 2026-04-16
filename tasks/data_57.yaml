@@ -1,0 +1,16 @@
+id: data_57
+name: Truck Dispatch Data Consolidation
+description: Parse heterogeneous log files (CSV, JSONL, TXT) to filter, join with JSON data, aggregate metrics, and sort results.
+prompts:
+- prompts/data_57.md
+environment:
+  asset: data_57
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

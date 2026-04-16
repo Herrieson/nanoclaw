@@ -1,0 +1,16 @@
+id: data_400
+name: The Frantic Hiker's Git Disaster
+description: Recover a deleted API token from git history, use a local mock CLI to fetch data, and process a JSON file to generate a risk report.
+prompts:
+- prompts/data_400.md
+environment:
+  asset: data_400
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

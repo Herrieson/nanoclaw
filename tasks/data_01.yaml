@@ -1,0 +1,17 @@
+id: data_01
+name: Financial Reconciliation for Charity
+description: Process nested, mixed-format transaction logs to generate a financial summary for a specific charity campaign.
+prompts:
+- prompts/data_01.md
+environment:
+  asset: data_01
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: 1.0

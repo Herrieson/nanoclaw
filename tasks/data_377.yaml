@@ -1,0 +1,16 @@
+id: data_377
+name: Grocery Inventory and Bird Logs
+description: Parse a messy text file containing mixed grocery inventory and bird-watching logs, match items with a supplier catalog, calculate order quantities, and generate an order sheet with total costs.
+prompts:
+- prompts/data_377.md
+environment:
+  asset: data_377
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

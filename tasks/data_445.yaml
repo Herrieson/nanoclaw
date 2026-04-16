@@ -1,0 +1,16 @@
+id: data_445
+name: Medical Claims Extraction and Script Fix
+description: Extract specific medical claims from a raw text dump and fix a broken python reporting script.
+prompts:
+- prompts/data_445.md
+environment:
+  asset: data_445
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

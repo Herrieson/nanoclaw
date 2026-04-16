@@ -1,0 +1,16 @@
+id: data_388
+name: Arcade VIP Pass Decoder
+description: A task requiring decoding a base64 file, debugging a small python script, and executing it based on vague instructions from a non-technical persona.
+prompts:
+- prompts/data_388.md
+environment:
+  asset: data_388
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

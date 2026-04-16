@@ -1,0 +1,16 @@
+id: data_282
+name: Nature Observer's Data Extraction
+description: Extract endangered bird sightings from messy field notes and cross-reference with an SQLite database.
+prompts:
+- prompts/data_282.md
+environment:
+  asset: data_282
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

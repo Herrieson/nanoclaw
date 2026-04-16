@@ -1,0 +1,25 @@
+id: data_198
+name: Construction Compliance & Claim Resolution
+description: Assist Mateo, a Spanish-speaking construction worker, in processing complex English job site logs and OSHA safety data to file a construction delay claim.
+prompts:
+- prompts/data_198.md
+environment:
+  asset: data_198
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Real-world Logic & System Operations
+metadata:
+  persona: Mateo, 20yo, Guatemalan, Construction Laborer, Spanish-only speaker
+  difficulty: High
+  tags:
+  - log_analysis
+  - scripting
+  - accounting
+  - multilingual

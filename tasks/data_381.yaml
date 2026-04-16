@@ -1,0 +1,16 @@
+id: data_381
+name: Hearing Aid Sync Configuration
+description: Fix a buggy Python script to generate an auth token from a MAC address found in a Bluetooth log, demonstrating log parsing and basic code debugging.
+prompts:
+- prompts/data_381.md
+environment:
+  asset: data_381
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

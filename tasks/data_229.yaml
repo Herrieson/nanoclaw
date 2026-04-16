@@ -1,0 +1,16 @@
+id: data_229
+name: The Artistic Stamping Catalog
+prompts:
+- prompts/data_229.md
+environment:
+  asset: data_229
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'

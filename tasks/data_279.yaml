@@ -1,0 +1,16 @@
+id: data_279
+name: The Literary Chauffeur's Quest
+description: Process scattered notes and logs to find specific passengers based on literary interests and a specific trip.
+prompts:
+- prompts/data_279.md
+environment:
+  asset: data_279
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

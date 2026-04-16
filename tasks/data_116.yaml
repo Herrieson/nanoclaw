@@ -1,0 +1,19 @@
+id: data_116
+name: The Anxious Caretaker's Log Recovery
+prompts:
+- prompts/data_116.md
+environment:
+  asset: data_116
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+tags:
+- text-processing
+- json-formatting
+- data-cleaning

@@ -1,0 +1,16 @@
+id: data_403
+name: The Neurotic Record Collector
+description: Recover a corrupted vintage record catalog and extract a specific subset of records to a CSV file.
+prompts:
+- prompts/data_403.md
+environment:
+  asset: data_403
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

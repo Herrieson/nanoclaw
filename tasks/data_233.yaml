@@ -1,0 +1,24 @@
+id: data_233
+name: Chaos Printing Press Rescue
+prompts:
+- prompts/data_233.md
+environment:
+  asset: data_233
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: System Administration & Code Debugging
+difficulty: hard
+metadata:
+  persona: 21yo_printing_operator_low_conscientiousness
+  tags:
+  - python
+  - api-debugging
+  - log-analysis
+  - system-recovery

@@ -1,0 +1,16 @@
+id: data_82
+name: Retail Supervisor Inventory Reconciliation
+prompts:
+- prompts/data_82.md
+environment:
+  asset: data_82
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'

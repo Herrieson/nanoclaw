@@ -1,0 +1,16 @@
+id: data_128
+name: Legal Discovery Data Extraction
+description: An extroverted, disorganized lawyer needs help cross-referencing a messy client ledger with OCR'd invoice documents to find billing discrepancies for a breach of contract case.
+prompts:
+- prompts/data_128.md
+environment:
+  asset: data_128
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

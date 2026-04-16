@@ -1,0 +1,16 @@
+id: data_488
+name: Panther Sighting Extraction
+description: Extract specific animal sightings from messy, unstructured text files based on location and aliases, matching the persona of an anxious, uneducated off-grid nature enthusiast.
+prompts:
+- prompts/data_488.md
+environment:
+  asset: data_488
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

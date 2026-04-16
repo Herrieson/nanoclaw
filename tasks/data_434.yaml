@@ -1,0 +1,17 @@
+id: data_434
+name: Childcare Schedule Optimization
+description: Generate a safe weekly childcare schedule based on messy notes and inventory constraints, embodying a highly agreeable and conscientious persona.
+prompts:
+- prompts/data_434.md
+environment:
+  asset: data_434
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: 1.0

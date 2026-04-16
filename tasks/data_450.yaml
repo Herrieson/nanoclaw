@@ -1,0 +1,16 @@
+id: data_450
+name: Supermarket Eco-Tracker Data Parsing
+description: Parse noisy JSON and CSV files to calculate energy usage and identify contaminated recycling bins based on a specific persona's request.
+prompts:
+- prompts/data_450.md
+environment:
+  asset: data_450
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

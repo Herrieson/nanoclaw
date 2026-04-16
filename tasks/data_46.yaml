@@ -1,0 +1,18 @@
+id: data_46
+name: Rogue Irrigation Logic Debugger
+description: Debug a faulty Python-based irrigation control system by analyzing logs, fixing a logical race condition in the code, and calculating projected water usage.
+prompts:
+- prompts/data_46.md
+environment:
+  asset: data_46
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: System Debugging & Data Processing
+difficulty: 4

@@ -1,0 +1,16 @@
+id: data_464
+name: Sci-Fi Bookstore POS Data Rescue
+description: Parse corrupted POS log data, filter by specific genres, cross-reference with an external text file of award winners, and generate a meticulously formatted JSON report.
+prompts:
+- prompts/data_464.md
+environment:
+  asset: data_464
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,16 @@
+id: data_444
+name: Exotic Food Logistics Optimization
+description: Parse unstructured supplier notes and calculate optimal purchasing strategy for a side hustle.
+prompts:
+- prompts/data_444.md
+environment:
+  asset: data_444
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

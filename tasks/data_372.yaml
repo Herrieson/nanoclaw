@@ -1,0 +1,21 @@
+id: data_372
+name: The Frantic Librarian's Data Rescue
+description: Fix a scrambled CSV containing swapped columns and hex-encoded years, and extract hidden quotes from raw text dumps into a JSON mapping.
+prompts:
+- prompts/data_372.md
+environment:
+  asset: data_372
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+tags:
+- data-cleaning
+- regex
+- text-processing
+- file-system

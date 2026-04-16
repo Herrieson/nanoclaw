@@ -1,0 +1,17 @@
+id: data_394
+name: The Anxious Mother's Nature Walk Logs
+description: Process a chaotic mix of archived and plain text log files to extract specific bird sightings and determine if the user's own record is present.
+prompts:
+- prompts/data_394.md
+environment:
+  asset: data_394
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'

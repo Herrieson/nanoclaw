@@ -1,0 +1,16 @@
+id: data_409
+name: Landscaping Invoice Automation
+description: Parse unstructured pricing notes and dirty field logs to generate client invoices and a revenue summary.
+prompts:
+- prompts/data_409.md
+environment:
+  asset: data_409
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

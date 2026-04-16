@@ -1,0 +1,17 @@
+id: data_45
+name: Tactical Historical Data Consolidation
+description: An enlisted tactical operations specialist needs help extracting, decoding, and cross-referencing historical Native American military communication logs with a local SQLite database to create a JSON SITREP.
+prompts:
+- prompts/data_45.md
+environment:
+  asset: data_45
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: 1.0

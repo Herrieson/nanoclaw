@@ -1,0 +1,15 @@
+id: data_311
+name: Wellness Inventory and Schedule Optimization
+prompts:
+- prompts/data_311.md
+environment:
+  asset: data_311
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

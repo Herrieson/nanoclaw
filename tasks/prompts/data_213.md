@@ -1,0 +1,5 @@
+Hey buddy, listen. I'm in a freakin' jam here. I collect historical memorabilia—mostly old prison gear from Trenton State and some civil war stuff, you know? Anyway, I'm trying to organize my collection for insurance purposes, but my files are a total disaster. I ain't got the patience for this computer stuff, I'm a hands-on guy. 
+
+I got some notes and files dumped in the `collection_mess` folder. I need youse to dig through that, figure out what all I own, and make me a proper list in `inventory.json`. Just put the ID, the name of the item, and the value in there.
+
+But here's the real problem: I did a quick check of the display case the other day and jotted down what I saw, but I know for a fact one piece is missing! Some guy must've walked off with it or I misplaced it. Figuring out which one is missing is driving me nuts. Cross-reference my master list with my recent check, and write the name of the missing item into `missing_item.txt`. Get it done quick, alright? I gotta hit the gym in an hour.

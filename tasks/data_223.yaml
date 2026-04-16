@@ -1,0 +1,15 @@
+id: data_223
+name: Supermarket Inventory Sorter
+prompts:
+- prompts/data_223.md
+environment:
+  asset: data_223
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

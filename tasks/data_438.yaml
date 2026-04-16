@@ -1,0 +1,17 @@
+id: data_438
+name: Fusion Feast Grocery Planner
+description: Agent must parse unstructured diary text to identify specific recipes, query a local SQLite database for ingredient requirements, calculate scaled quantities, subtract current inventory stock, and output a final shopping list CSV.
+prompts:
+- prompts/data_438.md
+environment:
+  asset: data_438
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'

@@ -1,0 +1,18 @@
+id: data_299
+name: The Barber's Messy Ledger
+description: Parse a messy, highly unstructured text file simulating a teenager's notes, extract specific conditional data, and calculate totals.
+prompts:
+- prompts/data_299.md
+environment:
+  asset: data_299
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+timeout: 300

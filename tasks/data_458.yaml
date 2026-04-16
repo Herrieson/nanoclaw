@@ -1,0 +1,20 @@
+id: data_458
+name: Bird-watching Data Reconciliation
+description: Parse messy CSV and text notes to generate a standardized JSON payload based on implicit requirements.
+prompts:
+- prompts/data_458.md
+environment:
+  asset: data_458
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+tags:
+- data-processing
+- python
+- regex

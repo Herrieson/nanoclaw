@@ -1,0 +1,22 @@
+id: data_304
+name: Tutoring Schedule Conflict Resolution
+description: An administrative supervisor requires the resolution of complex scheduling conflicts in a tutoring center's database using raw logs and CSV exports.
+prompts:
+- prompts/data_304.md
+environment:
+  asset: data_304
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Data Processing & Logic Reasoning
+tags:
+- Python
+- Bash
+- Scheduling Algorithm
+- Data Cleaning

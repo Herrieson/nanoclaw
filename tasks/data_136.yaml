@@ -1,0 +1,16 @@
+id: data_136
+name: Blue-Collar Woodworking Data Extraction
+description: Extract specific order quantities from a messy collection of notes and files to calculate material requirements.
+prompts:
+- prompts/data_136.md
+environment:
+  asset: data_136
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

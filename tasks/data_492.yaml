@@ -1,0 +1,18 @@
+id: data_492
+name: The Investigative Journalist's Digital Trail
+description: Trace and decrypt illicit surveillance data from a chaotic workstation environment to uncover a corporate scandal.
+prompts:
+- prompts/data_492.md
+environment:
+  asset: data_492
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: System Forensics & Data Analysis
+difficulty: Hard

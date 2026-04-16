@@ -1,0 +1,16 @@
+id: data_104
+name: Spring Fling Fundraiser Data Merge
+description: Process SQLite databases, scrape local HTML archives, and filter JSON inventory to generate a targeted donor list for a school fundraiser, matching the persona of a busy, disorganized tech sales rep.
+prompts:
+- prompts/data_104.md
+environment:
+  asset: data_104
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

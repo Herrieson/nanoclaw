@@ -1,0 +1,16 @@
+id: data_96
+name: The Whistleblower Phlebotomist
+description: Cross-reference hospital logs and demographic data to uncover unethical blood sampling targeted at low-income patients.
+prompts:
+- prompts/data_96.md
+environment:
+  asset: data_96
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2

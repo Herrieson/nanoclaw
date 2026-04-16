@@ -1,0 +1,23 @@
+id: data_271
+name: 'Retail Manager''s Panic: The Broken Inventory Report'
+description: Help a stressed retail supervisor fix a broken inventory balancing script and generate the correct weekly report before a high-stakes meeting.
+prompts:
+- prompts/data_271.md
+environment:
+  asset: data_271
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
+category: Data Processing & System Debugging
+difficulty: 4
+tags:
+- Python
+- Data Wrangling
+- Log Analysis
+- Debugging

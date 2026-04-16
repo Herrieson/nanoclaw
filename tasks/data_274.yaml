@@ -1,0 +1,15 @@
+id: data_274
+name: Woodworker's Quote Cross-Reference
+prompts:
+- prompts/data_274.md
+environment:
+  asset: data_274
+skills:
+  available:
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: reject
+  max_steps: 50
+  temperature: 0.2
