@@ -1,0 +1,207 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+import tempfile
+import unittest
+
+from nanoclaw.task_curation import (
+    build_dataset_manifest,
+    curate_tasks,
+    discover_evaluation_paths,
+    load_task_attempts,
+)
+
+
+class TaskCurationTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.repo_root = Path(self.temp_dir.name)
+        (self.repo_root / "results").mkdir(parents=True, exist_ok=True)
+        (self.repo_root / "tasks").mkdir(parents=True, exist_ok=True)
+        (self.repo_root / "assets").mkdir(parents=True, exist_ok=True)
+
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
+
+    def _write_model_eval(
+        self,
+        model_name: str,
+        task_id: str,
+        *,
+        run_status: str,
+        evaluation_status: str,
+        objective_score: float | None,
+        error: str | None = None,
+    ) -> None:
+        model_dir = self.repo_root / "results" / model_name
+        model_dir.mkdir(parents=True, exist_ok=True)
+        task_dir = model_dir / task_id / "20260101T000000Z"
+        task_dir.mkdir(parents=True, exist_ok=True)
+        summary_path = task_dir / "summary.json"
+        summary_path.write_text(
+            json.dumps(
+                {
+                    "task_id": task_id,
+                    "run_id": "20260101T000000Z",
+                    "status": run_status,
+                    "error": error,
+                }
+            ),
+            encoding="utf-8",
+        )
+        evaluation_path = model_dir / "evaluation.json"
+        existing = []
+        if evaluation_path.exists():
+            existing = json.loads(evaluation_path.read_text(encoding="utf-8"))
+        existing.append(
+            {
+                "task_id": task_id,
+                "summary_path": str(summary_path),
+                "run_status": run_status,
+                "evaluation_status": evaluation_status,
+                "objective_score": objective_score,
+            }
+        )
+        evaluation_path.write_text(json.dumps(existing), encoding="utf-8")
+        (self.repo_root / "tasks" / f"{task_id}.yaml").write_text("id: x\n", encoding="utf-8")
+        (self.repo_root / "assets" / task_id).mkdir(parents=True, exist_ok=True)
+
+    def test_curate_tasks_assigns_all_labels(self) -> None:
+        models = ("mock-noop", "real_a", "real_b", "real_c", "real_d")
+
+        for model in models:
+            self._write_model_eval(
+                model,
+                "data_bad_verifier",
+                run_status="completed",
+                evaluation_status="evaluated",
+                objective_score=100.0,
+            )
+            self._write_model_eval(
+                model,
+                "data_easy",
+                run_status="completed",
+                evaluation_status="evaluated",
+                objective_score=100.0 if model != "mock-noop" else 0.0,
+            )
+
+        for model, score in {
+            "mock-noop": 0.0,
+            "real_a": 100.0,
+            "real_b": 40.0,
+            "real_c": 55.0,
+            "real_d": 20.0,
+        }.items():
+            self._write_model_eval(
+                model,
+                "data_keep",
+                run_status="completed",
+                evaluation_status="evaluated",
+                objective_score=score,
+            )
+
+        for model, score in {
+            "mock-noop": 0.0,
+            "real_a": 20.0,
+            "real_b": 10.0,
+            "real_c": 0.0,
+            "real_d": None,
+        }.items():
+            self._write_model_eval(
+                model,
+                "data_broken",
+                run_status="failed" if score is None else "completed",
+                evaluation_status="skipped_run_not_completed" if score is None else "evaluated",
+                objective_score=score,
+                error="Agent exceeded max steps (50) without final answer" if score is None else None,
+            )
+
+        for model, score in {
+            "mock-noop": 0.0,
+            "real_a": 35.0,
+            "real_b": 45.0,
+            "real_c": 50.0,
+            "real_d": 59.0,
+        }.items():
+            self._write_model_eval(
+                model,
+                "data_ambiguous",
+                run_status="completed",
+                evaluation_status="evaluated",
+                objective_score=score,
+            )
+
+        evaluation_paths = discover_evaluation_paths(
+            ["results/*/evaluation.json"],
+            repo_root=self.repo_root,
+        )
+        attempts_by_task, _ = load_task_attempts(evaluation_paths)
+        records = curate_tasks(
+            attempts_by_task,
+            mock_models={"mock-noop"},
+            min_real_models=4,
+            keep_threshold=60.0,
+            broken_threshold=30.0,
+            easy_pool_keep_percent=100,
+            sample_salt="test",
+        )
+
+        by_task = {record.task_id: record for record in records}
+        self.assertEqual(by_task["data_bad_verifier"].label, "drop_bad_verifier")
+        self.assertEqual(by_task["data_easy"].label, "easy_pool")
+        self.assertTrue(by_task["data_easy"].easy_pool_selected)
+        self.assertEqual(by_task["data_keep"].label, "keep")
+        self.assertEqual(by_task["data_broken"].label, "drop_broken")
+        self.assertEqual(by_task["data_ambiguous"].label, "drop_ambiguous")
+
+        manifest = build_dataset_manifest(records, repo_root=self.repo_root)
+        self.assertEqual(
+            [item["task_id"] for item in manifest],
+            ["data_easy", "data_keep"],
+        )
+
+    def test_curate_tasks_marks_pending_when_coverage_is_insufficient(self) -> None:
+        self._write_model_eval(
+            "mock-noop",
+            "data_pending",
+            run_status="completed",
+            evaluation_status="evaluated",
+            objective_score=0.0,
+        )
+        self._write_model_eval(
+            "real_a",
+            "data_pending",
+            run_status="completed",
+            evaluation_status="evaluated",
+            objective_score=100.0,
+        )
+        self._write_model_eval(
+            "real_b",
+            "data_pending",
+            run_status="failed",
+            evaluation_status="skipped_run_not_completed",
+            objective_score=None,
+            error="Error code: 429 - rate limit reached",
+        )
+
+        evaluation_paths = discover_evaluation_paths(
+            ["results/*/evaluation.json"],
+            repo_root=self.repo_root,
+        )
+        attempts_by_task, _ = load_task_attempts(evaluation_paths)
+        records = curate_tasks(
+            attempts_by_task,
+            mock_models={"mock-noop"},
+            min_real_models=2,
+            keep_threshold=60.0,
+            broken_threshold=30.0,
+            easy_pool_keep_percent=30,
+            sample_salt="test",
+        )
+
+        self.assertEqual(records[0].label, "pending")
+
+
+if __name__ == "__main__":
+    unittest.main()

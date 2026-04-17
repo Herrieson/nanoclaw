@@ -48,7 +48,7 @@ class TaskNormalizerTests(unittest.TestCase):
         self.assertEqual(payload["skills"], {"available": None})
         self.assertEqual(payload["runtime"]["model"], "gpt-4o")
         self.assertEqual(payload["runtime"]["approval_mode"], "reject")
-        self.assertEqual(payload["runtime"]["max_steps"], 50)
+        self.assertEqual(payload["runtime"]["max_steps"], 30)
         self.assertEqual(payload["runtime"]["temperature"], 0.2)
         self.assertNotIn("x_legacy", payload)
         self.assertIn("skills:\n  available:\n", normalized_text)

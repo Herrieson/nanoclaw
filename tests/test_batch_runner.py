@@ -45,7 +45,7 @@ class BatchRunnerTests(unittest.TestCase):
                     "  mode: interactive",
                     "  memory_policy: default",
                     "  approval_mode: reject",
-                    "  max_steps: 50",
+                    "  max_steps: 30",
                     "  temperature: 0.2",
                     "",
                 ]
@@ -93,7 +93,7 @@ class BatchRunnerTests(unittest.TestCase):
                     "  mode: interactive",
                     "  memory_policy: default",
                     "  approval_mode: reject",
-                    "  max_steps: 50",
+                    "  max_steps: 30",
                     "  temperature: 0.2",
                     "",
                 ]

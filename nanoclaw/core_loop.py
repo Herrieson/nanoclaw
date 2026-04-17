@@ -286,6 +286,9 @@ class MinimalClaw:
         self.last_runtime_metadata: dict[str, Any] = {}
         self._bootstrapped_this_run = False
 
+    def _is_mock_noop_model(self) -> bool:
+        return self.settings.model.strip().lower() in {"mock-noop", "mock_noop"}
+
     def _get_client(self) -> OpenAI:
         if self.client is not None:
             return self.client
@@ -1013,6 +1016,35 @@ class MinimalClaw:
             print(f"User Task: {user_task}")
 
         try:
+            if self._is_mock_noop_model():
+                final_text = "MOCK_NOOP_FINAL_ANSWER"
+                assistant_message = {"role": "assistant", "content": final_text}
+                messages.append(assistant_message)
+                self._emit_event("assistant_message", step=0, message=assistant_message)
+                self._set_run_report(
+                    status="completed",
+                    result_type="final_answer",
+                    steps_used=0,
+                    final_answer=final_text,
+                    error=None,
+                )
+                self._emit_event(
+                    "final_answer",
+                    step=0,
+                    content=final_text,
+                    result_type="final_answer",
+                )
+                self._emit_event(
+                    "run_finished",
+                    status="completed",
+                    result_type="final_answer",
+                    steps_used=0,
+                )
+                finished = True
+                if echo:
+                    print(f"\n[Final Answer]: {final_text}")
+                return final_text
+
             client = self._get_client()
             for step in range(1, self.settings.max_steps + 1):
                 steps_used = step

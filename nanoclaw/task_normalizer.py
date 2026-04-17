@@ -31,7 +31,7 @@ DEFAULT_RUNTIME = {
     "mode": DEFAULT_RUN_MODE,
     "memory_policy": DEFAULT_MEMORY_POLICY,
     "approval_mode": "reject",
-    "max_steps": 50,
+    "max_steps": 30,
     "temperature": 0.2,
 }
 

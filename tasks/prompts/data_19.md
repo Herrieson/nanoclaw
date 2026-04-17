@@ -1,5 +1,0 @@
-Hey. My handheld scanner took a crap on me yesterday while I was finishing my route. I managed to pull the raw dump file off the thing using a USB cable, but it's just a giant mess of letters, numbers, and garbage symbols. 
-
-I don't have the time or the computer skills to sort through this. I got my Leatherman in one hand and my coffee in the other, and I gotta hit the road in about twenty minutes to start the new route. 
-
-Here's the deal: my route manager needs me to go back and physically re-check any meters where the usage jumped by more than 500 units since the last reading. I need you to go into that file (`scanner_dump_1024.log` in the workspace), find the addresses where the difference between the current reading and the previous reading is strictly greater than 500, and put those addresses into a new text file called `recheck_route.txt`. Just one address per line, nothing fancy. Don't give me any code or explanations, just make sure that text file is sitting in the folder when I get back from dropping my kid off at daycare.

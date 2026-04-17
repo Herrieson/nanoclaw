@@ -83,6 +83,34 @@ class CoreLoopTest(unittest.TestCase):
         self.assertEqual(agent._classify_final_response(" SILENT_REPLY\n"), "silent_reply")
         self.assertEqual(agent._classify_final_response("hello"), "final_answer")
 
+    def test_mock_noop_model_returns_without_api_call(self) -> None:
+        mock_settings = Settings(
+            model="mock-noop",
+            api_key=None,
+            base_url=None,
+            workspace_dir=self.settings.workspace_dir,
+            prompt_dir=self.settings.prompt_dir,
+            prompt_files=self.settings.prompt_files,
+            workspace_context_files=self.settings.workspace_context_files,
+            extra_skill_dirs=self.settings.extra_skill_dirs,
+            run_mode=self.settings.run_mode,
+            memory_policy=self.settings.memory_policy,
+            approval_mode=self.settings.approval_mode,
+            session_max_messages=self.settings.session_max_messages,
+            session_max_chars=self.settings.session_max_chars,
+            max_steps=self.settings.max_steps,
+            temperature=self.settings.temperature,
+        )
+        agent = MinimalClaw(mock_settings)
+        agent.bootstrap_workspace()
+
+        final_text = agent.run("Do nothing.", echo=False)
+
+        self.assertEqual(final_text, "MOCK_NOOP_FINAL_ANSWER")
+        self.assertIsNotNone(agent.last_run_report)
+        self.assertEqual(agent.last_run_report.status, "completed")
+        self.assertEqual(agent.last_run_report.steps_used, 0)
+
     def test_build_system_prompt_includes_skill_catalog_locations(self) -> None:
         skill_path = self.workspace / ".skills" / "tutorial-brief-writer" / "SKILL.md"
         skill_path.parent.mkdir(parents=True)
