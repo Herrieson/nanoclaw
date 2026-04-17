@@ -8,7 +8,12 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from nanoclaw.batch_runner import default_worker_count, resolve_task_specs, run_batch
+from nanoclaw.batch_runner import (
+    default_worker_count,
+    partition_task_specs_for_resume,
+    resolve_task_specs,
+    run_batch,
+)
 from nanoclaw.evaluator import (
     evaluate_run,
     summarize_evaluations,
@@ -52,6 +57,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--results-dir",
         default="results",
         help="Directory used to store task run outputs.",
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Skip tasks that already have a completed run under --results-dir and only run missing/failed tasks.",
     )
     parser.add_argument(
         "--keep-assets",
@@ -272,22 +282,42 @@ def main() -> int:
     if not specs:
         parser.error("No valid task files matched the provided paths.")
 
-    results = run_batch(
-        specs,
-        repo_root=REPO_ROOT,
-        results_dir=results_dir,
-        model=args.model,
-        workers=max(1, args.workers),
-        cleanup_assets=not args.keep_assets,
-        approval_mode=args.approval_mode,
-    )
+    reused_run_dirs: dict[str, Path] = {}
+    if args.resume:
+        specs, reused_run_dirs = partition_task_specs_for_resume(
+            specs,
+            results_dir=results_dir,
+        )
+        if reused_run_dirs:
+            print(
+                f"Resume mode: skipped {len(reused_run_dirs)} task(s) with existing completed runs."
+            )
+        if not specs:
+            print("Resume mode: no pending task runs remained after filtering.")
+
+    results = []
+    if specs:
+        results = run_batch(
+            specs,
+            repo_root=REPO_ROOT,
+            results_dir=results_dir,
+            model=args.model,
+            workers=max(1, args.workers),
+            cleanup_assets=not args.keep_assets,
+            approval_mode=args.approval_mode,
+        )
 
     failed = [result for result in results if not result.success]
-    print(f"Completed {len(results)} task runs: {len(results) - len(failed)} succeeded, {len(failed)} failed.")
+    print(
+        f"Completed {len(results)} new task run(s): "
+        f"{len(results) - len(failed)} succeeded, {len(failed)} failed."
+    )
 
     evaluation_failed = False
     if args.evaluate:
-        run_dirs = [result.run_dir for result in results if result.run_dir is not None]
+        run_dirs = list(reused_run_dirs.values()) + [
+            result.run_dir for result in results if result.run_dir is not None
+        ]
         if run_dirs:
             evaluation_results = [evaluate_run(run_dir, repo_root=REPO_ROOT) for run_dir in run_dirs]
             evaluation_summary = summarize_evaluations(evaluation_results)

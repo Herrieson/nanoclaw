@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
+import json
 import os
 from pathlib import Path
 import re
@@ -16,6 +17,7 @@ from .task_loader import load_task_definition
 
 
 RUN_DIR_PATTERN = re.compile(r"^Run dir:\s+(.+)$", re.MULTILINE)
+RUN_ID_PATTERN = re.compile(r"^(?P<ts>\d{8}T\d{6}Z)(?:_(?P<suffix>\d+))?$")
 
 
 @dataclass(frozen=True, slots=True)
@@ -118,6 +120,46 @@ def parse_run_dir(stdout: str) -> Path | None:
     if not match:
         return None
     return Path(match.group(1).strip()).expanduser().resolve()
+
+
+def find_latest_completed_run_dir(task_id: str, *, results_dir: Path) -> Path | None:
+    task_results_dir = (results_dir.expanduser() / task_id).resolve()
+    if not task_results_dir.exists():
+        return None
+
+    completed_run_dirs: list[Path] = []
+    for run_dir in task_results_dir.iterdir():
+        if not run_dir.is_dir():
+            continue
+        summary = _load_run_summary(run_dir)
+        if summary is None:
+            continue
+        if str(summary.get("status") or "") != "completed":
+            continue
+        completed_run_dirs.append(run_dir.resolve())
+
+    if not completed_run_dirs:
+        return None
+    return max(completed_run_dirs, key=_run_dir_sort_key)
+
+
+def partition_task_specs_for_resume(
+    specs: Sequence[BatchTaskSpec],
+    *,
+    results_dir: Path,
+) -> tuple[list[BatchTaskSpec], dict[str, Path]]:
+    pending_specs: list[BatchTaskSpec] = []
+    reused_run_dirs: dict[str, Path] = {}
+    for spec in specs:
+        completed_run_dir = find_latest_completed_run_dir(
+            spec.task_id,
+            results_dir=results_dir,
+        )
+        if completed_run_dir is None:
+            pending_specs.append(spec)
+            continue
+        reused_run_dirs[spec.task_id] = completed_run_dir
+    return pending_specs, reused_run_dirs
 
 
 def prepare_environment(spec: BatchTaskSpec, *, repo_root: Path) -> Path:
@@ -247,3 +289,24 @@ def run_batch(
             results.append(result)
             tracker.advance(success=result.success, current_task=result.spec.task_id)
     return results
+
+
+def _load_run_summary(run_dir: Path) -> dict[str, object] | None:
+    summary_path = run_dir / "summary.json"
+    if not summary_path.exists():
+        return None
+    try:
+        payload = json.loads(summary_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    return payload
+
+
+def _run_dir_sort_key(run_dir: Path) -> tuple[str, int, str]:
+    match = RUN_ID_PATTERN.fullmatch(run_dir.name)
+    if not match:
+        return (run_dir.name, 0, run_dir.name)
+    suffix = int(match.group("suffix") or "1")
+    return (match.group("ts"), suffix, run_dir.name)
