@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from xml.sax.saxutils import escape
 
+from nanoclaw.task_curation import is_infra_failure_error
+
 
 @dataclass(frozen=True, slots=True)
 class ModelMetrics:
@@ -32,29 +34,65 @@ def discover_summary_paths(patterns: list[str], *, repo_root: Path) -> list[Path
     return resolved
 
 
-def load_model_metrics(summary_paths: list[Path]) -> list[ModelMetrics]:
+def load_model_metrics(
+    summary_paths: list[Path],
+    *,
+    task_filter: set[str] | None = None,
+    exclude_infra_failures: bool = False,
+) -> list[ModelMetrics]:
     metrics: list[ModelMetrics] = []
     for summary_path in summary_paths:
-        payload = json.loads(summary_path.read_text(encoding="utf-8"))
-        perfect_score_rate = payload.get("perfect_score_rate")
-        average_objective_score = payload.get("average_objective_score")
-        if not isinstance(perfect_score_rate, (int, float)):
-            raise ValueError(
-                f"{summary_path} is missing numeric perfect_score_rate in evaluation_summary.json"
+        if task_filter is None and not exclude_infra_failures:
+            payload = json.loads(summary_path.read_text(encoding="utf-8"))
+            perfect_score_rate = payload.get("perfect_score_rate")
+            average_objective_score = payload.get("average_objective_score")
+            if not isinstance(perfect_score_rate, (int, float)):
+                raise ValueError(
+                    f"{summary_path} is missing numeric perfect_score_rate in evaluation_summary.json"
+                )
+            if not isinstance(average_objective_score, (int, float)):
+                raise ValueError(
+                    f"{summary_path} is missing numeric average_objective_score in evaluation_summary.json"
+                )
+            metrics.append(
+                ModelMetrics(
+                    model_name=summary_path.parent.name,
+                    summary_path=summary_path,
+                    perfect_score_rate=float(perfect_score_rate),
+                    average_objective_score=float(average_objective_score),
+                )
             )
-        if not isinstance(average_objective_score, (int, float)):
-            raise ValueError(
-                f"{summary_path} is missing numeric average_objective_score in evaluation_summary.json"
-            )
+            continue
+
         metrics.append(
-            ModelMetrics(
-                model_name=summary_path.parent.name,
-                summary_path=summary_path,
-                perfect_score_rate=float(perfect_score_rate),
-                average_objective_score=float(average_objective_score),
+            _load_filtered_model_metrics(
+                summary_path,
+                task_filter=task_filter,
+                exclude_infra_failures=exclude_infra_failures,
             )
         )
     return metrics
+
+
+def load_dataset_manifest_task_ids(manifest_path: Path) -> set[str]:
+    if not manifest_path.exists():
+        raise ValueError(f"Dataset manifest does not exist: {manifest_path}")
+    task_ids: set[str] = set()
+    for line_number, raw_line in enumerate(
+        manifest_path.read_text(encoding="utf-8").splitlines(),
+        start=1,
+    ):
+        line = raw_line.strip()
+        if not line:
+            continue
+        payload = json.loads(line)
+        task_id = payload.get("task_id")
+        if not isinstance(task_id, str) or not task_id.strip():
+            raise ValueError(f"{manifest_path}:{line_number} is missing a valid task_id")
+        task_ids.add(task_id.strip())
+    if not task_ids:
+        raise ValueError(f"Dataset manifest is empty: {manifest_path}")
+    return task_ids
 
 
 def sort_model_metrics(metrics: list[ModelMetrics], *, sort_by: str) -> list[ModelMetrics]:
@@ -70,9 +108,17 @@ def sort_model_metrics(metrics: list[ModelMetrics], *, sort_by: str) -> list[Mod
     raise ValueError(f"Unsupported sort field: {sort_by}")
 
 
-def render_grouped_bar_chart_svg(metrics: list[ModelMetrics], *, title: str) -> str:
+def render_grouped_bar_chart_svg(
+    metrics: list[ModelMetrics],
+    *,
+    title: str,
+    subtitle: str | None = None,
+) -> str:
     if not metrics:
         raise ValueError("At least one model summary is required to render the chart.")
+
+    if subtitle is None:
+        subtitle = "Scores are on a 0-100 scale and come from each model's evaluation_summary.json."
 
     chart_height = 420
     margin_top = 90
@@ -103,7 +149,7 @@ def render_grouped_bar_chart_svg(metrics: list[ModelMetrics], *, title: str) -> 
         f"{escape(title)}</text>",
         f'  <text x="{width / 2:.1f}" y="66" text-anchor="middle" '
         'font-family="Arial, sans-serif" font-size="13" fill="#4b5563">'
-        "Scores are on a 0-100 scale and come from each model's evaluation_summary.json.</text>",
+        f"{escape(subtitle)}</text>",
         f'  <line x1="{margin_left}" y1="{plot_bottom}" x2="{width - margin_right}" y2="{plot_bottom}" stroke="#374151" stroke-width="1.5" />',
         f'  <line x1="{margin_left}" y1="{margin_top}" x2="{margin_left}" y2="{plot_bottom}" stroke="#374151" stroke-width="1.5" />',
     ]
@@ -159,3 +205,71 @@ def render_grouped_bar_chart_svg(metrics: list[ModelMetrics], *, title: str) -> 
 
     svg_lines.append("</svg>")
     return "\n".join(svg_lines) + "\n"
+def _load_filtered_model_metrics(
+    summary_path: Path,
+    *,
+    task_filter: set[str] | None,
+    exclude_infra_failures: bool,
+) -> ModelMetrics:
+    evaluation_path = summary_path.parent / "evaluation.json"
+    if not evaluation_path.exists():
+        raise ValueError(f"Missing evaluation.json next to {summary_path}")
+
+    payload = json.loads(evaluation_path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list):
+        raise ValueError(f"{evaluation_path} does not contain a JSON array")
+
+    filtered_items: list[dict[str, object]] = []
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        task_id = str(item.get("task_id"))
+        if task_filter is not None and task_id not in task_filter:
+            continue
+        if exclude_infra_failures and _row_is_infra_failure(item):
+            continue
+        filtered_items.append(item)
+    total_runs = len(filtered_items)
+    perfect_score_runs = 0
+    scored_values: list[float] = []
+
+    for item in filtered_items:
+        evaluation_status = item.get("evaluation_status")
+        objective_score = item.get("objective_score")
+        if evaluation_status != "evaluated":
+            continue
+        if isinstance(objective_score, int):
+            score_value = float(objective_score)
+        elif isinstance(objective_score, float):
+            score_value = objective_score
+        else:
+            continue
+        scored_values.append(score_value)
+        if score_value == 100.0:
+            perfect_score_runs += 1
+
+    perfect_score_rate = round((perfect_score_runs / total_runs) * 100, 2) if total_runs else 0.0
+    average_objective_score = (
+        round(sum(scored_values) / len(scored_values), 2) if scored_values else 0.0
+    )
+    return ModelMetrics(
+        model_name=summary_path.parent.name,
+        summary_path=summary_path,
+        perfect_score_rate=perfect_score_rate,
+        average_objective_score=average_objective_score,
+    )
+
+
+def _row_is_infra_failure(item: dict[str, object]) -> bool:
+    summary_path_value = item.get("summary_path")
+    if not isinstance(summary_path_value, str) or not summary_path_value.strip():
+        return False
+    summary_path = Path(summary_path_value).resolve()
+    if not summary_path.exists():
+        return False
+    summary_payload = json.loads(summary_path.read_text(encoding="utf-8"))
+    if not isinstance(summary_payload, dict):
+        return False
+    error = summary_payload.get("error")
+    summary_error = str(error) if isinstance(error, str) and error.strip() else None
+    return is_infra_failure_error(summary_error)

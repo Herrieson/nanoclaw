@@ -8,12 +8,24 @@ from pathlib import Path
 
 INFRA_FAILURE_HINTS = (
     "429",
+    "access denied",
+    "arrearage",
+    "overdue-payment",
+    "account is in good standing",
     "rate limit",
     "ratelimit",
     "too many requests",
     "online-endpoints",
     "http-status-codes",
     "temporarily unavailable",
+)
+
+VERIFIER_RUNTIME_ISSUE_STATUSES = frozenset(
+    {
+        "verify_error",
+        "missing_verify_script",
+        "missing_verify_output",
+    }
 )
 
 
@@ -37,6 +49,10 @@ class TaskAttempt:
     def valid_attempt(self) -> bool:
         return not self.infra_failure
 
+    @property
+    def verifier_runtime_issue(self) -> bool:
+        return self.evaluation_status in VERIFIER_RUNTIME_ISSUE_STATUSES
+
 
 @dataclass(frozen=True, slots=True)
 class TaskCurationRecord:
@@ -51,6 +67,7 @@ class TaskCurationRecord:
     avg_score: float | None
     max_step_fail_count: int
     infra_fail_count: int
+    verifier_issue_count: int
     easy_pool_selected: bool
 
     def to_dict(self) -> dict[str, object]:
@@ -66,6 +83,7 @@ class TaskCurationRecord:
             "avg_score": self.avg_score,
             "max_step_fail_count": self.max_step_fail_count,
             "infra_fail_count": self.infra_fail_count,
+            "verifier_issue_count": self.verifier_issue_count,
             "easy_pool_selected": self.easy_pool_selected,
         }
 
@@ -168,13 +186,21 @@ def curate_tasks(
         avg_score = round(sum(real_scores) / len(real_scores), 2) if real_scores else None
         max_step_fail_count = sum(1 for attempt in real_valid_attempts if attempt.max_steps_failure)
         infra_fail_count = sum(1 for attempt in attempts if attempt.infra_failure)
+        verifier_issue_count = sum(
+            1 for attempt in real_attempts if attempt.verifier_runtime_issue
+        )
         all_real_models_solved = (
             len(real_model_names) > 0
             and len(real_valid_attempts) == len(real_model_names)
             and real_solved_count == len(real_model_names)
         )
 
-        if not mock_valid_attempts or len(real_valid_attempts) < min_real_models:
+        if verifier_issue_count > 0:
+            label = "drop_bad_verifier_runtime"
+            reason = (
+                f"{verifier_issue_count} real model(s) hit verifier runtime issues"
+            )
+        elif not mock_valid_attempts or len(real_valid_attempts) < min_real_models:
             label = "pending"
             reason = (
                 "insufficient coverage: "
@@ -223,6 +249,7 @@ def curate_tasks(
                 avg_score=avg_score,
                 max_step_fail_count=max_step_fail_count,
                 infra_fail_count=infra_fail_count,
+                verifier_issue_count=verifier_issue_count,
                 easy_pool_selected=easy_pool_selected,
             )
         )
@@ -275,6 +302,10 @@ def _summary_error(summary_payload: dict[str, object] | None) -> str | None:
         return None
     error = summary_payload.get("error")
     return str(error) if isinstance(error, str) and error.strip() else None
+
+
+def is_infra_failure_error(summary_error: str | None) -> bool:
+    return _is_infra_failure(summary_error)
 
 
 def _is_infra_failure(summary_error: str | None) -> bool:

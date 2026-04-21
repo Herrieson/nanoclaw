@@ -495,7 +495,12 @@ def _derive_objective_score(verify_data: dict[str, Any] | None) -> tuple[float |
 
     score = verify_data.get("score")
     if isinstance(score, (int, float)):
-        bounded = max(0.0, min(100.0, float(score)))
+        raw_score = float(score)
+        # Many generated verify scripts emit scores on a 0-1 scale.
+        # Normalize those to the benchmark's 0-100 scale before clamping.
+        if 0.0 <= raw_score <= 1.0:
+            raw_score *= 100.0
+        bounded = max(0.0, min(100.0, raw_score))
         return bounded, "verify_score"
 
     bool_values = [

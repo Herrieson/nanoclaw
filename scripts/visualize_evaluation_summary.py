@@ -10,6 +10,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from nanoclaw.evaluation_visualization import (
     discover_summary_paths,
+    load_dataset_manifest_task_ids,
     load_model_metrics,
     render_grouped_bar_chart_svg,
     sort_model_metrics,
@@ -42,6 +43,22 @@ def build_parser() -> argparse.ArgumentParser:
         default="model",
         help="Sort order for model groups. Metric sorts are descending.",
     )
+    parser.add_argument(
+        "--dataset-manifest",
+        default=None,
+        help=(
+            "Optional dataset_manifest.jsonl path. When provided, metrics are recomputed from "
+            "each model's evaluation.json using only those task_ids."
+        ),
+    )
+    parser.add_argument(
+        "--exclude-infra-failures",
+        action="store_true",
+        help=(
+            "Recompute metrics from evaluation.json and exclude each model's own infra failures "
+            "from the denominator. Max-steps failures are still counted."
+        ),
+    )
     return parser
 
 
@@ -60,9 +77,35 @@ def main() -> int:
     if not summary_paths:
         parser.error("No evaluation_summary.json files matched the provided paths.")
 
-    metrics = load_model_metrics(summary_paths)
+    subtitle = None
+    task_filter = None
+    if args.dataset_manifest:
+        manifest_path = resolve_output_path(args.dataset_manifest)
+        task_filter = load_dataset_manifest_task_ids(manifest_path)
+
+    metrics = load_model_metrics(
+        summary_paths,
+        task_filter=task_filter,
+        exclude_infra_failures=args.exclude_infra_failures,
+    )
+
+    if task_filter is not None and args.exclude_infra_failures:
+        subtitle = (
+            f"Scores are recomputed from evaluation.json for {len(task_filter)} curated dataset "
+            "task(s); each model's own infra failures are excluded from the denominator."
+        )
+    elif task_filter is not None:
+        subtitle = (
+            f"Scores are on a 0-100 scale and are recomputed from evaluation.json for "
+            f"{len(task_filter)} curated dataset task(s)."
+        )
+    elif args.exclude_infra_failures:
+        subtitle = (
+            "Scores are recomputed from evaluation.json across all tasks; each model's own infra "
+            "failures are excluded from the denominator."
+        )
     metrics = sort_model_metrics(metrics, sort_by=args.sort_by)
-    svg = render_grouped_bar_chart_svg(metrics, title=args.title)
+    svg = render_grouped_bar_chart_svg(metrics, title=args.title, subtitle=subtitle)
 
     output_path = resolve_output_path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)

@@ -7,6 +7,7 @@ import unittest
 
 from nanoclaw.evaluation_visualization import (
     discover_summary_paths,
+    load_dataset_manifest_task_ids,
     load_model_metrics,
     render_grouped_bar_chart_svg,
     sort_model_metrics,
@@ -31,6 +32,36 @@ class EvaluationVisualizationTests(unittest.TestCase):
                 {
                     "perfect_score_rate": perfect,
                     "average_objective_score": average,
+                }
+            ),
+            encoding="utf-8",
+        )
+        return summary_path
+
+    def _write_evaluation(
+        self,
+        model_name: str,
+        *,
+        rows: list[dict[str, object]],
+    ) -> Path:
+        model_dir = self.repo_root / "results" / model_name
+        model_dir.mkdir(parents=True, exist_ok=True)
+        evaluation_path = model_dir / "evaluation.json"
+        evaluation_path.write_text(
+            json.dumps(rows),
+            encoding="utf-8",
+        )
+        return evaluation_path
+
+    def _write_run_summary(self, model_name: str, task_id: str, *, error: str | None = None) -> Path:
+        run_dir = self.repo_root / "results" / model_name / task_id / "20260101T000000Z"
+        run_dir.mkdir(parents=True, exist_ok=True)
+        summary_path = run_dir / "summary.json"
+        summary_path.write_text(
+            json.dumps(
+                {
+                    "task_id": task_id,
+                    "error": error,
                 }
             ),
             encoding="utf-8",
@@ -63,6 +94,97 @@ class EvaluationVisualizationTests(unittest.TestCase):
         self.assertIn("model_b", svg)
         self.assertIn("perfect_score_rate", svg)
         self.assertIn("average_objective_score", svg)
+
+    def test_loads_filtered_metrics_from_dataset_manifest(self) -> None:
+        self._write_summary("model_a", perfect=99.0, average=99.0)
+        self._write_summary("model_b", perfect=88.0, average=88.0)
+        self._write_evaluation(
+            "model_a",
+            rows=[
+                {"task_id": "data_keep", "evaluation_status": "evaluated", "objective_score": 100.0},
+                {"task_id": "data_drop", "evaluation_status": "evaluated", "objective_score": 0.0},
+            ],
+        )
+        self._write_evaluation(
+            "model_b",
+            rows=[
+                {"task_id": "data_keep", "evaluation_status": "evaluated", "objective_score": 40.0},
+                {"task_id": "data_drop", "evaluation_status": "evaluated", "objective_score": 100.0},
+            ],
+        )
+        manifest_path = self.repo_root / "results" / "curation" / "dataset_manifest.jsonl"
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        manifest_path.write_text(
+            json.dumps({"task_id": "data_keep"}) + "\n",
+            encoding="utf-8",
+        )
+
+        task_filter = load_dataset_manifest_task_ids(manifest_path)
+        paths = discover_summary_paths(["results/*/evaluation_summary.json"], repo_root=self.repo_root)
+        metrics = sort_model_metrics(
+            load_model_metrics(paths, task_filter=task_filter),
+            sort_by="model",
+        )
+
+        self.assertEqual([item.model_name for item in metrics], ["model_a", "model_b"])
+        self.assertEqual(metrics[0].perfect_score_rate, 100.0)
+        self.assertEqual(metrics[0].average_objective_score, 100.0)
+        self.assertEqual(metrics[1].perfect_score_rate, 0.0)
+        self.assertEqual(metrics[1].average_objective_score, 40.0)
+        svg = render_grouped_bar_chart_svg(
+            metrics,
+            title="Curated Comparison",
+            subtitle="Curated task subset only.",
+        )
+        self.assertIn("Curated task subset only.", svg)
+
+    def test_excludes_infra_failures_from_denominator_when_requested(self) -> None:
+        self._write_summary("model_a", perfect=99.0, average=99.0)
+        good_summary = self._write_run_summary("model_a", "data_good")
+        infra_summary = self._write_run_summary(
+            "model_a",
+            "data_infra",
+            error="Access denied, please make sure your account is in good standing.",
+        )
+        max_steps_summary = self._write_run_summary(
+            "model_a",
+            "data_max_steps",
+            error="Agent exceeded max steps (50) without final answer",
+        )
+        self._write_evaluation(
+            "model_a",
+            rows=[
+                {
+                    "task_id": "data_good",
+                    "summary_path": str(good_summary),
+                    "run_status": "completed",
+                    "evaluation_status": "evaluated",
+                    "objective_score": 100.0,
+                },
+                {
+                    "task_id": "data_infra",
+                    "summary_path": str(infra_summary),
+                    "run_status": "failed",
+                    "evaluation_status": "skipped_run_not_completed",
+                    "objective_score": None,
+                },
+                {
+                    "task_id": "data_max_steps",
+                    "summary_path": str(max_steps_summary),
+                    "run_status": "failed",
+                    "evaluation_status": "skipped_run_not_completed",
+                    "objective_score": None,
+                },
+            ],
+        )
+
+        paths = discover_summary_paths(["results/*/evaluation_summary.json"], repo_root=self.repo_root)
+        metrics_all = load_model_metrics(paths)
+        metrics_excluding_infra = load_model_metrics(paths, exclude_infra_failures=True)
+
+        self.assertEqual(metrics_all[0].perfect_score_rate, 99.0)
+        self.assertEqual(metrics_excluding_infra[0].perfect_score_rate, 50.0)
+        self.assertEqual(metrics_excluding_infra[0].average_objective_score, 100.0)
 
 
 if __name__ == "__main__":

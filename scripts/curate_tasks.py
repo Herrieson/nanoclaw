@@ -118,6 +118,7 @@ def main() -> int:
         "avg_score",
         "max_step_fail_count",
         "infra_fail_count",
+        "verifier_issue_count",
         "easy_pool_selected",
     ]
     with report_path.open("w", encoding="utf-8", newline="") as handle:
@@ -132,6 +133,7 @@ def main() -> int:
     known_labels = (
         "pending",
         "drop_bad_verifier",
+        "drop_bad_verifier_runtime",
         "easy_pool",
         "keep",
         "drop_broken",

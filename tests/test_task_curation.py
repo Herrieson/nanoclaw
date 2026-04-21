@@ -132,6 +132,21 @@ class TaskCurationTests(unittest.TestCase):
                 objective_score=score,
             )
 
+        for model, status, score in (
+            ("mock-noop", "evaluated", 0.0),
+            ("real_a", "evaluated", 100.0),
+            ("real_b", "verify_error", None),
+            ("real_c", "evaluated", 80.0),
+            ("real_d", "evaluated", 60.0),
+        ):
+            self._write_model_eval(
+                model,
+                "data_verifier_runtime_issue",
+                run_status="completed",
+                evaluation_status=status,
+                objective_score=score,
+            )
+
         evaluation_paths = discover_evaluation_paths(
             ["results/*/evaluation.json"],
             repo_root=self.repo_root,
@@ -154,6 +169,11 @@ class TaskCurationTests(unittest.TestCase):
         self.assertEqual(by_task["data_keep"].label, "keep")
         self.assertEqual(by_task["data_broken"].label, "drop_broken")
         self.assertEqual(by_task["data_ambiguous"].label, "drop_ambiguous")
+        self.assertEqual(
+            by_task["data_verifier_runtime_issue"].label,
+            "drop_bad_verifier_runtime",
+        )
+        self.assertEqual(by_task["data_verifier_runtime_issue"].verifier_issue_count, 1)
 
         manifest = build_dataset_manifest(records, repo_root=self.repo_root)
         self.assertEqual(
@@ -190,6 +210,102 @@ class TaskCurationTests(unittest.TestCase):
             repo_root=self.repo_root,
         )
         attempts_by_task, _ = load_task_attempts(evaluation_paths)
+        records = curate_tasks(
+            attempts_by_task,
+            mock_models={"mock-noop"},
+            min_real_models=2,
+            keep_threshold=60.0,
+            broken_threshold=30.0,
+            easy_pool_keep_percent=30,
+            sample_salt="test",
+        )
+
+        self.assertEqual(records[0].label, "pending")
+
+    def test_verifier_runtime_issues_are_dropped_from_dataset(self) -> None:
+        self._write_model_eval(
+            "mock-noop",
+            "data_drop_verifier_runtime",
+            run_status="completed",
+            evaluation_status="evaluated",
+            objective_score=0.0,
+        )
+        self._write_model_eval(
+            "real_a",
+            "data_drop_verifier_runtime",
+            run_status="completed",
+            evaluation_status="evaluated",
+            objective_score=100.0,
+        )
+        self._write_model_eval(
+            "real_b",
+            "data_drop_verifier_runtime",
+            run_status="completed",
+            evaluation_status="verify_error",
+            objective_score=None,
+        )
+
+        evaluation_paths = discover_evaluation_paths(
+            ["results/*/evaluation.json"],
+            repo_root=self.repo_root,
+        )
+        attempts_by_task, _ = load_task_attempts(evaluation_paths)
+        records = curate_tasks(
+            attempts_by_task,
+            mock_models={"mock-noop"},
+            min_real_models=2,
+            keep_threshold=60.0,
+            broken_threshold=30.0,
+            easy_pool_keep_percent=100,
+            sample_salt="test",
+        )
+
+        self.assertEqual(records[0].label, "drop_bad_verifier_runtime")
+        manifest = build_dataset_manifest(records, repo_root=self.repo_root)
+        self.assertEqual(manifest, [])
+
+    def test_access_denied_is_treated_as_infra_failure(self) -> None:
+        self._write_model_eval(
+            "mock-noop",
+            "data_access_denied",
+            run_status="completed",
+            evaluation_status="evaluated",
+            objective_score=0.0,
+        )
+        self._write_model_eval(
+            "real_a",
+            "data_access_denied",
+            run_status="failed",
+            evaluation_status="skipped_run_not_completed",
+            objective_score=None,
+            error=(
+                "Error code: 400 - {'error': {'message': 'Access denied, please make sure "
+                "your account is in good standing. For details, see: "
+                "https://help.aliyun.com/zh/model-studio/error-code#overdue-payment', "
+                "'type': 'Arrearage', 'code': 'Arrearage'}}"
+            ),
+        )
+        self._write_model_eval(
+            "real_b",
+            "data_access_denied",
+            run_status="completed",
+            evaluation_status="evaluated",
+            objective_score=100.0,
+        )
+
+        evaluation_paths = discover_evaluation_paths(
+            ["results/*/evaluation.json"],
+            repo_root=self.repo_root,
+        )
+        attempts_by_task, _ = load_task_attempts(evaluation_paths)
+        attempts = attempts_by_task["data_access_denied"]
+        denied_attempt = next(attempt for attempt in attempts if attempt.model_name == "real_a")
+        successful_attempt = next(attempt for attempt in attempts if attempt.model_name == "real_b")
+        self.assertTrue(denied_attempt.infra_failure)
+        self.assertFalse(denied_attempt.valid_attempt)
+        self.assertFalse(successful_attempt.infra_failure)
+        self.assertTrue(successful_attempt.valid_attempt)
+
         records = curate_tasks(
             attempts_by_task,
             mock_models={"mock-noop"},

@@ -121,6 +121,44 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(result.objective_score, 80.0)
         self.assertEqual(result.objective_score_source, "verify_score")
 
+    def test_evaluate_run_normalizes_fractional_verify_scores_to_percent(self) -> None:
+        run_dir = self._create_run("data_401")
+        verify_script = self.repo_root / "tasks" / "data_401" / "verify_rules.py"
+        verify_script.write_text(
+            "\n".join(
+                [
+                    "import json",
+                    "print(json.dumps({'score': 1.0}))",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        result = evaluate_run(run_dir, repo_root=self.repo_root)
+        self.assertEqual(result.evaluation_status, "evaluated")
+        self.assertEqual(result.objective_score, 100.0)
+        self.assertEqual(result.objective_score_source, "verify_score")
+
+    def test_evaluate_run_normalizes_partial_fractional_verify_scores_to_percent(self) -> None:
+        run_dir = self._create_run("data_402")
+        verify_script = self.repo_root / "tasks" / "data_402" / "verify_rules.py"
+        verify_script.write_text(
+            "\n".join(
+                [
+                    "import json",
+                    "print(json.dumps({'score': 0.5}))",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        result = evaluate_run(run_dir, repo_root=self.repo_root)
+        self.assertEqual(result.evaluation_status, "evaluated")
+        self.assertEqual(result.objective_score, 50.0)
+        self.assertEqual(result.objective_score_source, "verify_score")
+
     def test_evaluate_run_supports_pretty_printed_stdout_json(self) -> None:
         run_dir = self._create_run("data_262")
         target = run_dir / "workspace_after" / "assets" / "data_262"
