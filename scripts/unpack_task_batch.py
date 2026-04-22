@@ -23,6 +23,14 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional cap on the number of accepted records to unpack.",
     )
+    parser.add_argument(
+        "--sort-by-total-score",
+        action="store_true",
+        help=(
+            "Sort accepted JSONL records by qa_result.total_score descending before applying "
+            "--max-records."
+        ),
+    )
     return parser
 
 
@@ -40,6 +48,7 @@ def main() -> int:
         _resolve_path(args.jsonl),
         output_root=_resolve_path(args.output_root),
         max_records=args.max_records,
+        sort_by_total_score=args.sort_by_total_score,
     )
     print(f"Unpacked {len(unpacked)} record(s) into {_resolve_path(args.output_root)}")
     for item in unpacked[:10]:

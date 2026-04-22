@@ -4,8 +4,9 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
-from nanoclaw.evaluator import evaluate_run, summarize_evaluations
+from nanoclaw.evaluator import EvaluationJudgeConfig, evaluate_run, summarize_evaluations
 
 
 class EvaluatorTests(unittest.TestCase):
@@ -31,6 +32,16 @@ class EvaluatorTests(unittest.TestCase):
         }
         (run_dir / "summary.json").write_text(json.dumps(summary), encoding="utf-8")
         return run_dir
+
+    def _judge_config(self, *, max_attempts: int = 2) -> EvaluationJudgeConfig:
+        return EvaluationJudgeConfig(
+            enabled=True,
+            model="judge-model",
+            api_key="test-key",
+            base_url=None,
+            max_attempts=max_attempts,
+            temperature=0.0,
+        )
 
     def test_evaluate_run_supports_repo_asset_style_verify_script(self) -> None:
         run_dir = self._create_run("data_03")
@@ -269,6 +280,93 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(result.evaluation_status, "skipped_run_not_completed")
         self.assertIsNone(result.objective_score)
         self.assertEqual(result.run_status, "failed")
+
+    @mock.patch("nanoclaw.evaluator.OpenAI")
+    def test_evaluate_run_averages_probe_and_judge_scores(self, openai_cls: mock.Mock) -> None:
+        run_dir = self._create_run("data_520")
+        (run_dir / "trace.jsonl").write_text('{"type":"shell_command"}\n', encoding="utf-8")
+        (run_dir / "final_answer.md").write_text("done\n", encoding="utf-8")
+        verify_script = self.repo_root / "tasks" / "data_520" / "verify_rules.py"
+        verify_script.write_text("print('{\"score\": 80}')\n", encoding="utf-8")
+        verify_prompt = self.repo_root / "tasks" / "data_520" / "verify_prompt.md"
+        verify_prompt.write_text("Judge this task.\n", encoding="utf-8")
+
+        response = mock.Mock()
+        response.choices = [mock.Mock(message=mock.Mock(content='{"score": 60, "reasoning": "ok"}'))]
+        client = mock.Mock()
+        client.chat.completions.create.return_value = response
+        openai_cls.return_value = client
+
+        result = evaluate_run(
+            run_dir,
+            repo_root=self.repo_root,
+            judge_config=self._judge_config(),
+        )
+
+        self.assertEqual(result.evaluation_status, "evaluated")
+        self.assertEqual(result.probe_score, 80.0)
+        self.assertEqual(result.judge_score, 60.0)
+        self.assertEqual(result.objective_score, 70.0)
+        self.assertEqual(result.objective_score_source, "probe_judge_average")
+        self.assertEqual(result.judge_attempts, 1)
+        self.assertIsNone(result.judge_error)
+
+    @mock.patch("nanoclaw.evaluator.OpenAI")
+    def test_evaluate_run_retries_judge_parse_failures(self, openai_cls: mock.Mock) -> None:
+        run_dir = self._create_run("data_521")
+        (run_dir / "trace.jsonl").write_text('{"type":"shell_command"}\n', encoding="utf-8")
+        verify_script = self.repo_root / "tasks" / "data_521" / "verify_rules.py"
+        verify_script.write_text("print('{\"score\": 100}')\n", encoding="utf-8")
+        verify_prompt = self.repo_root / "tasks" / "data_521" / "verify_prompt.md"
+        verify_prompt.write_text("Judge this task.\n", encoding="utf-8")
+
+        response_bad = mock.Mock()
+        response_bad.choices = [mock.Mock(message=mock.Mock(content="not json"))]
+        response_good = mock.Mock()
+        response_good.choices = [mock.Mock(message=mock.Mock(content='{"score": 40, "reasoning": "ok"}'))]
+        client = mock.Mock()
+        client.chat.completions.create.side_effect = [response_bad, response_good]
+        openai_cls.return_value = client
+
+        result = evaluate_run(
+            run_dir,
+            repo_root=self.repo_root,
+            judge_config=self._judge_config(max_attempts=2),
+        )
+
+        self.assertEqual(result.evaluation_status, "evaluated")
+        self.assertEqual(result.judge_attempts, 2)
+        self.assertEqual(result.judge_score, 40.0)
+        self.assertEqual(result.objective_score, 70.0)
+        self.assertIsNone(result.judge_error)
+
+    @mock.patch("nanoclaw.evaluator.OpenAI")
+    def test_evaluate_run_marks_judge_error_when_all_attempts_fail(self, openai_cls: mock.Mock) -> None:
+        run_dir = self._create_run("data_522")
+        (run_dir / "trace.jsonl").write_text('{"type":"shell_command"}\n', encoding="utf-8")
+        verify_script = self.repo_root / "tasks" / "data_522" / "verify_rules.py"
+        verify_script.write_text("print('{\"score\": 90}')\n", encoding="utf-8")
+        verify_prompt = self.repo_root / "tasks" / "data_522" / "verify_prompt.md"
+        verify_prompt.write_text("Judge this task.\n", encoding="utf-8")
+
+        response_bad = mock.Mock()
+        response_bad.choices = [mock.Mock(message=mock.Mock(content="still not json"))]
+        client = mock.Mock()
+        client.chat.completions.create.side_effect = [response_bad, response_bad]
+        openai_cls.return_value = client
+
+        result = evaluate_run(
+            run_dir,
+            repo_root=self.repo_root,
+            judge_config=self._judge_config(max_attempts=2),
+        )
+
+        self.assertEqual(result.evaluation_status, "judge_error")
+        self.assertEqual(result.probe_score, 90.0)
+        self.assertIsNone(result.judge_score)
+        self.assertIsNone(result.objective_score)
+        self.assertEqual(result.judge_attempts, 2)
+        self.assertIn("not valid JSON", result.judge_error or "")
 
     def test_summarize_evaluations_computes_benchmark_score(self) -> None:
         run_dir_ok = self._create_run("data_501")

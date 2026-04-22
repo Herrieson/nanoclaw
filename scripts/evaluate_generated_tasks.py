@@ -10,6 +10,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from nanoclaw.evaluator import (
     discover_run_dirs,
+    EvaluationJudgeConfig,
     evaluate_run,
     summarize_evaluations,
     write_evaluation_csv,
@@ -43,6 +44,27 @@ def build_parser() -> argparse.ArgumentParser:
         default="results/evaluation_summary.json",
         help="JSON output path for aggregate evaluation metrics.",
     )
+    parser.add_argument(
+        "--enable-judge",
+        action="store_true",
+        help="Use verify_prompt.md plus trace.jsonl to obtain a second LLM-judge score.",
+    )
+    parser.add_argument(
+        "--judge-model",
+        default=None,
+        help="Override the auxiliary judge model.",
+    )
+    parser.add_argument(
+        "--judge-base-url",
+        default=None,
+        help="Override the auxiliary judge base URL.",
+    )
+    parser.add_argument(
+        "--judge-max-attempts",
+        type=int,
+        default=None,
+        help="Maximum attempts for judge output parsing retries.",
+    )
     return parser
 
 
@@ -60,7 +82,18 @@ def main() -> int:
     if not run_dirs:
         parser.error("No run directories matched the provided paths.")
 
-    results = [evaluate_run(run_dir, repo_root=REPO_ROOT) for run_dir in run_dirs]
+    judge_config = EvaluationJudgeConfig.from_env()
+    if args.enable_judge:
+        judge_config = EvaluationJudgeConfig(
+            enabled=True,
+            model=args.judge_model or judge_config.model or "gpt-4o",
+            api_key=judge_config.api_key,
+            base_url=args.judge_base_url if args.judge_base_url is not None else judge_config.base_url,
+            max_attempts=args.judge_max_attempts or judge_config.max_attempts,
+            temperature=judge_config.temperature,
+        )
+
+    results = [evaluate_run(run_dir, repo_root=REPO_ROOT, judge_config=judge_config) for run_dir in run_dirs]
     summary = summarize_evaluations(results)
     json_out = _resolve_output(args.json_out)
     csv_out = _resolve_output(args.csv_out)

@@ -6,6 +6,10 @@ from pathlib import Path
 import json
 import re
 import shutil
+import textwrap
+from typing import Any
+
+import yaml
 
 from .generated_task_validator import (
     autofix_prompt_repo_asset_paths,
@@ -16,6 +20,12 @@ from .task_normalizer import normalize_task_file
 
 TEXT_FILE_SUFFIXES = frozenset({".md", ".py", ".yaml", ".yml", ".json", ".txt"})
 ROUND_ID_PATTERN = re.compile(r"[^a-z0-9]+")
+BUILDER_REPO_ASSET_PATTERNS = (
+    re.compile(r"""(?x)["']assets/data_[A-Za-z0-9_-]+(?:/|["'])"""),
+    re.compile(r"""(?x)Path\(\s*["']assets(?:/|["'])"""),
+    re.compile(r"""(?x)os\.path\.join\(\s*["']assets["']"""),
+    re.compile(r"""(?x)["']/workspace(?:/|["'])"""),
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,11 +81,17 @@ def import_staged_tasks(
     resolved_repo = repo_root.expanduser().resolve()
     normalized_round = normalize_round_id(round_id)
     staged_task_paths = discover_staged_task_paths(resolved_staging)
+    existing_round_count = _count_existing_round_tasks(
+        resolved_repo,
+        normalized_round=normalized_round,
+    )
+    if existing_round_count:
+        staged_task_paths = staged_task_paths[existing_round_count:]
     if max_tasks is not None:
         staged_task_paths = staged_task_paths[:max_tasks]
 
     imported: list[ImportedTask] = []
-    next_index = 1
+    next_index = existing_round_count + 1
     for staged_task_path in staged_task_paths:
         source_task_id = staged_task_path.stem
         imported_task_id, next_index = _allocate_task_id(
@@ -127,6 +143,11 @@ def _task_id_available(repo_root: Path, task_id: str) -> bool:
     return not any(path.exists() for path in candidates)
 
 
+def _count_existing_round_tasks(repo_root: Path, *, normalized_round: str) -> int:
+    pattern = f"data_{normalized_round}_*.yaml"
+    return len(list((repo_root / "tasks").glob(pattern)))
+
+
 def _import_single_task(
     staged_task_path: Path,
     *,
@@ -149,6 +170,7 @@ def _import_single_task(
 
     shutil.copy2(staged_task_path, destination_task_path)
     _rewrite_text_file(destination_task_path, source_task_id=source_task_id, imported_task_id=imported_task_id)
+    _rewrite_task_yaml_metadata(destination_task_path)
 
     if prompt_source_path.exists():
         destination_prompt_path = repo_prompts_root / f"{imported_task_id}.md"
@@ -170,6 +192,7 @@ def _import_single_task(
                 source_task_id=source_task_id,
                 imported_task_id=imported_task_id,
             )
+        _wrap_builder_for_workspace_root(destination_task_dir / "env_builder.py", imported_task_id)
 
     normalize_task_file(destination_task_path, create_backup=False)
     autofix_prompt_repo_asset_paths(destination_task_path, repo_root=repo_root)
@@ -194,3 +217,151 @@ def _rewrite_text_file(
     original = path.read_text(encoding="utf-8")
     updated = original.replace(source_task_id, imported_task_id)
     path.write_text(updated, encoding="utf-8")
+
+
+def _rewrite_task_yaml_metadata(task_yaml_path: Path) -> None:
+    original = task_yaml_path.read_text(encoding="utf-8")
+    payload = yaml.safe_load(original) or {}
+    if not isinstance(payload, dict):
+        updated = original.replace("tasks/prompts/", "prompts/")
+        if updated != original:
+            task_yaml_path.write_text(updated, encoding="utf-8")
+        return
+
+    changed = False
+
+    for key in ("prompt", "prompt_file"):
+        value = payload.get(key)
+        if isinstance(value, str):
+            normalized = _normalize_prompt_reference(value)
+            if normalized != value:
+                payload[key] = normalized
+                changed = True
+
+    prompts = payload.get("prompts")
+    normalized_prompts = _normalize_import_prompt_sources(prompts)
+    if normalized_prompts is not None and normalized_prompts != prompts:
+        payload["prompts"] = normalized_prompts
+        changed = True
+
+    if prompts is None:
+        fallback_paths: list[str] = []
+        for key in ("prompt", "prompt_file"):
+            value = payload.get(key)
+            if isinstance(value, str) and value.strip():
+                fallback_paths.append(_normalize_prompt_reference(value))
+        if fallback_paths:
+            payload["prompts"] = fallback_paths
+            changed = True
+
+    if not changed:
+        return
+    task_yaml_path.write_text(yaml.safe_dump(payload, sort_keys=False, allow_unicode=True), encoding="utf-8")
+
+
+def _normalize_import_prompt_sources(prompts: Any) -> Any | None:
+    if isinstance(prompts, str):
+        return _normalize_prompt_reference(prompts)
+
+    if isinstance(prompts, list):
+        normalized_items: list[Any] = []
+        changed = False
+        for item in prompts:
+            if isinstance(item, str):
+                normalized = _normalize_prompt_reference(item)
+                normalized_items.append(normalized)
+                changed = changed or normalized != item
+                continue
+            if isinstance(item, dict):
+                extracted = _extract_prompt_path_from_mapping(item)
+                if extracted is not None:
+                    normalized_items.append(extracted)
+                    changed = True
+                    continue
+            normalized_items.append(item)
+        return normalized_items if changed else prompts
+
+    if isinstance(prompts, dict):
+        files = prompts.get("files")
+        if isinstance(files, str):
+            return {"files": [_normalize_prompt_reference(files)]}
+        if isinstance(files, list):
+            normalized_files = [
+                _normalize_prompt_reference(item)
+                for item in files
+                if isinstance(item, str) and item.strip()
+            ]
+            return {"files": normalized_files} if normalized_files else {"files": []}
+
+        extracted_paths: list[str] = []
+        for key in ("file", "user", "assistant", "system", "prompt"):
+            value = prompts.get(key)
+            if isinstance(value, str) and value.strip():
+                extracted_paths.append(_normalize_prompt_reference(value))
+        inline = prompts.get("inline")
+        if isinstance(inline, list):
+            if all(isinstance(item, str) and item.strip().endswith(".md") for item in inline):
+                extracted_paths.extend(
+                    _normalize_prompt_reference(item)
+                    for item in inline
+                )
+        if extracted_paths:
+            return extracted_paths
+        return prompts
+
+    return None
+
+
+def _extract_prompt_path_from_mapping(item: dict[str, Any]) -> str | None:
+    for key in ("file", "user", "assistant", "system", "prompt"):
+        value = item.get(key)
+        if isinstance(value, str) and value.strip():
+            return _normalize_prompt_reference(value)
+    return None
+
+
+def _normalize_prompt_reference(value: str) -> str:
+    normalized = value.strip().replace("tasks/prompts/", "prompts/")
+    if "/" not in normalized and Path(normalized).suffix.lower() != ".md":
+        return f"prompts/{normalized}.md"
+    return normalized
+
+
+def _wrap_builder_for_workspace_root(builder_path: Path, task_id: str) -> None:
+    if not builder_path.exists():
+        return
+    original = builder_path.read_text(encoding="utf-8")
+    if _builder_uses_repo_asset_paths(original):
+        return
+
+    impl_path = builder_path.with_name("_env_builder_impl.py")
+    if impl_path.exists():
+        return
+
+    builder_path.rename(impl_path)
+    wrapper = textwrap.dedent(
+        f"""
+        from __future__ import annotations
+
+        import os
+        import runpy
+        from pathlib import Path
+
+
+        def main() -> None:
+            repo_root = Path(__file__).resolve().parents[2]
+            asset_dir = repo_root / "assets" / "{task_id}"
+            asset_dir.mkdir(parents=True, exist_ok=True)
+            os.chdir(asset_dir)
+            runpy.run_path(str(Path(__file__).with_name("_env_builder_impl.py")), run_name="__main__")
+
+
+        if __name__ == "__main__":
+            main()
+        """
+    ).lstrip()
+    builder_path.write_text(wrapper, encoding="utf-8")
+
+
+def _builder_uses_repo_asset_paths(builder_text: str) -> bool:
+    return any(pattern.search(builder_text) for pattern in BUILDER_REPO_ASSET_PATTERNS)
