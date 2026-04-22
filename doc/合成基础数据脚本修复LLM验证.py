@@ -111,7 +111,7 @@ def build_env():
     # 采用代码一的请求逻辑
     for attempt in range(max_retries):
         try:
-            response = hm_aigc.aigc_managed(
+            response =(
                 model_agent=MODEL_AGENT,
                 req_data=req_data,
                 sub_account_name=SUB_ACCOUNT_NAME,
