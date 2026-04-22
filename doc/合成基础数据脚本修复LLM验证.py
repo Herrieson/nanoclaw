@@ -11,40 +11,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import warnings
 
-# 内部依赖库 (来自代码一)
-import hmwrangler_init
-from hmwrangler import hm_aigc
 
-warnings.filterwarnings("ignore", message="Unverified HTTPS request")
-
-# ================= 动态路径计算 =================
-SCRIPT_DIR = Path("/home/semtp/notebooks/gemini_0421")
-REPO_ROOT = SCRIPT_DIR
-# 如果需要支持 nanoclaw_normalizer, 可以将上级目录加入 sys.path
-# if str(REPO_ROOT) not in sys.path:
-#     sys.path.insert(0, str(REPO_ROOT))
-# try:
-#     from nanoclaw.task_normalizer import normalize_task_file
-# except ImportError:
-#     normalize_task_file = None
-# ===============================================
-
-# ================= 配置区 =================
-MODEL_AGENT = "yunwu"
-SUB_ACCOUNT_NAME = "云雾_教育办公_侯宇泰_0401"
-MODEL_NAME = "gemini-3-pro-preview"
-
-# 使用 Path 对象进行路径管理 (采用代码二的规范)
-PERSONA_FILE = REPO_ROOT / "persona2000.jsonl"
-OUTPUT_JSONL_FILE = REPO_ROOT / "all_outputs_for_copy_0421_fix_verifier.jsonl"
-MAX_WORKERS = 100  # 最大并行线程数
-
-# 解析大模型输出的正则表达式
-CODE_BLOCK_PATTERN = re.compile(r"```(\w+)?\n(tasks/[^\n]+)\n(.*?)```", re.DOTALL)
-
-# 线程锁，用于安全写入 JSONL
-file_lock = threading.Lock()
-# ==========================================
 
 
 def init_directories(task_id: str) -> None:
