@@ -32,6 +32,7 @@ class TaskCurationTests(unittest.TestCase):
         run_status: str,
         evaluation_status: str,
         objective_score: float | None,
+        probe_score: float | None = None,
         error: str | None = None,
     ) -> None:
         model_dir = self.repo_root / "results" / model_name
@@ -61,6 +62,7 @@ class TaskCurationTests(unittest.TestCase):
                 "run_status": run_status,
                 "evaluation_status": evaluation_status,
                 "objective_score": objective_score,
+                "probe_score": objective_score if probe_score is None else probe_score,
             }
         )
         evaluation_path.write_text(json.dumps(existing), encoding="utf-8")
@@ -317,6 +319,41 @@ class TaskCurationTests(unittest.TestCase):
         )
 
         self.assertEqual(records[0].label, "pending")
+
+    def test_mock_bad_verifier_detection_uses_probe_score(self) -> None:
+        for model, objective_score, probe_score in (
+            ("mock-noop", 50.0, 100.0),
+            ("real_a", 100.0, 100.0),
+            ("real_b", 85.0, 85.0),
+            ("real_c", 75.0, 75.0),
+            ("real_d", 65.0, 65.0),
+        ):
+            self._write_model_eval(
+                model,
+                "data_probe_bad_verifier",
+                run_status="completed",
+                evaluation_status="evaluated",
+                objective_score=objective_score,
+                probe_score=probe_score,
+            )
+
+        evaluation_paths = discover_evaluation_paths(
+            ["results/*/evaluation.json"],
+            repo_root=self.repo_root,
+        )
+        attempts_by_task, _ = load_task_attempts(evaluation_paths)
+        records = curate_tasks(
+            attempts_by_task,
+            mock_models={"mock-noop"},
+            min_real_models=4,
+            keep_threshold=60.0,
+            broken_threshold=30.0,
+            easy_pool_keep_percent=30,
+            sample_salt="test",
+        )
+
+        self.assertEqual(records[0].label, "drop_bad_verifier")
+        self.assertTrue(records[0].mock_solved)
 
 
 if __name__ == "__main__":

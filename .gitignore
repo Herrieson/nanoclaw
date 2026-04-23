@@ -238,3 +238,6 @@ __marimo__/
 
 # Tasks
 tasks/
+.invalid_generated/
+.staging/
+

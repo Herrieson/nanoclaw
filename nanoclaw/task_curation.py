@@ -37,6 +37,7 @@ class TaskAttempt:
     run_status: str | None
     evaluation_status: str
     objective_score: float | None
+    probe_score: float | None
     summary_error: str | None
     infra_failure: bool
     max_steps_failure: bool
@@ -48,6 +49,10 @@ class TaskAttempt:
     @property
     def valid_attempt(self) -> bool:
         return not self.infra_failure
+
+    @property
+    def probe_solved(self) -> bool:
+        return self.probe_score == 100.0
 
     @property
     def verifier_runtime_issue(self) -> bool:
@@ -130,6 +135,11 @@ def load_task_attempts(evaluation_paths: list[Path]) -> tuple[dict[str, list[Tas
                 objective_score = float(objective_score)
             elif not isinstance(objective_score, float):
                 objective_score = None
+            probe_score = item.get("probe_score")
+            if isinstance(probe_score, int):
+                probe_score = float(probe_score)
+            elif not isinstance(probe_score, float):
+                probe_score = objective_score
             attempt = TaskAttempt(
                 task_id=task_id,
                 model_name=model_name,
@@ -137,6 +147,7 @@ def load_task_attempts(evaluation_paths: list[Path]) -> tuple[dict[str, list[Tas
                 run_status=item.get("run_status"),
                 evaluation_status=str(item["evaluation_status"]),
                 objective_score=objective_score,
+                probe_score=probe_score,
                 summary_error=summary_error,
                 infra_failure=infra_failure,
                 max_steps_failure=max_steps_failure,
@@ -180,7 +191,7 @@ def curate_tasks(
             for attempt in real_valid_attempts
             if attempt.objective_score is not None
         ]
-        mock_solved = any(attempt.solved for attempt in mock_valid_attempts)
+        mock_solved = any(attempt.probe_solved for attempt in mock_valid_attempts)
         real_solved_count = sum(1 for attempt in real_valid_attempts if attempt.solved)
         best_score = max(real_scores) if real_scores else None
         avg_score = round(sum(real_scores) / len(real_scores), 2) if real_scores else None
