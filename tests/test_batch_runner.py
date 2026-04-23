@@ -7,6 +7,7 @@ import unittest
 
 from nanoclaw.batch_runner import (
     BatchTaskSpec,
+    batch_assets_root,
     cleanup_environment,
     find_latest_completed_run_dir,
     parse_run_dir,
@@ -24,6 +25,13 @@ class BatchRunnerTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
+
+    def test_batch_assets_root_uses_results_local_batch_env(self) -> None:
+        results_dir = self.repo_root / "results" / "demo_model"
+        self.assertEqual(
+            batch_assets_root(results_dir),
+            (results_dir / ".batch_env" / "assets").resolve(),
+        )
 
     def test_resolve_task_specs_reads_normalized_task(self) -> None:
         task_path = self.repo_root / "tasks" / "data_01.yaml"
@@ -102,12 +110,89 @@ class BatchRunnerTests(unittest.TestCase):
         )
 
         spec = resolve_task_specs(["tasks/data_02.yaml"], repo_root=self.repo_root)[0]
-        asset_dir = prepare_environment(spec, repo_root=self.repo_root)
+        isolated_assets_root = (self.repo_root / "results" / "demo_model" / ".batch_env" / "assets")
+        asset_dir = prepare_environment(
+            spec,
+            repo_root=self.repo_root,
+            assets_root=isolated_assets_root,
+        )
         self.assertTrue(asset_dir.exists())
         self.assertTrue((asset_dir / "docs" / "input.txt").exists())
+        self.assertEqual(asset_dir, (isolated_assets_root / task_id).resolve())
 
-        cleanup_environment(spec, repo_root=self.repo_root)
+        cleanup_environment(
+            spec,
+            repo_root=self.repo_root,
+            assets_root=isolated_assets_root,
+        )
         self.assertFalse(asset_dir.exists())
+
+    def test_prepare_environment_runs_wrapped_builder_inside_isolated_asset_dir(self) -> None:
+        task_id = "data_03"
+        task_path = self.repo_root / "tasks" / f"{task_id}.yaml"
+        prompt_path = self.repo_root / "tasks" / "prompts" / f"{task_id}.md"
+        builder_dir = self.repo_root / "tasks" / task_id
+        builder_path = builder_dir / "env_builder.py"
+        impl_path = builder_dir / "_env_builder_impl.py"
+        prompt_path.write_text("Read docs/input.txt.\n", encoding="utf-8")
+        builder_dir.mkdir(parents=True, exist_ok=True)
+        builder_path.write_text(
+            "\n".join(
+                [
+                    "from pathlib import Path",
+                    "repo_root = Path(__file__).resolve().parents[2]",
+                    f"asset_dir = repo_root / 'assets' / '{task_id}'",
+                    "asset_dir.mkdir(parents=True, exist_ok=True)",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        impl_path.write_text(
+            "\n".join(
+                [
+                    "from pathlib import Path",
+                    "Path('docs').mkdir(parents=True, exist_ok=True)",
+                    "Path('docs/input.txt').write_text('ok\\n', encoding='utf-8')",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        task_path.write_text(
+            "\n".join(
+                [
+                    f"id: {task_id}",
+                    "name: Example",
+                    "prompts:",
+                    f"  - prompts/{task_id}.md",
+                    "environment:",
+                    f"  asset: {task_id}",
+                    "skills:",
+                    "  available:",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "  mode: interactive",
+                    "  memory_policy: default",
+                    "  approval_mode: reject",
+                    "  max_steps: 30",
+                    "  temperature: 0.2",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        spec = resolve_task_specs(["tasks/data_03.yaml"], repo_root=self.repo_root)[0]
+        isolated_assets_root = (self.repo_root / "results" / "demo_model" / ".batch_env" / "assets")
+        asset_dir = prepare_environment(
+            spec,
+            repo_root=self.repo_root,
+            assets_root=isolated_assets_root,
+        )
+
+        self.assertTrue((asset_dir / "docs" / "input.txt").exists())
+        self.assertFalse((self.repo_root / "assets" / task_id).exists())
 
     def test_parse_run_dir(self) -> None:
         stdout = "Trace: foo\nRun dir: /tmp/example-run\nSummary: summary.json\n"

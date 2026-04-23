@@ -162,6 +162,49 @@ class GeneratedTaskValidatorTests(unittest.TestCase):
         )
         self.assertIn("builder_missing_asset_dir", [issue.code for issue in result.issues])
 
+    def test_run_builder_uses_isolated_assets_root_for_wrapped_builder(self) -> None:
+        task_path = self._write_task("data_317")
+        builder_dir = self.repo_root / "tasks" / "data_317"
+        builder_dir.mkdir(parents=True, exist_ok=True)
+        builder_path = builder_dir / "env_builder.py"
+        impl_path = builder_dir / "_env_builder_impl.py"
+        builder_path.write_text(
+            "\n".join(
+                [
+                    "from pathlib import Path",
+                    "repo_root = Path(__file__).resolve().parents[2]",
+                    "asset_dir = repo_root / 'assets' / 'data_317'",
+                    "asset_dir.mkdir(parents=True, exist_ok=True)",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        impl_path.write_text(
+            "\n".join(
+                [
+                    "from pathlib import Path",
+                    "Path('docs').mkdir(parents=True, exist_ok=True)",
+                    "Path('docs/input.txt').write_text('ok\\n', encoding='utf-8')",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        isolated_assets_root = self.repo_root / "results" / "demo_model" / ".batch_env" / "assets"
+        result = validate_generated_task(
+            task_path,
+            repo_root=self.repo_root,
+            run_builder=True,
+            keep_assets=True,
+            assets_root=isolated_assets_root,
+        )
+
+        self.assertEqual(result.issues, ())
+        self.assertTrue((isolated_assets_root / "data_317" / "docs" / "input.txt").exists())
+        self.assertFalse((self.repo_root / "assets" / "data_317").exists())
+
     def test_collect_task_artifacts_includes_prompt_task_and_asset(self) -> None:
         task_path = self._write_task("data_200")
         asset_dir = self.repo_root / "assets" / "data_200"

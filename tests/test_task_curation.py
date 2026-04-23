@@ -320,6 +320,116 @@ class TaskCurationTests(unittest.TestCase):
 
         self.assertEqual(records[0].label, "pending")
 
+    def test_content_filter_is_treated_as_infra_failure(self) -> None:
+        self._write_model_eval(
+            "mock-noop",
+            "data_content_filter",
+            run_status="completed",
+            evaluation_status="evaluated",
+            objective_score=0.0,
+        )
+        self._write_model_eval(
+            "real_a",
+            "data_content_filter",
+            run_status="failed",
+            evaluation_status="skipped_run_not_completed",
+            objective_score=None,
+            error=(
+                "BadRequestError: Error code: 400 - {'error': {'message': "
+                "\"The response was filtered due to the prompt triggering Azure OpenAI's "
+                "content management policy.\", 'code': 'content_filter', "
+                "'innererror': {'code': 'ResponsibleAIPolicyViolation', "
+                "'content_filter_result': {'self_harm': {'filtered': True, "
+                "'severity': 'medium'}}}}}"
+            ),
+        )
+        self._write_model_eval(
+            "real_b",
+            "data_content_filter",
+            run_status="completed",
+            evaluation_status="evaluated",
+            objective_score=100.0,
+        )
+
+        evaluation_paths = discover_evaluation_paths(
+            ["results/*/evaluation.json"],
+            repo_root=self.repo_root,
+        )
+        attempts_by_task, _ = load_task_attempts(evaluation_paths)
+        attempts = attempts_by_task["data_content_filter"]
+        filtered_attempt = next(attempt for attempt in attempts if attempt.model_name == "real_a")
+        successful_attempt = next(attempt for attempt in attempts if attempt.model_name == "real_b")
+        self.assertTrue(filtered_attempt.infra_failure)
+        self.assertFalse(filtered_attempt.valid_attempt)
+        self.assertFalse(successful_attempt.infra_failure)
+        self.assertTrue(successful_attempt.valid_attempt)
+
+        records = curate_tasks(
+            attempts_by_task,
+            mock_models={"mock-noop"},
+            min_real_models=2,
+            keep_threshold=60.0,
+            broken_threshold=30.0,
+            easy_pool_keep_percent=30,
+            sample_salt="test",
+        )
+
+        self.assertEqual(records[0].label, "pending")
+
+    def test_invalid_function_arguments_is_treated_as_infra_failure(self) -> None:
+        self._write_model_eval(
+            "mock-noop",
+            "data_invalid_function_arguments",
+            run_status="completed",
+            evaluation_status="evaluated",
+            objective_score=0.0,
+        )
+        self._write_model_eval(
+            "real_a",
+            "data_invalid_function_arguments",
+            run_status="failed",
+            evaluation_status="skipped_run_not_completed",
+            objective_score=None,
+            error=(
+                "Error code: 400 - {'error': {'message': "
+                "'<400> InternalError.Algo.InvalidParameter: The \"function.arguments\" "
+                "parameter of the code model must be in JSON format.', "
+                "'type': 'invalid_request_error', 'code': 'invalid_parameter_error'}}"
+            ),
+        )
+        self._write_model_eval(
+            "real_b",
+            "data_invalid_function_arguments",
+            run_status="completed",
+            evaluation_status="evaluated",
+            objective_score=100.0,
+        )
+
+        evaluation_paths = discover_evaluation_paths(
+            ["results/*/evaluation.json"],
+            repo_root=self.repo_root,
+        )
+        attempts_by_task, _ = load_task_attempts(evaluation_paths)
+        attempts = attempts_by_task["data_invalid_function_arguments"]
+        invalid_attempt = next(attempt for attempt in attempts if attempt.model_name == "real_a")
+        successful_attempt = next(attempt for attempt in attempts if attempt.model_name == "real_b")
+        self.assertTrue(invalid_attempt.infra_failure)
+        self.assertFalse(invalid_attempt.valid_attempt)
+        self.assertFalse(successful_attempt.infra_failure)
+        self.assertTrue(successful_attempt.valid_attempt)
+
+        records = curate_tasks(
+            attempts_by_task,
+            mock_models={"mock-noop"},
+            min_real_models=2,
+            keep_threshold=60.0,
+            broken_threshold=30.0,
+            easy_pool_keep_percent=30,
+            sample_salt="test",
+        )
+
+        self.assertEqual(records[0].label, "pending")
+
     def test_mock_bad_verifier_detection_uses_probe_score(self) -> None:
         for model, objective_score, probe_score in (
             ("mock-noop", 50.0, 100.0),

@@ -18,6 +18,7 @@ from .task_loader import load_task_definition
 
 RUN_DIR_PATTERN = re.compile(r"^Run dir:\s+(.+)$", re.MULTILINE)
 RUN_ID_PATTERN = re.compile(r"^(?P<ts>\d{8}T\d{6}Z)(?:_(?P<suffix>\d+))?$")
+BATCH_ENV_DIRNAME = ".batch_env"
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,6 +80,10 @@ class ProgressTracker:
 def default_worker_count() -> int:
     cpu_count = os.cpu_count() or 1
     return max(1, min(8, cpu_count))
+
+
+def batch_assets_root(results_dir: Path) -> Path:
+    return (results_dir.expanduser().resolve() / BATCH_ENV_DIRNAME / "assets").resolve()
 
 
 def resolve_task_specs(
@@ -162,21 +167,48 @@ def partition_task_specs_for_resume(
     return pending_specs, reused_run_dirs
 
 
-def prepare_environment(spec: BatchTaskSpec, *, repo_root: Path) -> Path:
-    asset_dir = (repo_root / "assets" / spec.asset_name).resolve()
+def prepare_environment(
+    spec: BatchTaskSpec,
+    *,
+    repo_root: Path,
+    assets_root: Path | None = None,
+) -> Path:
+    shared_assets_root = (repo_root / "assets").resolve()
+    runtime_assets_root = (
+        assets_root.expanduser().resolve()
+        if assets_root is not None
+        else shared_assets_root
+    )
+    asset_dir = (runtime_assets_root / spec.asset_name).resolve()
+    source_asset_dir = (shared_assets_root / spec.asset_name).resolve()
     if spec.builder_path is None:
-        if not asset_dir.exists():
+        if not source_asset_dir.exists():
             raise FileNotFoundError(
-                f"Missing asset directory and no env_builder.py for {spec.task_id}: {asset_dir}"
+                f"Missing asset directory and no env_builder.py for {spec.task_id}: {source_asset_dir}"
             )
+        if runtime_assets_root == shared_assets_root:
+            return source_asset_dir
+        if asset_dir.exists():
+            shutil.rmtree(asset_dir)
+        asset_dir.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(source_asset_dir, asset_dir)
         return asset_dir
 
     if asset_dir.exists():
         shutil.rmtree(asset_dir)
 
+    builder_workspace_root = runtime_assets_root.parent
+    builder_workspace_root.mkdir(parents=True, exist_ok=True)
+    wrapped_impl = spec.builder_path.with_name("_env_builder_impl.py")
+    command = [sys.executable, str(wrapped_impl if wrapped_impl.exists() else spec.builder_path)]
+    cwd = builder_workspace_root
+    if wrapped_impl.exists():
+        asset_dir.mkdir(parents=True, exist_ok=True)
+        cwd = asset_dir
+
     subprocess.run(
-        [sys.executable, str(spec.builder_path)],
-        cwd=repo_root,
+        command,
+        cwd=cwd,
         check=True,
         capture_output=True,
         text=True,
@@ -188,10 +220,21 @@ def prepare_environment(spec: BatchTaskSpec, *, repo_root: Path) -> Path:
     return asset_dir
 
 
-def cleanup_environment(spec: BatchTaskSpec, *, repo_root: Path) -> None:
-    if spec.builder_path is None:
+def cleanup_environment(
+    spec: BatchTaskSpec,
+    *,
+    repo_root: Path,
+    assets_root: Path | None = None,
+) -> None:
+    shared_assets_root = (repo_root / "assets").resolve()
+    runtime_assets_root = (
+        assets_root.expanduser().resolve()
+        if assets_root is not None
+        else shared_assets_root
+    )
+    if spec.builder_path is None and runtime_assets_root == shared_assets_root:
         return
-    asset_dir = (repo_root / "assets" / spec.asset_name).resolve()
+    asset_dir = (runtime_assets_root / spec.asset_name).resolve()
     if asset_dir.exists():
         shutil.rmtree(asset_dir)
 
@@ -201,6 +244,7 @@ def run_single_task(
     *,
     repo_root: Path,
     results_dir: Path,
+    assets_root: Path | None,
     model: str | None,
     cleanup_assets: bool,
     approval_mode: str | None,
@@ -210,7 +254,7 @@ def run_single_task(
     run_dir: Path | None = None
 
     try:
-        prepare_environment(spec, repo_root=repo_root)
+        prepare_environment(spec, repo_root=repo_root, assets_root=assets_root)
         command = [
             sys.executable,
             str(repo_root / "main.py"),
@@ -220,6 +264,8 @@ def run_single_task(
             "--results-dir",
             str(results_dir),
         ]
+        if assets_root is not None:
+            command.extend(["--assets-dir", str(assets_root)])
         if model:
             command.extend(["--model", model])
         if approval_mode:
@@ -254,7 +300,7 @@ def run_single_task(
         )
     finally:
         if cleanup_assets:
-            cleanup_environment(spec, repo_root=repo_root)
+            cleanup_environment(spec, repo_root=repo_root, assets_root=assets_root)
 
 
 def run_batch(
@@ -262,6 +308,7 @@ def run_batch(
     *,
     repo_root: Path,
     results_dir: Path,
+    assets_root: Path | None,
     model: str | None,
     workers: int,
     cleanup_assets: bool,
@@ -278,6 +325,7 @@ def run_batch(
                 spec,
                 repo_root=repo_root,
                 results_dir=results_dir,
+                assets_root=assets_root,
                 model=model,
                 cleanup_assets=cleanup_assets,
                 approval_mode=approval_mode,

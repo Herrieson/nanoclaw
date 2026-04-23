@@ -9,6 +9,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from nanoclaw.batch_runner import (
+    batch_assets_root,
     default_worker_count,
     partition_task_specs_for_resume,
     resolve_task_specs,
@@ -209,6 +210,7 @@ def main() -> int:
     if not task_paths:
         parser.error("No task files matched the provided paths.")
     results_dir = (REPO_ROOT / args.results_dir).resolve()
+    isolated_assets_root = batch_assets_root(results_dir)
 
     if not args.skip_normalize:
         backup_root = Path(args.backup_root)
@@ -253,6 +255,7 @@ def main() -> int:
                 repo_root=REPO_ROOT,
                 run_builder=args.run_builder_validation,
                 keep_assets=args.keep_assets,
+                assets_root=isolated_assets_root,
             )
             validation_results.append(result)
             if result.has_errors or (args.strict and result.has_warnings):
@@ -323,6 +326,7 @@ def main() -> int:
             specs,
             repo_root=REPO_ROOT,
             results_dir=results_dir,
+            assets_root=isolated_assets_root,
             model=args.model,
             workers=max(1, args.workers),
             cleanup_assets=not args.keep_assets,
@@ -411,6 +415,7 @@ def main() -> int:
         else:
             print("Skipped evaluation because this batch did not produce any run directories.")
 
+    exit_code = 0
     if failed:
         print("\nFailures:")
         for result in failed:
@@ -421,12 +426,12 @@ def main() -> int:
                 print(f"  stderr={result.stderr.strip().splitlines()[-1]}")
             elif result.stdout.strip():
                 print(f"  stdout={result.stdout.strip().splitlines()[-1]}")
-        return 1
+        exit_code = 1
 
     if evaluation_failed:
-        return 1
+        exit_code = 1
 
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -79,11 +80,19 @@ def validate_generated_task(
     run_builder: bool = False,
     keep_assets: bool = False,
     settings: Settings | None = None,
+    assets_root: Path | None = None,
 ) -> ValidationResult:
     source_path = task_path.expanduser().resolve()
     task_id = source_path.stem
     task_dir = (repo_root / "tasks" / task_id).resolve()
-    asset_dir = (repo_root / "assets" / task_id).resolve()
+    shared_assets_root = (repo_root / "assets").resolve()
+    runtime_assets_root = (
+        assets_root.expanduser().resolve()
+        if assets_root is not None
+        else shared_assets_root
+    )
+    asset_dir = (runtime_assets_root / task_id).resolve()
+    repo_asset_dir = (shared_assets_root / task_id).resolve()
     builder_path = (repo_root / "tasks" / task_id / "env_builder.py").resolve()
     if not builder_path.exists():
         builder_path = None
@@ -114,7 +123,8 @@ def validate_generated_task(
 
     task_id = task.task_id
     task_dir = (repo_root / "tasks" / task_id).resolve()
-    asset_dir = (repo_root / "assets" / task.asset).resolve()
+    asset_dir = (runtime_assets_root / task.asset).resolve()
+    repo_asset_dir = (shared_assets_root / task.asset).resolve()
     expected_builder_path = (repo_root / "tasks" / task_id / "env_builder.py").resolve()
     builder_path = expected_builder_path if expected_builder_path.exists() else None
     prompt_paths = _resolve_prompt_paths(task.prompt_sources, source_path=source_path, repo_root=repo_root)
@@ -131,13 +141,13 @@ def validate_generated_task(
             )
         )
 
-    if builder_path is None and not asset_dir.exists():
+    if builder_path is None and not asset_dir.exists() and not repo_asset_dir.exists():
         issues.append(
             ValidationIssue(
                 severity="error",
                 code="missing_asset_and_builder",
                 message=(
-                    f"Expected either {asset_dir} to exist or {repo_root / 'tasks' / task_id / 'env_builder.py'} "
+                    f"Expected either {repo_asset_dir} to exist or {repo_root / 'tasks' / task_id / 'env_builder.py'} "
                     "to be present."
                 ),
             )
@@ -179,13 +189,25 @@ def validate_generated_task(
         if run_builder:
             if asset_dir.exists():
                 shutil.rmtree(asset_dir)
+            builder_workspace_root = runtime_assets_root.parent
+            builder_workspace_root.mkdir(parents=True, exist_ok=True)
+            wrapped_impl = builder_path.with_name("_env_builder_impl.py")
+            command = [sys.executable, str(wrapped_impl if wrapped_impl.exists() else builder_path)]
+            cwd = builder_workspace_root
+            if wrapped_impl.exists():
+                asset_dir.mkdir(parents=True, exist_ok=True)
+                cwd = asset_dir
             try:
                 process = subprocess.run(
-                    [sys.executable, str(builder_path)],
-                    cwd=repo_root,
+                    command,
+                    cwd=cwd,
                     check=True,
                     capture_output=True,
                     text=True,
+                    env={
+                        **os.environ,
+                        "NANOCLAW_ASSETS_ROOT": str(runtime_assets_root),
+                    },
                 )
                 if not asset_dir.exists():
                     issues.append(

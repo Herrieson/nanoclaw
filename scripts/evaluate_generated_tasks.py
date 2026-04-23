@@ -19,6 +19,41 @@ from nanoclaw.evaluator import (
 )
 
 
+class ProgressTracker:
+    def __init__(self, total: int) -> None:
+        self.total = total
+        self.completed = 0
+        self.succeeded = 0
+        self.failed = 0
+
+    def start(self) -> None:
+        self._render(current_task=None)
+
+    def advance(self, *, success: bool, current_task: str) -> None:
+        self.completed += 1
+        if success:
+            self.succeeded += 1
+        else:
+            self.failed += 1
+        self._render(current_task=current_task)
+        if self.completed == self.total:
+            sys.stderr.write("\n")
+            sys.stderr.flush()
+
+    def _render(self, *, current_task: str | None) -> None:
+        width = 24
+        ratio = 0 if self.total == 0 else self.completed / self.total
+        filled = int(width * ratio)
+        bar = "#" * filled + "-" * (width - filled)
+        suffix = (
+            f" {self.completed}/{self.total} ok={self.succeeded} fail={self.failed}"
+        )
+        if current_task:
+            suffix += f" last={current_task}"
+        sys.stderr.write(f"\r[{bar}]{suffix}")
+        sys.stderr.flush()
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Evaluate completed generated-task runs using task-specific verify_rules.py scripts."
@@ -93,7 +128,16 @@ def main() -> int:
             temperature=judge_config.temperature,
         )
 
-    results = [evaluate_run(run_dir, repo_root=REPO_ROOT, judge_config=judge_config) for run_dir in run_dirs]
+    tracker = ProgressTracker(total=len(run_dirs))
+    tracker.start()
+    results = []
+    for run_dir in run_dirs:
+        result = evaluate_run(run_dir, repo_root=REPO_ROOT, judge_config=judge_config)
+        results.append(result)
+        tracker.advance(
+            success=result.evaluation_status in {"evaluated", "skipped_run_not_completed"},
+            current_task=result.task_id,
+        )
     summary = summarize_evaluations(results)
     json_out = _resolve_output(args.json_out)
     csv_out = _resolve_output(args.csv_out)
