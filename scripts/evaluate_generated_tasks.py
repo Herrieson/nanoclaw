@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
+import threading
 from pathlib import Path
 import sys
 
@@ -25,20 +27,23 @@ class ProgressTracker:
         self.completed = 0
         self.succeeded = 0
         self.failed = 0
+        # 添加线程锁以确保多线程下进度更新和输出的安全
+        self._lock = threading.Lock()
 
     def start(self) -> None:
         self._render(current_task=None)
 
     def advance(self, *, success: bool, current_task: str) -> None:
-        self.completed += 1
-        if success:
-            self.succeeded += 1
-        else:
-            self.failed += 1
-        self._render(current_task=current_task)
-        if self.completed == self.total:
-            sys.stderr.write("\n")
-            sys.stderr.flush()
+        with self._lock:
+            self.completed += 1
+            if success:
+                self.succeeded += 1
+            else:
+                self.failed += 1
+            self._render(current_task=current_task)
+            if self.completed == self.total:
+                sys.stderr.write("\n")
+                sys.stderr.flush()
 
     def _render(self, *, current_task: str | None) -> None:
         width = 24
@@ -100,6 +105,13 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Maximum attempts for judge output parsing retries.",
     )
+    # 新增并发控制参数
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=10,
+        help="Number of concurrent workers for evaluation. Default is 10.",
+    )
     return parser
 
 
@@ -131,13 +143,28 @@ def main() -> int:
     tracker = ProgressTracker(total=len(run_dirs))
     tracker.start()
     results = []
-    for run_dir in run_dirs:
-        result = evaluate_run(run_dir, repo_root=REPO_ROOT, judge_config=judge_config)
-        results.append(result)
-        tracker.advance(
-            success=result.evaluation_status in {"evaluated", "skipped_run_not_completed"},
-            current_task=result.task_id,
-        )
+    
+    # 使用线程池进行并发评估
+    with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
+        future_to_run = {
+            executor.submit(evaluate_run, run_dir, repo_root=REPO_ROOT, judge_config=judge_config): run_dir
+            for run_dir in run_dirs
+        }
+
+        for future in concurrent.futures.as_completed(future_to_run):
+            run_dir = future_to_run[future]
+            try:
+                result = future.result()
+                results.append(result)
+                tracker.advance(
+                    success=result.evaluation_status in {"evaluated", "skipped_run_not_completed"},
+                    current_task=result.task_id,
+                )
+            except Exception as exc:
+                sys.stderr.write(f"\n[Error] Evaluating {run_dir} generated an exception: {exc}\n")
+                # 即使发生异常也需推进进度条，防止卡死
+                tracker.advance(success=False, current_task="ERROR")
+
     summary = summarize_evaluations(results)
     json_out = _resolve_output(args.json_out)
     csv_out = _resolve_output(args.csv_out)
@@ -171,14 +198,18 @@ def main() -> int:
     failures = [
         result
         for result in results
-        if result.evaluation_status not in {"evaluated", "skipped_run_not_completed"}
+        if getattr(result, "evaluation_status", None) not in {"evaluated", "skipped_run_not_completed"}
     ]
     if failures:
         print("\nEvaluation issues:")
         for result in failures[:20]:
-            print(f"- {result.task_id}/{result.run_id}: {result.evaluation_status}")
-            if result.error:
-                print(f"  error={result.error}")
+            task_id = getattr(result, "task_id", "Unknown")
+            run_id = getattr(result, "run_id", "Unknown")
+            status = getattr(result, "evaluation_status", "Failed/Error")
+            print(f"- {task_id}/{run_id}: {status}")
+            error = getattr(result, "error", None)
+            if error:
+                print(f"  error={error}")
         return 1
     return 0
 
