@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 import json
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -14,6 +15,19 @@ class ModelMetrics:
     summary_path: Path
     perfect_score_rate: float
     average_objective_score: float
+
+
+@dataclass(frozen=True, slots=True)
+class TaskConsensusFilter:
+    task_ids: set[str]
+    all_perfect_total: int
+    all_non_perfect_total: int
+    all_perfect_removed: int
+    all_non_perfect_removed: int
+
+    @property
+    def removed_total(self) -> int:
+        return self.all_perfect_removed + self.all_non_perfect_removed
 
 
 def discover_summary_paths(patterns: list[str], *, repo_root: Path) -> list[Path]:
@@ -39,10 +53,11 @@ def load_model_metrics(
     *,
     task_filter: set[str] | None = None,
     exclude_infra_failures: bool = False,
+    exclude_task_ids: set[str] | None = None,
 ) -> list[ModelMetrics]:
     metrics: list[ModelMetrics] = []
     for summary_path in summary_paths:
-        if task_filter is None and not exclude_infra_failures:
+        if task_filter is None and not exclude_infra_failures and not exclude_task_ids:
             payload = json.loads(summary_path.read_text(encoding="utf-8"))
             perfect_score_rate = payload.get("perfect_score_rate")
             average_objective_score = payload.get("average_objective_score")
@@ -69,6 +84,7 @@ def load_model_metrics(
                 summary_path,
                 task_filter=task_filter,
                 exclude_infra_failures=exclude_infra_failures,
+                exclude_task_ids=exclude_task_ids,
             )
         )
     return metrics
@@ -205,12 +221,98 @@ def render_grouped_bar_chart_svg(
 
     svg_lines.append("</svg>")
     return "\n".join(svg_lines) + "\n"
+def build_task_consensus_filter(
+    summary_paths: list[Path],
+    *,
+    exclude_all_perfect_percent: float = 0.0,
+    exclude_all_non_perfect_percent: float = 0.0,
+    task_filter: set[str] | None = None,
+    exclude_infra_failures: bool = False,
+    sample_salt: str = "nanoclaw-evaluation-visualization",
+) -> TaskConsensusFilter:
+    _validate_percent(exclude_all_perfect_percent, "exclude_all_perfect_percent")
+    _validate_percent(exclude_all_non_perfect_percent, "exclude_all_non_perfect_percent")
+
+    if exclude_all_perfect_percent <= 0 and exclude_all_non_perfect_percent <= 0:
+        return TaskConsensusFilter(set(), 0, 0, 0, 0)
+
+    task_scores_by_model: list[dict[str, bool]] = []
+    for summary_path in summary_paths:
+        rows = _load_filtered_evaluation_rows(
+            summary_path,
+            task_filter=task_filter,
+            exclude_infra_failures=exclude_infra_failures,
+            exclude_task_ids=None,
+        )
+        model_scores: dict[str, bool] = {}
+        for item in rows:
+            task_id = str(item.get("task_id"))
+            score = _evaluated_objective_score(item)
+            if score is None:
+                continue
+            model_scores[task_id] = score == 100.0
+        task_scores_by_model.append(model_scores)
+
+    if not task_scores_by_model:
+        return TaskConsensusFilter(set(), 0, 0, 0, 0)
+
+    common_task_ids = set(task_scores_by_model[0])
+    for model_scores in task_scores_by_model[1:]:
+        common_task_ids &= set(model_scores)
+
+    all_perfect = sorted(
+        task_id
+        for task_id in common_task_ids
+        if all(model_scores[task_id] for model_scores in task_scores_by_model)
+    )
+    all_non_perfect = sorted(
+        task_id
+        for task_id in common_task_ids
+        if all(not model_scores[task_id] for model_scores in task_scores_by_model)
+    )
+
+    all_perfect_removed = _sample_task_ids(
+        all_perfect,
+        percent=exclude_all_perfect_percent,
+        salt=f"{sample_salt}:all_perfect",
+    )
+    all_non_perfect_removed = _sample_task_ids(
+        all_non_perfect,
+        percent=exclude_all_non_perfect_percent,
+        salt=f"{sample_salt}:all_non_perfect",
+    )
+    return TaskConsensusFilter(
+        task_ids=set(all_perfect_removed) | set(all_non_perfect_removed),
+        all_perfect_total=len(all_perfect),
+        all_non_perfect_total=len(all_non_perfect),
+        all_perfect_removed=len(all_perfect_removed),
+        all_non_perfect_removed=len(all_non_perfect_removed),
+    )
+
+
 def _load_filtered_model_metrics(
     summary_path: Path,
     *,
     task_filter: set[str] | None,
     exclude_infra_failures: bool,
+    exclude_task_ids: set[str] | None,
 ) -> ModelMetrics:
+    filtered_items = _load_filtered_evaluation_rows(
+        summary_path,
+        task_filter=task_filter,
+        exclude_infra_failures=exclude_infra_failures,
+        exclude_task_ids=exclude_task_ids,
+    )
+    return _metrics_from_filtered_rows(summary_path, filtered_items)
+
+
+def _load_filtered_evaluation_rows(
+    summary_path: Path,
+    *,
+    task_filter: set[str] | None,
+    exclude_infra_failures: bool,
+    exclude_task_ids: set[str] | None,
+) -> list[dict[str, object]]:
     evaluation_path = summary_path.parent / "evaluation.json"
     if not evaluation_path.exists():
         raise ValueError(f"Missing evaluation.json next to {summary_path}")
@@ -226,23 +328,25 @@ def _load_filtered_model_metrics(
         task_id = str(item.get("task_id"))
         if task_filter is not None and task_id not in task_filter:
             continue
+        if exclude_task_ids is not None and task_id in exclude_task_ids:
+            continue
         if exclude_infra_failures and _row_is_infra_failure(item):
             continue
         filtered_items.append(item)
+    return filtered_items
+
+
+def _metrics_from_filtered_rows(
+    summary_path: Path,
+    filtered_items: list[dict[str, object]],
+) -> ModelMetrics:
     total_runs = len(filtered_items)
     perfect_score_runs = 0
     scored_values: list[float] = []
 
     for item in filtered_items:
-        evaluation_status = item.get("evaluation_status")
-        objective_score = item.get("objective_score")
-        if evaluation_status != "evaluated":
-            continue
-        if isinstance(objective_score, int):
-            score_value = float(objective_score)
-        elif isinstance(objective_score, float):
-            score_value = objective_score
-        else:
+        score_value = _evaluated_objective_score(item)
+        if score_value is None:
             continue
         scored_values.append(score_value)
         if score_value == 100.0:
@@ -258,6 +362,37 @@ def _load_filtered_model_metrics(
         perfect_score_rate=perfect_score_rate,
         average_objective_score=average_objective_score,
     )
+
+
+def _evaluated_objective_score(item: dict[str, object]) -> float | None:
+    if item.get("evaluation_status") != "evaluated":
+        return None
+    objective_score = item.get("objective_score")
+    if isinstance(objective_score, int):
+        return float(objective_score)
+    if isinstance(objective_score, float):
+        return objective_score
+    return None
+
+
+def _validate_percent(value: float, name: str) -> None:
+    if not 0 <= value <= 100:
+        raise ValueError(f"{name} must be between 0 and 100.")
+
+
+def _sample_task_ids(task_ids: list[str], *, percent: float, salt: str) -> list[str]:
+    if percent <= 0 or not task_ids:
+        return []
+    if percent >= 100:
+        return list(task_ids)
+    sample_count = int(len(task_ids) * percent / 100)
+    if sample_count <= 0:
+        return []
+    ranked = sorted(
+        task_ids,
+        key=lambda task_id: hashlib.sha256(f"{salt}:{task_id}".encode("utf-8")).hexdigest(),
+    )
+    return ranked[:sample_count]
 
 
 def _row_is_infra_failure(item: dict[str, object]) -> bool:

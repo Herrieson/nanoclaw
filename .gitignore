@@ -241,3 +241,5 @@ tasks/
 .invalid_generated/
 .staging/
 
+# skills
+skills/

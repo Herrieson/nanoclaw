@@ -103,6 +103,68 @@ class TaskBatchUnpackerTests(unittest.TestCase):
         self.assertTrue((self.unpack_root / "record_0002" / "tasks" / "data_mid.yaml").exists())
         self.assertFalse((self.unpack_root / "record_0003").exists())
 
+    def test_unpack_jsonl_records_sorts_by_enhancement_total_qa_score(self) -> None:
+        payloads = []
+        for task_id, score in [("data_low", 27), ("data_high", 30), ("data_mid", 29)]:
+            payload = self._build_payload(task_id)
+            payload["enhanced_raw_output"] = payload.pop("raw_output")
+            payload["enhancement_qa_result"] = {"total_qa_score": score}
+            payloads.append(payload)
+        self.jsonl_path.write_text(
+            "".join(json.dumps(payload, ensure_ascii=False) + "\n" for payload in payloads),
+            encoding="utf-8",
+        )
+
+        unpacked = unpack_jsonl_records(
+            self.jsonl_path,
+            output_root=self.unpack_root,
+            max_records=2,
+            sort_by_total_score=True,
+        )
+
+        self.assertEqual(len(unpacked), 2)
+        self.assertTrue((self.unpack_root / "record_0001" / "tasks" / "data_high.yaml").exists())
+        self.assertTrue((self.unpack_root / "record_0002" / "tasks" / "data_mid.yaml").exists())
+
+    def test_unpack_jsonl_records_supports_enhanced_skill_records_and_manifest_order(self) -> None:
+        first = self._build_payload("data_01", total_score=10)
+        first["task_id"] = "data_01"
+        first["original_scores"] = first.pop("qa_result")
+        first["enhanced_raw_output"] = first.pop("raw_output") + "\n" + "\n".join(
+            [
+                "```markdown",
+                "skills/data_01/pdf_reader.md",
+                "# PDF Reader",
+                "Reads PDFs for data_01.",
+                "```",
+                "```python",
+                "# skills/data_01/pdf_reader.py",
+                "print('data_01')",
+                "```",
+            ]
+        )
+        second = self._build_payload("data_02", total_score=40)
+        second["task_id"] = "data_02"
+        second["original_scores"] = second.pop("qa_result")
+        second["enhanced_raw_output"] = second.pop("raw_output")
+        self.jsonl_path.write_text(
+            json.dumps(first, ensure_ascii=False) + "\n" + json.dumps(second, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+
+        unpacked = unpack_jsonl_records(
+            [self.jsonl_path],
+            output_root=self.unpack_root,
+            max_records=2,
+            order_task_ids=["data_02", "data_01"],
+        )
+
+        self.assertEqual([item.record_id for item in unpacked], ["record_0001", "record_0002"])
+        self.assertTrue((self.unpack_root / "record_0001" / "tasks" / "data_02.yaml").exists())
+        self.assertTrue((self.unpack_root / "record_0002" / "tasks" / "data_01.yaml").exists())
+        self.assertTrue((self.unpack_root / "record_0002" / "skills" / "data_01" / "pdf_reader.md").exists())
+        self.assertTrue((self.unpack_root / "record_0002" / "skills" / "data_01" / "pdf_reader.py").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

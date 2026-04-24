@@ -9,6 +9,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from nanoclaw.evaluation_visualization import (
+    build_task_consensus_filter,
     discover_summary_paths,
     load_dataset_manifest_task_ids,
     load_model_metrics,
@@ -59,6 +60,29 @@ def build_parser() -> argparse.ArgumentParser:
             "from the denominator. Max-steps failures are still counted."
         ),
     )
+    parser.add_argument(
+        "--exclude-all-perfect-percent",
+        type=float,
+        default=0.0,
+        help=(
+            "Deterministically exclude this percentage of tasks that every included model "
+            "scored perfectly on. Requires evaluation.json files."
+        ),
+    )
+    parser.add_argument(
+        "--exclude-all-non-perfect-percent",
+        type=float,
+        default=0.0,
+        help=(
+            "Deterministically exclude this percentage of tasks that no included model "
+            "scored perfectly on. Requires evaluation.json files."
+        ),
+    )
+    parser.add_argument(
+        "--consensus-filter-salt",
+        default="nanoclaw-evaluation-visualization",
+        help="Salt used for deterministic consensus-task exclusion sampling.",
+    )
     return parser
 
 
@@ -83,10 +107,20 @@ def main() -> int:
         manifest_path = resolve_output_path(args.dataset_manifest)
         task_filter = load_dataset_manifest_task_ids(manifest_path)
 
+    consensus_filter = build_task_consensus_filter(
+        summary_paths,
+        exclude_all_perfect_percent=args.exclude_all_perfect_percent,
+        exclude_all_non_perfect_percent=args.exclude_all_non_perfect_percent,
+        task_filter=task_filter,
+        exclude_infra_failures=args.exclude_infra_failures,
+        sample_salt=args.consensus_filter_salt,
+    )
+
     metrics = load_model_metrics(
         summary_paths,
         task_filter=task_filter,
         exclude_infra_failures=args.exclude_infra_failures,
+        exclude_task_ids=consensus_filter.task_ids,
     )
 
     if task_filter is not None and args.exclude_infra_failures:
@@ -104,6 +138,13 @@ def main() -> int:
             "Scores are recomputed from evaluation.json across all tasks; each model's own infra "
             "failures are excluded from the denominator."
         )
+    if consensus_filter.removed_total:
+        filter_note = (
+            f"Consensus filter removed {consensus_filter.removed_total} task(s): "
+            f"{consensus_filter.all_perfect_removed}/{consensus_filter.all_perfect_total} all-perfect, "
+            f"{consensus_filter.all_non_perfect_removed}/{consensus_filter.all_non_perfect_total} all-non-perfect."
+        )
+        subtitle = f"{subtitle} {filter_note}" if subtitle else filter_note
     metrics = sort_model_metrics(metrics, sort_by=args.sort_by)
     svg = render_grouped_bar_chart_svg(metrics, title=args.title, subtitle=subtitle)
 
@@ -118,6 +159,14 @@ def main() -> int:
     for item in metrics:
         print(
             f"{item.model_name:<30} {item.perfect_score_rate:>18.2f} {item.average_objective_score:>25.2f}"
+        )
+    if consensus_filter.removed_total:
+        print("")
+        print(
+            "Consensus filter removed "
+            f"{consensus_filter.removed_total} task(s): "
+            f"{consensus_filter.all_perfect_removed}/{consensus_filter.all_perfect_total} all-perfect, "
+            f"{consensus_filter.all_non_perfect_removed}/{consensus_filter.all_non_perfect_total} all-non-perfect."
         )
     return 0
 

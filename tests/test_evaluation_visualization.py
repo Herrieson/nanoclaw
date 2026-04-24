@@ -6,6 +6,7 @@ import tempfile
 import unittest
 
 from nanoclaw.evaluation_visualization import (
+    build_task_consensus_filter,
     discover_summary_paths,
     load_dataset_manifest_task_ids,
     load_model_metrics,
@@ -185,6 +186,43 @@ class EvaluationVisualizationTests(unittest.TestCase):
         self.assertEqual(metrics_all[0].perfect_score_rate, 99.0)
         self.assertEqual(metrics_excluding_infra[0].perfect_score_rate, 50.0)
         self.assertEqual(metrics_excluding_infra[0].average_objective_score, 100.0)
+
+    def test_excludes_consensus_all_perfect_and_all_non_perfect_tasks(self) -> None:
+        self._write_summary("model_a", perfect=99.0, average=99.0)
+        self._write_summary("model_b", perfect=88.0, average=88.0)
+        self._write_evaluation(
+            "model_a",
+            rows=[
+                {"task_id": "all_perfect", "evaluation_status": "evaluated", "objective_score": 100.0},
+                {"task_id": "all_non_perfect", "evaluation_status": "evaluated", "objective_score": 40.0},
+                {"task_id": "mixed", "evaluation_status": "evaluated", "objective_score": 100.0},
+            ],
+        )
+        self._write_evaluation(
+            "model_b",
+            rows=[
+                {"task_id": "all_perfect", "evaluation_status": "evaluated", "objective_score": 100.0},
+                {"task_id": "all_non_perfect", "evaluation_status": "evaluated", "objective_score": 20.0},
+                {"task_id": "mixed", "evaluation_status": "evaluated", "objective_score": 50.0},
+            ],
+        )
+
+        paths = discover_summary_paths(["results/*/evaluation_summary.json"], repo_root=self.repo_root)
+        consensus_filter = build_task_consensus_filter(
+            paths,
+            exclude_all_perfect_percent=100,
+            exclude_all_non_perfect_percent=100,
+        )
+        metrics = sort_model_metrics(
+            load_model_metrics(paths, exclude_task_ids=consensus_filter.task_ids),
+            sort_by="model",
+        )
+
+        self.assertEqual(consensus_filter.task_ids, {"all_perfect", "all_non_perfect"})
+        self.assertEqual(metrics[0].perfect_score_rate, 100.0)
+        self.assertEqual(metrics[0].average_objective_score, 100.0)
+        self.assertEqual(metrics[1].perfect_score_rate, 0.0)
+        self.assertEqual(metrics[1].average_objective_score, 50.0)
 
 
 if __name__ == "__main__":

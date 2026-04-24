@@ -1,18 +1,41 @@
 #!/bin/bash
 
+set -u
+
+TASK_GLOB="tasks/data_round_01_skills_*.yaml"
+
+slugify_model_name() {
+    echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+//g'
+}
+
+shopt -s nullglob
+TASK_FILES=(${TASK_GLOB})
+shopt -u nullglob
+
+if [ ${#TASK_FILES[@]} -eq 0 ]; then
+    echo "❌ 未找到 skills 任务: ${TASK_GLOB}"
+    exit 1
+fi
+
+echo "🎯 本次仅运行 skills 任务: ${TASK_GLOB} (${#TASK_FILES[@]} 个)"
+
 # 定义需要运行的模型数组
 MODELS=(
-    "qwen3-32b"
-    "qwen2.5-14b-instruct-1m"
-    "deepseek-v3"
+    # "MiniMax/MiniMax-M2.1"
+    # "MiniMax/MiniMax-M2.7"
+    # "deepseek-v3.2"
+    # "deepseek-v3"
+    "qwen3-vl-flash"
+    "qwen-plus"
 )
 
 # 遍历每个模型并执行命令
 for MODEL in "${MODELS[@]}"; do
-    # 动态生成目录名称：移除模型名称中的连字符(-)和点号(.)
+    # 动态生成目录名称：移除 /、-、. 等非字母数字字符，并统一小写
     # 例如：qwen2.5-14b-instruct-1m -> qwen2514binstruct1m
-    DIR_NAME="${MODEL//[-.]/}"
-    RESULTS_DIR="results/${DIR_NAME}"
+    #      MiniMax/MiniMax-M2.1 -> minimaxminimaxm21
+    DIR_NAME="$(slugify_model_name "${MODEL}")"
+    RESULTS_DIR="results/skills/${DIR_NAME}"
 
     echo "=================================================="
     echo "🚀 开始运行模型: ${MODEL} ..."
@@ -20,6 +43,7 @@ for MODEL in "${MODELS[@]}"; do
     echo "=================================================="
 
     uv run python scripts/run_generated_tasks.py \
+        "${TASK_FILES[@]}" \
         --model "${MODEL}" \
         --approval-mode approve-all \
         --workers 16 \
@@ -27,10 +51,6 @@ for MODEL in "${MODELS[@]}"; do
         --strict \
         --quarantine-invalid \
         --results-dir "${RESULTS_DIR}" \
-        --evaluate \
-        --enable-judge \
-        --judge-model qwen3.5-27b \
-        --judge-max-attempts 2 \
         --resume
 
     # 检查上一条命令是否执行成功

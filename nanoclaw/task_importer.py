@@ -20,6 +20,7 @@ from .task_normalizer import normalize_task_file
 
 TEXT_FILE_SUFFIXES = frozenset({".md", ".py", ".yaml", ".yml", ".json", ".txt"})
 ROUND_ID_PATTERN = re.compile(r"[^a-z0-9]+")
+SKILL_SLUG_PATTERN = re.compile(r"[^a-z0-9]+")
 BUILDER_REPO_ASSET_PATTERNS = (
     re.compile(r"""(?x)["']assets/data_[A-Za-z0-9_-]+(?:/|["'])"""),
     re.compile(r"""(?x)Path\(\s*["']assets(?:/|["'])"""),
@@ -165,8 +166,10 @@ def _import_single_task(
     destination_task_dir: Path | None = None
 
     staged_tasks_dir = staged_task_path.parent
+    staged_record_root = staged_tasks_dir.parent
     prompt_source_path = staged_tasks_dir / "prompts" / f"{source_task_id}.md"
     task_dir_source_path = staged_tasks_dir / source_task_id
+    skill_source_dir = staged_record_root / "skills" / source_task_id
 
     shutil.copy2(staged_task_path, destination_task_path)
     _rewrite_text_file(destination_task_path, source_task_id=source_task_id, imported_task_id=imported_task_id)
@@ -194,7 +197,16 @@ def _import_single_task(
             )
         _wrap_builder_for_workspace_root(destination_task_dir / "env_builder.py", imported_task_id)
 
+    imported_skill_slugs = _import_task_local_skills(
+        skill_source_dir,
+        repo_root=repo_root,
+        source_task_id=source_task_id,
+        imported_task_id=imported_task_id,
+    )
+
     normalize_task_file(destination_task_path, create_backup=False)
+    if imported_skill_slugs:
+        _merge_available_skills(destination_task_path, imported_skill_slugs)
     autofix_prompt_repo_asset_paths(destination_task_path, repo_root=repo_root)
     autofix_verify_rules_runtime_paths(destination_task_path, repo_root=repo_root)
 
@@ -217,6 +229,150 @@ def _rewrite_text_file(
     original = path.read_text(encoding="utf-8")
     updated = original.replace(source_task_id, imported_task_id)
     path.write_text(updated, encoding="utf-8")
+
+
+def _import_task_local_skills(
+    skill_source_dir: Path,
+    *,
+    repo_root: Path,
+    source_task_id: str,
+    imported_task_id: str,
+) -> list[str]:
+    if not skill_source_dir.exists() or not skill_source_dir.is_dir():
+        return []
+
+    repo_skills_root = repo_root / "skills"
+    repo_skills_root.mkdir(parents=True, exist_ok=True)
+    imported_slugs: list[str] = []
+
+    base_names = sorted({path.stem for path in skill_source_dir.glob("*.md")} | {path.stem for path in skill_source_dir.glob("*.py")})
+    for base_name in base_names:
+        markdown_path = skill_source_dir / f"{base_name}.md"
+        slug = _task_local_skill_slug(imported_task_id, base_name)
+        destination_dir = repo_skills_root / slug
+        if destination_dir.exists():
+            shutil.rmtree(destination_dir)
+        destination_dir.mkdir(parents=True, exist_ok=True)
+
+        if markdown_path.exists():
+            skill_markdown = markdown_path.read_text(encoding="utf-8")
+        if not markdown_path.exists() or not skill_markdown.strip():
+            skill_markdown = _fallback_skill_markdown(base_name)
+        skill_markdown = skill_markdown.replace(source_task_id, imported_task_id)
+        (destination_dir / "SKILL.md").write_text(
+            _to_skill_document(skill_markdown, slug=slug, fallback_name=base_name),
+            encoding="utf-8",
+        )
+
+        python_path = markdown_path.with_suffix(".py")
+        if python_path.exists():
+            shutil.copy2(python_path, destination_dir / python_path.name)
+            _rewrite_text_file(
+                destination_dir / python_path.name,
+                source_task_id=source_task_id,
+                imported_task_id=imported_task_id,
+            )
+
+        imported_slugs.append(slug)
+
+    return imported_slugs
+
+
+def _fallback_skill_markdown(base_name: str) -> str:
+    display_name = base_name.replace("_", " ").replace("-", " ").title()
+    script_name = f"{base_name}.py"
+    return "\n".join(
+        [
+            f"# {display_name}",
+            "",
+            f"Task-local helper script `{script_name}`. Read this skill before invoking the script.",
+            "",
+            "Use the adjacent Python script with the arguments requested by the task prompt.",
+        ]
+    )
+
+
+def _task_local_skill_slug(task_id: str, base_name: str) -> str:
+    raw_slug = f"{task_id}__{base_name}".lower()
+    normalized = SKILL_SLUG_PATTERN.sub("-", raw_slug).strip("-")
+    return normalized or task_id
+
+
+def _to_skill_document(skill_markdown: str, *, slug: str, fallback_name: str) -> str:
+    stripped = skill_markdown.strip()
+    if stripped.startswith("---\n"):
+        return stripped + "\n"
+    name = _extract_markdown_title(stripped) or fallback_name.replace("_", " ").replace("-", " ").title()
+    description = _extract_skill_description(stripped, fallback=name)
+    return "\n".join(
+        [
+            "---",
+            f"name: {_quote_frontmatter_value(name)}",
+            f"description: {description}",
+            "aliases:",
+            f"  - {fallback_name}",
+            f"  - {slug}",
+            "---",
+            "",
+            stripped,
+            "",
+        ]
+    )
+
+
+def _extract_markdown_title(markdown: str) -> str | None:
+    for line in markdown.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            title = stripped.lstrip("#").strip()
+            if title:
+                return title
+    return None
+
+
+def _extract_skill_description(markdown: str, *, fallback: str) -> str:
+    for line in markdown.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or stripped.startswith("**"):
+            continue
+        return _quote_frontmatter_value(stripped[:200])
+    return _quote_frontmatter_value(fallback)
+
+
+def _quote_frontmatter_value(value: str) -> str:
+    escaped = value.replace('"', "'")
+    return f'"{escaped}"'
+
+
+def _merge_available_skills(task_yaml_path: Path, skill_slugs: list[str]) -> None:
+    payload = yaml.safe_load(task_yaml_path.read_text(encoding="utf-8")) or {}
+    if not isinstance(payload, dict):
+        return
+
+    skills = payload.get("skills")
+    if not isinstance(skills, dict):
+        skills = {}
+        payload["skills"] = skills
+
+    available = skills.get("available")
+    available_items: list[str] = []
+    if isinstance(available, str) and available.strip():
+        available_items.append(available.strip())
+    elif isinstance(available, list):
+        available_items.extend(item.strip() for item in available if isinstance(item, str) and item.strip())
+
+    seen = set(available_items)
+    for slug in skill_slugs:
+        if slug in seen:
+            continue
+        available_items.append(slug)
+        seen.add(slug)
+
+    skills["available"] = available_items
+    task_yaml_path.write_text(
+        yaml.safe_dump(payload, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
 
 
 def _rewrite_task_yaml_metadata(task_yaml_path: Path) -> None:

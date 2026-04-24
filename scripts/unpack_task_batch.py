@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 import sys
 
@@ -15,7 +16,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Safely unpack JSONL task generations into per-record staging directories."
     )
-    parser.add_argument("jsonl", help="Input JSONL path.")
+    parser.add_argument("jsonl", nargs="+", help="Input JSONL path(s).")
     parser.add_argument("--output-root", required=True, help="Directory used to store unpacked records.")
     parser.add_argument(
         "--max-records",
@@ -27,8 +28,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--sort-by-total-score",
         action="store_true",
         help=(
-            "Sort accepted JSONL records by qa_result.total_score descending before applying "
-            "--max-records."
+            "Sort accepted JSONL records by qa_result/original_scores/enhancement_qa_result "
+            "total_score or total_qa_score descending before applying --max-records."
+        ),
+    )
+    parser.add_argument(
+        "--order-from-manifest",
+        default=None,
+        help=(
+            "Optional import_manifest.jsonl whose source_task_id order should be reused. "
+            "Only records with matching task ids are unpacked."
         ),
     )
     return parser
@@ -41,14 +50,32 @@ def _resolve_path(path_value: str) -> Path:
     return path
 
 
+def _load_manifest_task_order(path_value: str | None) -> list[str] | None:
+    if path_value is None:
+        return None
+    path = _resolve_path(path_value)
+    task_ids: list[str] = []
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            raw_line = line.strip()
+            if not raw_line:
+                continue
+            payload = json.loads(raw_line)
+            source_task_id = payload.get("source_task_id")
+            if isinstance(source_task_id, str) and source_task_id.strip():
+                task_ids.append(source_task_id.strip())
+    return task_ids
+
+
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
     unpacked = unpack_jsonl_records(
-        _resolve_path(args.jsonl),
+        [_resolve_path(item) for item in args.jsonl],
         output_root=_resolve_path(args.output_root),
         max_records=args.max_records,
         sort_by_total_score=args.sort_by_total_score,
+        order_task_ids=_load_manifest_task_order(args.order_from_manifest),
     )
     print(f"Unpacked {len(unpacked)} record(s) into {_resolve_path(args.output_root)}")
     for item in unpacked[:10]:

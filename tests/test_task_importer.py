@@ -128,6 +128,49 @@ class TaskImporterTests(unittest.TestCase):
         self.assertIn(f"prompts/{new_id}.md", task_yaml)
         self.assertNotIn("tasks/prompts/", task_yaml)
 
+    def test_import_staged_tasks_converts_task_local_skills(self) -> None:
+        self._write_staged_task("data_06")
+        skill_dir = self.staging_root / "skills" / "data_06"
+        skill_dir.mkdir(parents=True, exist_ok=True)
+        (skill_dir / "pdf_reader.md").write_text(
+            "# PDF Reader\n\nReads private PDFs for data_06.\n",
+            encoding="utf-8",
+        )
+        (skill_dir / "pdf_reader.py").write_text(
+            "TASK_ID = 'data_06'\n",
+            encoding="utf-8",
+        )
+        (skill_dir / "orphan_tool.py").write_text(
+            "TASK_ID = 'data_06'\n",
+            encoding="utf-8",
+        )
+
+        imported = import_staged_tasks(
+            self.staging_root,
+            repo_root=self.repo_root,
+            round_id="round_demo",
+            max_tasks=100,
+        )
+
+        new_id = imported[0].imported_task_id
+        slug = f"{new_id}-pdf-reader".replace("_", "-")
+        task_yaml = (self.repo_root / "tasks" / f"{new_id}.yaml").read_text(encoding="utf-8")
+        skill_root = self.repo_root / "skills" / slug
+
+        self.assertIn(slug, task_yaml)
+        self.assertTrue((skill_root / "SKILL.md").exists())
+        self.assertTrue((skill_root / "pdf_reader.py").exists())
+        self.assertIn("description:", (skill_root / "SKILL.md").read_text(encoding="utf-8"))
+        script = (skill_root / "pdf_reader.py").read_text(encoding="utf-8")
+        self.assertIn(new_id, script)
+        self.assertNotIn("data_06", script)
+
+        orphan_slug = f"{new_id}-orphan-tool".replace("_", "-")
+        orphan_root = self.repo_root / "skills" / orphan_slug
+        self.assertIn(orphan_slug, task_yaml)
+        self.assertTrue((orphan_root / "SKILL.md").exists())
+        self.assertTrue((orphan_root / "orphan_tool.py").exists())
+
     def test_import_staged_tasks_normalizes_mapping_prompt_sources(self) -> None:
         (self.staging_root / "tasks" / "data_03.yaml").write_text(
             "\n".join(
