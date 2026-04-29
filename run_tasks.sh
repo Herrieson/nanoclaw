@@ -2,7 +2,8 @@
 
 set -u
 
-TASK_GLOB="tasks/data_round_01_skills_*.yaml"
+TASK_GLOB="tasks/data_round_01_hard_100_*.yaml"
+RESULTS_ROOT="results/hard_100"
 
 slugify_model_name() {
     echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+//g'
@@ -13,20 +14,24 @@ TASK_FILES=(${TASK_GLOB})
 shopt -u nullglob
 
 if [ ${#TASK_FILES[@]} -eq 0 ]; then
-    echo "❌ 未找到 skills 任务: ${TASK_GLOB}"
+    echo "❌ 未找到 hard-100 任务: ${TASK_GLOB}"
     exit 1
 fi
 
-echo "🎯 本次仅运行 skills 任务: ${TASK_GLOB} (${#TASK_FILES[@]} 个)"
+echo "🎯 本次仅运行 hard-100 任务: ${TASK_GLOB} (${#TASK_FILES[@]} 个)"
 
 # 定义需要运行的模型数组
 MODELS=(
-    # "MiniMax/MiniMax-M2.1"
-    # "MiniMax/MiniMax-M2.7"
+    # "MiniMax-M2.1"
+    # "MiniMax-M2.5"
     # "deepseek-v3.2"
     # "deepseek-v3"
     "qwen3-vl-flash"
     "qwen-plus"
+    "qwen2.5-14b-instruct-1m"
+    "qwen3.5-flash"
+    "qwen3.5-plus"
+    "qwen3.5-27b"
 )
 
 # 遍历每个模型并执行命令
@@ -35,7 +40,7 @@ for MODEL in "${MODELS[@]}"; do
     # 例如：qwen2.5-14b-instruct-1m -> qwen2514binstruct1m
     #      MiniMax/MiniMax-M2.1 -> minimaxminimaxm21
     DIR_NAME="$(slugify_model_name "${MODEL}")"
-    RESULTS_DIR="results/skills/${DIR_NAME}"
+    RESULTS_DIR="${RESULTS_ROOT}/${DIR_NAME}"
 
     echo "=================================================="
     echo "🚀 开始运行模型: ${MODEL} ..."
@@ -46,7 +51,7 @@ for MODEL in "${MODELS[@]}"; do
         "${TASK_FILES[@]}" \
         --model "${MODEL}" \
         --approval-mode approve-all \
-        --workers 16 \
+        --workers 4 \
         --run-builder-validation \
         --strict \
         --quarantine-invalid \

@@ -57,6 +57,36 @@ class TaskBatchUnpackerTests(unittest.TestCase):
             payload["qa_result"] = {"total_score": total_score}
         return payload
 
+    def _build_inline_header_payload(self, task_id: str) -> dict[str, object]:
+        code_block = "\n".join(
+            [
+                f"```yaml tasks/{task_id}.yaml",
+                f"id: {task_id}",
+                "name: Inline Header Example",
+                "prompts:",
+                f"  - prompts/{task_id}.md",
+                "environment:",
+                f"  asset: {task_id}",
+                "skills:",
+                "  available:",
+                "runtime:",
+                "  model: gpt-4o",
+                "  mode: interactive",
+                "  memory_policy: default",
+                "  approval_mode: reject",
+                "  max_steps: 30",
+                "  temperature: 0.2",
+                "```",
+                f"```markdown tasks/prompts/{task_id}.md",
+                "Use docs/input.txt",
+                "```",
+                f"```python skills/{task_id}/inline_tool.py",
+                "print('inline')",
+                "```",
+            ]
+        )
+        return {"raw_output": code_block}
+
     def test_unpack_jsonl_records_preserves_duplicate_task_ids_across_records(self) -> None:
         payload = self._build_payload("data_01")
         self.jsonl_path.write_text(
@@ -164,6 +194,72 @@ class TaskBatchUnpackerTests(unittest.TestCase):
         self.assertTrue((self.unpack_root / "record_0002" / "tasks" / "data_01.yaml").exists())
         self.assertTrue((self.unpack_root / "record_0002" / "skills" / "data_01" / "pdf_reader.md").exists())
         self.assertTrue((self.unpack_root / "record_0002" / "skills" / "data_01" / "pdf_reader.py").exists())
+
+    def test_unpack_jsonl_records_supports_inline_fence_paths_and_manifest_order(self) -> None:
+        first = self._build_inline_header_payload("data_01")
+        second = self._build_inline_header_payload("data_02")
+        self.jsonl_path.write_text(
+            json.dumps(first, ensure_ascii=False) + "\n" + json.dumps(second, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+
+        unpacked = unpack_jsonl_records(
+            [self.jsonl_path],
+            output_root=self.unpack_root,
+            max_records=2,
+            order_task_ids=["data_02", "data_01"],
+        )
+
+        self.assertEqual([item.record_id for item in unpacked], ["record_0001", "record_0002"])
+        data_02_yaml = self.unpack_root / "record_0001" / "tasks" / "data_02.yaml"
+        self.assertTrue(data_02_yaml.exists())
+        self.assertTrue(data_02_yaml.read_text(encoding="utf-8").startswith("id: data_02\n"))
+        self.assertTrue((self.unpack_root / "record_0001" / "skills" / "data_02" / "inline_tool.py").exists())
+        self.assertTrue((self.unpack_root / "record_0002" / "tasks" / "data_01.yaml").exists())
+
+    def test_unpack_jsonl_records_supports_path_before_fence_for_manifest_order(self) -> None:
+        payload = {
+            "raw_output": "\n".join(
+                [
+                    "### 1. `tasks/data_01.yaml`",
+                    "```yaml",
+                    "id: data_01",
+                    "name: Path Before Fence Example",
+                    "prompts:",
+                    "  - prompts/data_01.md",
+                    "environment:",
+                    "  asset: data_01",
+                    "skills:",
+                    "  available:",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "  mode: interactive",
+                    "  memory_policy: default",
+                    "  approval_mode: reject",
+                    "  max_steps: 30",
+                    "  temperature: 0.2",
+                    "```",
+                    "`skills/data_01/path_before_tool.py`",
+                    "```python",
+                    "print('path before fence')",
+                    "```",
+                ]
+            )
+        }
+        self.jsonl_path.write_text(json.dumps(payload, ensure_ascii=False) + "\n", encoding="utf-8")
+
+        unpacked = unpack_jsonl_records(
+            [self.jsonl_path],
+            output_root=self.unpack_root,
+            max_records=1,
+            order_task_ids=["data_01"],
+        )
+
+        self.assertEqual(len(unpacked), 1)
+        data_01_yaml = self.unpack_root / "record_0001" / "tasks" / "data_01.yaml"
+        self.assertTrue(data_01_yaml.exists())
+        self.assertTrue(data_01_yaml.read_text(encoding="utf-8").startswith("id: data_01\n"))
+        self.assertTrue((self.unpack_root / "record_0001" / "skills" / "data_01" / "path_before_tool.py").exists())
 
 
 if __name__ == "__main__":

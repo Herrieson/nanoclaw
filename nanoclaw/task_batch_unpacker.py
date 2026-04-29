@@ -7,7 +7,7 @@ from pathlib import Path
 import re
 
 
-CODE_BLOCK_PATTERN = re.compile(r"```[a-zA-Z]*\n([^\n]+)\n(.*?)```", re.DOTALL)
+CODE_BLOCK_PATTERN = re.compile(r"```(?P<header>[^\n`]*)\n(?P<body>.*?)```", re.DOTALL)
 ALLOWED_PATH_PREFIXES = ("tasks/", "skills/")
 
 
@@ -46,15 +46,12 @@ def unpack_jsonl_records(
     )
     unpacked: list[UnpackedRecord] = []
     for accepted, candidate in enumerate(candidates, start=1):
-        matches = CODE_BLOCK_PATTERN.findall(candidate.raw_output)
+        matches = _iter_code_blocks(candidate.raw_output)
         record_id = f"record_{accepted:04d}"
         record_root = resolved_output / record_id
         files_written = 0
         for relative_path, content in matches:
-            clean_relative = _clean_relative_path(relative_path)
-            if clean_relative is None:
-                continue
-            target_path = record_root / clean_relative
+            target_path = record_root / relative_path
             target_path.parent.mkdir(parents=True, exist_ok=True)
             target_path.write_text(content.strip() + "\n", encoding="utf-8")
             files_written += 1
@@ -160,12 +157,36 @@ def _extract_total_score(payload: dict[str, object]) -> float | None:
 
 
 def _extract_writable_blocks(raw_output: str) -> list[tuple[str, str]]:
+    return list(_iter_code_blocks(raw_output))
+
+
+def _iter_code_blocks(raw_output: str) -> list[tuple[str, str]]:
     blocks: list[tuple[str, str]] = []
-    for raw_path, content in CODE_BLOCK_PATTERN.findall(raw_output):
-        clean_path = _clean_relative_path(raw_path)
-        if clean_path is not None:
-            blocks.append((clean_path, content))
+    for match in CODE_BLOCK_PATTERN.finditer(raw_output):
+        header = match.group("header")
+        body = match.group("body")
+        header_path = _clean_relative_path(header)
+        if header_path is not None:
+            blocks.append((header_path, body))
+            continue
+
+        first_line, separator, remainder = body.partition("\n")
+        body_path = _clean_relative_path(first_line) if separator else None
+        if body_path is not None and separator:
+            blocks.append((body_path, remainder))
+            continue
+
+        preceding_path = _clean_relative_path(_previous_nonempty_line(raw_output, match.start()))
+        if preceding_path is not None:
+            blocks.append((preceding_path, body))
     return blocks
+
+
+def _previous_nonempty_line(raw_output: str, end: int) -> str:
+    prefix = raw_output[:end].rstrip()
+    if not prefix:
+        return ""
+    return prefix.rsplit("\n", maxsplit=1)[-1]
 
 
 def _clean_relative_path(raw_path: str) -> str | None:
@@ -176,6 +197,8 @@ def _clean_relative_path(raw_path: str) -> str | None:
         marker = cleaned.find(prefix)
         if marker >= 0:
             cleaned = cleaned[marker:]
+            cleaned = cleaned.split(maxsplit=1)[0]
+            cleaned = cleaned.strip().strip("`").rstrip(":")
             break
     else:
         return None

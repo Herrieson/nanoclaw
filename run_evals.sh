@@ -2,47 +2,37 @@
 
 set -u
 
-slugify_model_name() {
-    echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+//g'
-}
+RESULTS_ROOT="results/hard_100"
+RUN_GLOB="${RESULTS_ROOT}/*/data_round_01_hard_100_*/*"
+MANIFEST=".staging/round_01_hard_aligned_100/import_manifest.jsonl"
+OUTPUT_ROOT="results/hard_100_new_verifier_workplace_only"
 
-# 定义所有需要评估的模型名称数组，需与 run_tasks.sh 保持一致
-MODELS=(
-    # "minimaxminimaxm27"
-    # "minimaxminimaxm21"
-    # "deepseekv32"
-    # "deepseekv3"
-    "qwen3vlflash"
-    "qwenplus"
+VERIFIER_JSONLS=(
+    "doc/todo/gemini3_2000_score_new_verifier_hard_1.jsonl"
+    "doc/todo/gemini3_2000_score_new_verifier_hard_2.jsonl"
+    "doc/todo/gemini3_2000_score_new_verifier_hard_3.jsonl"
+    "doc/todo/gemini3_2000_score_new_verifier_hard_4.jsonl"
 )
 
-# 遍历每个模型并执行命令
-for MODEL in "${MODELS[@]}"; do
-    DIR_NAME="$(slugify_model_name "${MODEL}")"
-    RESULTS_DIR="results/skills/${DIR_NAME}"
+echo "=================================================="
+echo "🚀 开始评估 hard-100 任务"
+echo "📂 结果输入: ${RUN_GLOB}"
+echo "🧾 Manifest: ${MANIFEST}"
+echo "📂 评估输出: ${OUTPUT_ROOT}"
+echo "=================================================="
 
-    echo "=================================================="
-    echo "🚀 开始评估模型: ${MODEL} ..."
-    echo "📂 结果输入目录: ${RESULTS_DIR}"
-    echo "=================================================="
+uv run python scripts/evaluate_workplace_trace_tasks.py \
+    "${RUN_GLOB}" \
+    --verifier-jsonl "${VERIFIER_JSONLS[@]}" \
+    --manifest "${MANIFEST}" \
+    --components workplace \
+    --workers 16 \
+    --select-run-per-task latest-completed \
+    --output-root "${OUTPUT_ROOT}" \
+    --allow-issues
 
-    uv run python scripts/evaluate_generated_tasks.py \
-        "${RESULTS_DIR}/data_round_01_skills_*/*" \
-        --json-out "${RESULTS_DIR}/evaluation.json" \
-        --csv-out "${RESULTS_DIR}/evaluation.csv" \
-        --summary-out "${RESULTS_DIR}/evaluation_summary.json" \
-        --enable-judge \
-        --judge-model qwen3.5-27b \
-        --judge-max-attempts 2 \
-        --workers 32
-        
-    # 检查上一条命令是否执行成功
-    if [ $? -eq 0 ]; then
-        echo "✅ 模型 ${MODEL} 评估完成！"
-    else
-        echo "❌ 模型 ${MODEL} 评估出错，请检查日志。"
-    fi
-    echo ""
-done
-
-echo "🎉 所有模型的评估任务已全部执行完毕！"
+if [ $? -eq 0 ]; then
+    echo "✅ hard-100 新 verifier workplace 评估完成！"
+else
+    echo "❌ hard-100 新 verifier workplace 评估出错，请检查日志。"
+fi
