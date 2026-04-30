@@ -1,0 +1,50 @@
+id: openclaw
+type: docker
+image: nanoclaw-runner-openclaw:latest
+
+command:
+  - /opt/nanoclaw-adapter/run_task
+  - --task
+  - /input/task.md
+  - --resolved-task
+  - /input/resolved_task.json
+  - --workspace
+  - /workspace
+  - --output
+  - /output
+  - --state
+  - /state
+
+timeout_seconds: 900
+network: bridge
+workdir: /workspace
+
+env:
+  pass:
+    - OPENAI_API_KEY
+    - ANTHROPIC_API_KEY
+    - GOOGLE_API_KEY
+    - GEMINI_API_KEY
+    - OPENROUTER_API_KEY
+    - CUSTOM_API_KEY
+    - OPENAI_BASE_URL
+    - NANOCLAW_BASE_URL
+    - NANOCLAW_MODEL
+    - NANOCLAW_OPENCLAW_CLI
+    - NANOCLAW_OPENCLAW_AGENT
+    - NANOCLAW_OPENCLAW_SESSION_ID
+    - NANOCLAW_OPENCLAW_THINKING
+    - NANOCLAW_OPENCLAW_VERBOSE
+    - NANOCLAW_OPENCLAW_TIMEOUT
+    - NANOCLAW_OPENCLAW_AUTO_ONBOARD
+    - NANOCLAW_OPENCLAW_INCLUDE_PRIOR_MESSAGES
+    - NANOCLAW_OPENCLAW_ISOLATED_HOME
+    - NANOCLAW_OPENCLAW_HOME
+    - NANOCLAW_OPENCLAW_CUSTOM_COMPATIBILITY
+  set:
+    NANOCLAW_RUNNER_FRAMEWORK: openclaw
+
+resources:
+  cpus: "2"
+  memory: 4g
+  pids_limit: 512

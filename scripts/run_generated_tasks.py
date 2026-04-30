@@ -77,6 +77,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Override runtime.approval_mode for this batch. If omitted, use the task YAML value.",
     )
     parser.add_argument(
+        "--runner-profile",
+        default=None,
+        help=(
+            "Optional runner profile YAML. Defaults to the built-in nanoclaw runner; "
+            "docker profiles execute tasks in containerized agent frameworks."
+        ),
+    )
+    parser.add_argument(
         "--skip-validation",
         action="store_true",
         help="Do not validate generated tasks before running them.",
@@ -203,6 +211,15 @@ def resolve_output_path(path_value: str | None, *, default_path: Path) -> Path:
     return path
 
 
+def resolve_optional_input_path(path_value: str | None) -> Path | None:
+    if not path_value:
+        return None
+    path = Path(path_value)
+    if not path.is_absolute():
+        path = (REPO_ROOT / path).resolve()
+    return path
+
+
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
@@ -211,6 +228,7 @@ def main() -> int:
         parser.error("No task files matched the provided paths.")
     results_dir = (REPO_ROOT / args.results_dir).resolve()
     isolated_assets_root = batch_assets_root(results_dir)
+    runner_profile_path = resolve_optional_input_path(args.runner_profile)
 
     if not args.skip_normalize:
         backup_root = Path(args.backup_root)
@@ -331,6 +349,7 @@ def main() -> int:
             workers=max(1, args.workers),
             cleanup_assets=not args.keep_assets,
             approval_mode=args.approval_mode,
+            runner_profile_path=runner_profile_path,
         )
 
     failed = [result for result in results if not result.success]

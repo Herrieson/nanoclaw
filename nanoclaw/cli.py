@@ -22,6 +22,7 @@ from .run_store import (
     write_final_answer,
     write_summary,
 )
+from .runners import RunnerRequest, build_runner, load_runner_profile
 from .session_store import append_session_message, load_session_messages
 from .skills import (
     SkillDefinition,
@@ -277,6 +278,14 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Auto-select skills by matching the resolved task prompt to skill metadata",
     )
+    run_task_parser.add_argument(
+        "--runner-profile",
+        default=None,
+        help=(
+            "Optional runner profile YAML. Defaults to the built-in nanoclaw runner; "
+            "docker profiles execute the task in a containerized agent framework."
+        ),
+    )
 
     return parser
 
@@ -463,6 +472,8 @@ def main() -> None:
         return
 
     if args.command == "run-task":
+        runner_profile = load_runner_profile(args.runner_profile)
+        runner = build_runner(runner_profile)
         task = load_task_definition(Path(args.task), settings)
         task_runtime = replace(
             task.runtime,
@@ -516,18 +527,20 @@ def main() -> None:
             temperature=task.runtime.temperature,
         )
 
-        agent = MinimalClaw(
+        _materialize_skill_pool(layout.workspace_dir, available_skills)
+        bootstrap_agent = MinimalClaw(
             task_settings,
             available_skills=available_skills,
             activated_skills=activated_skills,
         )
-        _materialize_skill_pool(layout.workspace_dir, available_skills)
-        agent.bootstrap_workspace()
+        bootstrap_agent.bootstrap_workspace()
+        bootstrapped_this_run = bootstrap_agent._bootstrapped_this_run
         snapshot_workspace(layout.workspace_dir, layout.before_dir)
 
         recorder = RunRecorder(layout)
         started_at = utc_now_iso()
         run_error: Exception | None = None
+        runner_result = None
         prior_messages = ()
         session_root = results_root / task.task_id
         if task_session:
@@ -539,13 +552,34 @@ def main() -> None:
             )
 
         try:
-            final_text = agent.run(
-                task.prompt,
-                echo=True,
-                event_handler=recorder.record_event,
-                prior_messages=prior_messages,
+            runner_result = runner.run(
+                RunnerRequest(
+                    task_id=task.task_id,
+                    run_id=layout.run_id,
+                    prompt=task.prompt,
+                    resolved_task=resolved_payload,
+                    settings=task_settings,
+                    workspace_dir=layout.workspace_dir,
+                    run_dir=layout.run_dir,
+                    input_dir=layout.run_dir / "runner_input",
+                    output_dir=layout.run_dir / "runner_output",
+                    state_dir=layout.run_dir / "runner_state",
+                    trace_path=layout.trace_path,
+                    approval_log_path=layout.approval_log_path,
+                    available_skills=available_skills,
+                    activated_skills=activated_skills,
+                    prior_messages=prior_messages,
+                    event_handler=recorder.record_event,
+                    echo=True,
+                    bootstrapped_this_run=bootstrapped_this_run,
+                )
             )
+            final_text = runner_result.final_answer
+            if final_text is None:
+                final_text = runner_result.error or ""
             write_final_answer(layout.final_answer_path, final_text)
+            if runner_result.status != "completed":
+                run_error = RuntimeError(runner_result.error or "Task runner failed")
         except Exception as exc:
             run_error = exc
             failure_text = f"{type(exc).__name__}: {exc}"
@@ -553,12 +587,11 @@ def main() -> None:
         finally:
             snapshot_workspace(layout.workspace_dir, layout.after_dir)
             finished_at = utc_now_iso()
-            report = agent.last_run_report
             if (
                 task_session
-                and report
-                and report.status == "completed"
-                and report.result_type == "final_answer"
+                and runner_result
+                and runner_result.status == "completed"
+                and runner_result.result_type == "final_answer"
             ):
                 append_session_message(
                     session_root,
@@ -566,13 +599,13 @@ def main() -> None:
                     role="user",
                     content=task.prompt,
                 )
-                if report.final_answer:
+                if runner_result.final_answer:
                     append_session_message(
                         session_root,
                         task_session,
                         role="assistant",
-                        content=report.final_answer,
-                        result_type=report.result_type,
+                        content=runner_result.final_answer,
+                        result_type=runner_result.result_type,
                     )
             summary = {
                 "task_id": task.task_id,
@@ -583,9 +616,13 @@ def main() -> None:
                 "task_file": str(task.source_path),
                 "run_id": layout.run_id,
                 "result_dir": str(layout.run_dir),
-                "status": report.status if report else "failed",
-                "result_type": report.result_type if report else "failure",
-                "error": report.error if report else None,
+                "status": runner_result.status if runner_result else "failed",
+                "result_type": runner_result.result_type if runner_result else "failure",
+                "error": (
+                    runner_result.error
+                    if runner_result
+                    else (str(run_error) if run_error is not None else None)
+                ),
                 "model": task_settings.model,
                 "max_steps": task_settings.max_steps,
                 "temperature": task_settings.temperature,
@@ -593,8 +630,21 @@ def main() -> None:
                 "memory_policy": task_settings.memory_policy,
                 "approval_mode": task_settings.approval_mode,
                 "session": task_session,
-                "workspace_context_files": list(agent.last_workspace_context_files),
-                "runtime_metadata": agent.last_runtime_metadata,
+                "workspace_context_files": (
+                    list(runner_result.workspace_context_files)
+                    if runner_result
+                    else []
+                ),
+                "runtime_metadata": (
+                    runner_result.runtime_metadata if runner_result else {}
+                ),
+                "runner": runner_result.runner_metadata if runner_result else {
+                    "id": runner_profile.profile_id,
+                    "type": runner_profile.runner_type,
+                    "profile": str(runner_profile.source_path)
+                    if runner_profile.source_path
+                    else None,
+                },
                 "skills": {
                     "available": [
                         serialize_skill(skill) for skill in available_skills
@@ -605,7 +655,7 @@ def main() -> None:
                         serialize_skill(skill) for skill in activated_skills
                     ],
                 },
-                "steps_used": report.steps_used if report else 0,
+                "steps_used": runner_result.steps_used if runner_result else 0,
                 "started_at": started_at,
                 "finished_at": finished_at,
                 "final_answer_file": layout.final_answer_path.name,

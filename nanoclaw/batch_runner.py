@@ -22,6 +22,7 @@ from .run_store import (
     write_final_answer,
     write_summary,
 )
+from .runners import RunnerRequest, build_runner, load_runner_profile
 from .skills import (
     auto_select_skills,
     discover_skills,
@@ -284,6 +285,7 @@ def run_single_task(
     model: str | None,
     cleanup_assets: bool,
     approval_mode: str | None,
+    runner_profile_path: Path | None,
 ) -> BatchTaskResult:
     stdout = ""
     stderr = ""
@@ -299,6 +301,7 @@ def run_single_task(
                 assets_root=assets_root,
                 model=model,
                 approval_mode=approval_mode,
+                runner_profile_path=runner_profile_path,
             )
             stdout = f"Run dir: {run_dir}\n"
             return BatchTaskResult(
@@ -325,6 +328,8 @@ def run_single_task(
             command.extend(["--model", model])
         if approval_mode:
             command.extend(["--approval-mode", approval_mode])
+        if runner_profile_path is not None:
+            command.extend(["--runner-profile", str(runner_profile_path)])
         process = subprocess.run(
             command,
             cwd=repo_root,
@@ -368,6 +373,7 @@ def run_batch(
     workers: int,
     cleanup_assets: bool,
     approval_mode: str | None,
+    runner_profile_path: Path | None = None,
 ) -> list[BatchTaskResult]:
     tracker = ProgressTracker(total=len(specs))
     tracker.start()
@@ -384,6 +390,7 @@ def run_batch(
                 model=model,
                 cleanup_assets=cleanup_assets,
                 approval_mode=approval_mode,
+                runner_profile_path=runner_profile_path,
             ): spec
             for spec in specs
         }
@@ -415,8 +422,11 @@ def _run_multi_turn_task(
     assets_root: Path | None,
     model: str | None,
     approval_mode: str | None,
+    runner_profile_path: Path | None,
 ) -> Path:
     settings = Settings.from_env()
+    runner_profile = load_runner_profile(runner_profile_path)
+    runner = build_runner(runner_profile)
     task = load_task_definition(spec.task_path, settings)
     task_runtime = replace(
         task.runtime,
@@ -454,13 +464,14 @@ def _run_multi_turn_task(
         temperature=task.runtime.temperature,
     )
 
-    agent = MinimalClaw(
+    _materialize_skill_pool(layout.workspace_dir, available_skills)
+    bootstrap_agent = MinimalClaw(
         task_settings,
         available_skills=available_skills,
         activated_skills=activated_skills,
     )
-    _materialize_skill_pool(layout.workspace_dir, available_skills)
-    agent.bootstrap_workspace()
+    bootstrap_agent.bootstrap_workspace()
+    bootstrapped_this_run = bootstrap_agent._bootstrapped_this_run
     snapshot_workspace(layout.workspace_dir, layout.before_dir)
 
     recorder = RunRecorder(layout)
@@ -471,6 +482,16 @@ def _run_multi_turn_task(
     final_texts: list[str] = []
     total_steps_used = 0
     final_report = None
+    final_workspace_context_files: tuple[str, ...] = ()
+    final_runtime_metadata: dict[str, object] = {}
+    final_runner_metadata: dict[str, object] = {
+        "id": runner_profile.profile_id,
+        "type": runner_profile.runner_type,
+        "profile": str(runner_profile.source_path) if runner_profile.source_path else None,
+    }
+    resolved_payload = task.resolved_payload(
+        activated_skills=tuple(serialize_skill(skill) for skill in activated_skills)
+    )
 
     try:
         for index, session in enumerate(task.sessions):
@@ -488,17 +509,40 @@ def _run_multi_turn_task(
             recorder.record_event({"type": "turn_started", "turn": session.turn})
             turn_error: str | None = None
             turn_final_answer_path = layout.run_dir / f"final_answer_turn_{session.turn}.md"
+            runner_result = None
             try:
-                final_text = agent.run(
-                    session.prompt,
-                    echo=False,
-                    event_handler=recorder.record_event,
-                    prior_messages=tuple(prior_messages),
+                runner_result = runner.run(
+                    RunnerRequest(
+                        task_id=task.task_id,
+                        run_id=layout.run_id,
+                        prompt=session.prompt,
+                        resolved_task=resolved_payload,
+                        settings=task_settings,
+                        workspace_dir=layout.workspace_dir,
+                        run_dir=layout.run_dir,
+                        input_dir=layout.run_dir / f"runner_input_turn_{session.turn}",
+                        output_dir=layout.run_dir / f"runner_output_turn_{session.turn}",
+                        state_dir=layout.run_dir / "runner_state",
+                        trace_path=layout.trace_path,
+                        approval_log_path=layout.approval_log_path,
+                        available_skills=available_skills,
+                        activated_skills=activated_skills,
+                        prior_messages=tuple(prior_messages),
+                        event_handler=recorder.record_event,
+                        echo=False,
+                        turn=session.turn,
+                        bootstrapped_this_run=bootstrapped_this_run and index == 0,
+                    )
                 )
+                final_text = runner_result.final_answer or runner_result.error or ""
                 final_texts.append(f"## Turn {session.turn}\n\n{final_text}")
                 write_final_answer(turn_final_answer_path, final_text)
-                prior_messages.append({"role": "user", "content": session.prompt})
-                prior_messages.append({"role": "assistant", "content": final_text})
+                if runner_result.status == "completed":
+                    prior_messages.append({"role": "user", "content": session.prompt})
+                    prior_messages.append({"role": "assistant", "content": final_text})
+                else:
+                    turn_error = runner_result.error or "Task runner failed"
+                    run_error = RuntimeError(turn_error)
             except Exception as exc:
                 run_error = exc
                 turn_error = f"{type(exc).__name__}: {exc}"
@@ -506,19 +550,21 @@ def _run_multi_turn_task(
                 final_texts.append(f"## Turn {session.turn}\n\n{turn_error}")
                 write_final_answer(turn_final_answer_path, turn_error)
 
-            report = agent.last_run_report
-            final_report = report
-            if report is not None:
-                total_steps_used += report.steps_used
+            if runner_result is not None:
+                final_report = runner_result
+                total_steps_used += runner_result.steps_used
+                final_workspace_context_files = runner_result.workspace_context_files
+                final_runtime_metadata = dict(runner_result.runtime_metadata)
+                final_runner_metadata = dict(runner_result.runner_metadata)
             turn_after_dir = _turn_after_dir(layout.run_dir, session.turn)
             snapshot_workspace(layout.workspace_dir, turn_after_dir)
             turn_summary = {
                 "turn": session.turn,
                 "prompt_source": session.prompt_source,
-                "status": report.status if report else "failed",
-                "result_type": report.result_type if report else "failure",
-                "error": turn_error or (report.error if report else None),
-                "steps_used": report.steps_used if report else 0,
+                "status": runner_result.status if runner_result else "failed",
+                "result_type": runner_result.result_type if runner_result else "failure",
+                "error": turn_error or (runner_result.error if runner_result else None),
+                "steps_used": runner_result.steps_used if runner_result else 0,
                 "final_answer_file": turn_final_answer_path.name,
                 "after_state_dir": turn_after_dir.name,
             }
@@ -545,7 +591,11 @@ def _run_multi_turn_task(
             "run_id": layout.run_id,
             "result_dir": str(layout.run_dir),
             "status": "completed" if all_completed else "failed",
-            "result_type": final_report.result_type if final_report else "failure",
+            "result_type": (
+                "failure"
+                if run_error is not None
+                else (final_report.result_type if final_report else "failure")
+            ),
             "error": str(run_error) if run_error is not None else None,
             "model": task_settings.model,
             "max_steps": task_settings.max_steps,
@@ -555,8 +605,9 @@ def _run_multi_turn_task(
             "approval_mode": task_settings.approval_mode,
             "session": task.runtime.session,
             "turns": turn_summaries,
-            "workspace_context_files": list(agent.last_workspace_context_files),
-            "runtime_metadata": agent.last_runtime_metadata,
+            "workspace_context_files": list(final_workspace_context_files),
+            "runtime_metadata": final_runtime_metadata,
+            "runner": final_runner_metadata,
             "skills": {
                 "available": [serialize_skill(skill) for skill in available_skills],
                 "requested": list(task.skills.include),

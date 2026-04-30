@@ -1,0 +1,59 @@
+id: hermes
+type: docker
+image: nanoclaw-runner-hermes:latest
+
+command:
+  - /opt/nanoclaw-adapter/run_task
+  - --task
+  - /input/task.md
+  - --resolved-task
+  - /input/resolved_task.json
+  - --workspace
+  - /workspace
+  - --output
+  - /output
+  - --state
+  - /state
+
+timeout_seconds: 900
+network: bridge
+workdir: /workspace
+
+env:
+  pass:
+    - OPENAI_API_KEY
+    - OPENAI_BASE_URL
+    - ANTHROPIC_API_KEY
+    - GOOGLE_API_KEY
+    - GEMINI_API_KEY
+    - OPENROUTER_API_KEY
+    - TOGETHER_API_KEY
+    - GROQ_API_KEY
+    - DEEPSEEK_API_KEY
+    - XAI_API_KEY
+    - NANOCLAW_BASE_URL
+    - NANOCLAW_MODEL
+    - NANOCLAW_HERMES_CLI
+    - NANOCLAW_HERMES_MODE
+    - NANOCLAW_HERMES_MODEL
+    - NANOCLAW_HERMES_PROVIDER
+    - NANOCLAW_HERMES_TOOLSETS
+    - NANOCLAW_HERMES_SKILLS
+    - NANOCLAW_HERMES_MAX_TURNS
+    - NANOCLAW_HERMES_SOURCE
+    - NANOCLAW_HERMES_RESUME
+    - NANOCLAW_HERMES_CONTINUE
+    - NANOCLAW_HERMES_YOLO
+    - NANOCLAW_HERMES_IGNORE_USER_CONFIG
+    - NANOCLAW_HERMES_IGNORE_RULES
+    - NANOCLAW_HERMES_INCLUDE_PRIOR_MESSAGES
+    - HERMES_INFERENCE_PROVIDER
+    - HERMES_INFERENCE_MODEL
+  set:
+    NANOCLAW_RUNNER_FRAMEWORK: hermes
+    HERMES_HOME: /state
+
+resources:
+  cpus: "2"
+  memory: 4g
+  pids_limit: 512

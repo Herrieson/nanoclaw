@@ -458,6 +458,156 @@ MEMORY.md
 active_task.md
 ```
 
+## 8) Run tasks with an external agent framework
+
+`nanoclaw` can also act as a benchmark orchestrator for a real agent framework running
+inside Docker. In this mode, `nanoclaw` still owns task loading, asset setup, run
+directories, snapshots, summaries, and evaluation; the containerized framework owns
+the actual agent loop.
+
+The current external runners are:
+
+| Framework | Base image | Local image | Runner profile |
+| --- | --- | --- | --- |
+| OpenClaw | `ghcr.io/openclaw/openclaw:latest` | `nanoclaw-runner-openclaw:latest` | `runner_profiles/openclaw.yaml` |
+| Hermes Agent | `nousresearch/hermes-agent:latest` | `nanoclaw-runner-hermes:latest` | `runner_profiles/hermes.yaml` |
+
+Build the runner images:
+
+```bash
+docker build -t nanoclaw-runner-openclaw:latest docker/openclaw-runner
+docker build -t nanoclaw-runner-hermes:latest docker/hermes-runner
+```
+
+If Docker Hub returns `429 Too Many Requests` while building the Hermes image,
+run `docker login` and retry the build. The OpenClaw image is hosted on GHCR; the
+Hermes image is currently pulled from Docker Hub.
+
+Run one task with a real framework:
+
+```bash
+OPENAI_API_KEY=... \
+uv run python main.py run-task \
+  --task tasks/my_task.yaml \
+  --runner-profile runner_profiles/openclaw.yaml
+
+OPENAI_API_KEY=... \
+uv run python main.py run-task \
+  --task tasks/my_task.yaml \
+  --runner-profile runner_profiles/hermes.yaml
+```
+
+Batch runs use the same `--runner-profile` flag:
+
+```bash
+OPENAI_API_KEY=... \
+uv run python scripts/run_generated_tasks.py \
+  tasks/data_round_01_*.yaml \
+  --runner-profile runner_profiles/openclaw.yaml \
+  --results-dir results/openclaw_base
+
+OPENAI_API_KEY=... \
+uv run python scripts/run_generated_tasks.py \
+  tasks/data_round_01_*.yaml \
+  --runner-profile runner_profiles/hermes.yaml \
+  --results-dir results/hermes_base
+```
+
+A Docker runner profile declares the image, adapter command, timeout, resource
+limits, network mode, and environment variables that may be passed from the host.
+The task YAML remains framework-agnostic; framework selection happens at runtime
+through `--runner-profile`.
+
+### Runner adapter contract
+
+Each framework image only adds `/opt/nanoclaw-adapter/run_task` on top of the
+official framework image. The adapter receives mounted nanoclaw inputs and writes
+normalized outputs:
+
+```text
+/workspace/                 writable task workspace
+/input/task.md              current prompt
+/input/resolved_task.json   resolved task metadata
+/input/prior_messages.json  prior turn/session messages
+/input/runner_request.json  runtime metadata
+/output/final_answer.md     required final answer
+/output/trace.jsonl         normalized runner trace events
+/output/*_stdout.log        raw framework stdout
+/output/*_stderr.log        raw framework stderr
+/output/runner_metadata.json adapter/framework metadata
+/state/                     writable runner state, reused across turns
+```
+
+`nanoclaw` records Docker stdout/stderr, Docker inspect output, runner events,
+`workspace_before/`, `workspace_after/`, `final_answer.md`, `trace.jsonl`, and
+runner metadata in `summary.json`. The container is removed after the run by default.
+
+Multi-turn runs do not keep containers alive. Instead, `nanoclaw` reuses `/state`
+across turns, so framework config, sessions, and cache can persist while each turn
+still starts from a clean container process.
+
+### OpenClaw runner
+
+The OpenClaw runner extends the official `ghcr.io/openclaw/openclaw:latest` image.
+Its adapter calls:
+
+```text
+openclaw agent --local --message <task prompt> --json --session-id <run session> --model <model>
+```
+
+Common OpenClaw settings:
+
+- `NANOCLAW_MODEL`: passed as OpenClaw `--model`; defaults to the task/runtime model
+- `NANOCLAW_BASE_URL`: copied to `OPENAI_BASE_URL` for OpenAI-compatible endpoints
+- `NANOCLAW_OPENCLAW_AGENT`: pass `--agent <id>` instead of `--session-id`
+- `NANOCLAW_OPENCLAW_THINKING`: pass `--thinking <level>`
+- `NANOCLAW_OPENCLAW_TIMEOUT`: pass OpenClaw `--timeout <seconds>`
+- `NANOCLAW_OPENCLAW_VERBOSE`: pass OpenClaw `--verbose on|off`; `1` maps to `on`
+- `NANOCLAW_OPENCLAW_INCLUDE_PRIOR_MESSAGES=1`: include prior turn messages in the prompt body
+- `NANOCLAW_OPENCLAW_AUTO_ONBOARD=0`: skip adapter-managed non-interactive onboarding
+- `NANOCLAW_OPENCLAW_ISOLATED_HOME=0`: use the image's existing OpenClaw home/config
+
+By default the adapter isolates OpenClaw home/config/cache under `/state`. When
+`OPENAI_API_KEY` is available and OpenClaw has not yet been configured in `/state`,
+the adapter attempts a non-interactive local OpenClaw onboarding step before the
+task run. For a custom OpenAI-compatible endpoint, pass `NANOCLAW_BASE_URL`,
+`NANOCLAW_MODEL`, and `OPENAI_API_KEY` or `CUSTOM_API_KEY`.
+
+### Hermes runner
+
+The Hermes runner extends the official `nousresearch/hermes-agent:latest` image.
+Its adapter defaults to Hermes one-shot mode:
+
+```text
+hermes -z <task prompt>
+```
+
+This mode returns only the final response on stdout. If `NANOCLAW_HERMES_TOOLSETS`,
+`NANOCLAW_HERMES_SKILLS`, `NANOCLAW_HERMES_MAX_TURNS`, `NANOCLAW_HERMES_SOURCE`,
+`NANOCLAW_HERMES_RESUME`, or `NANOCLAW_HERMES_CONTINUE` is set, the adapter switches
+to chat mode:
+
+```text
+hermes chat --quiet -q <task prompt>
+```
+
+Common Hermes settings:
+
+- `NANOCLAW_MODEL`: copied to `HERMES_INFERENCE_MODEL` and passed as `--model`
+- `NANOCLAW_BASE_URL`: copied to `OPENAI_BASE_URL` for OpenAI-compatible endpoints
+- `NANOCLAW_HERMES_PROVIDER`: copied to `HERMES_INFERENCE_PROVIDER` and passed as `--provider`
+- `NANOCLAW_HERMES_MODEL`: override the Hermes model independently of `NANOCLAW_MODEL`
+- `NANOCLAW_HERMES_MODE=chat|oneshot`: force the adapter mode
+- `NANOCLAW_HERMES_TOOLSETS`: pass Hermes `--toolsets`
+- `NANOCLAW_HERMES_SKILLS`: pass Hermes `--skills`
+- `NANOCLAW_HERMES_MAX_TURNS`: pass Hermes `--max-turns`
+- `NANOCLAW_HERMES_YOLO=1`: pass Hermes `--yolo`
+- `NANOCLAW_HERMES_IGNORE_USER_CONFIG=1`: pass Hermes `--ignore-user-config`
+- `NANOCLAW_HERMES_IGNORE_RULES=1`: pass Hermes `--ignore-rules`
+- `NANOCLAW_HERMES_INCLUDE_PRIOR_MESSAGES=0`: do not include prior turn messages in the prompt body
+
+Hermes state is stored under `/state` by setting `HERMES_HOME=/state`.
+
 ## Environment variables
 
 - `OPENAI_API_KEY`: required when `NANOCLAW_BASE_URL` is not set
