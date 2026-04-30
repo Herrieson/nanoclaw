@@ -38,6 +38,13 @@ class TaskSkills:
 
 
 @dataclass(frozen=True, slots=True)
+class TaskSession:
+    turn: int
+    prompt: str
+    prompt_source: str
+
+
+@dataclass(frozen=True, slots=True)
 class TaskDefinition:
     source_path: Path
     source_text: str
@@ -47,6 +54,7 @@ class TaskDefinition:
     asset: str
     prompt: str
     prompt_sources: tuple[str, ...]
+    sessions: tuple[TaskSession, ...]
     skills: TaskSkills
     runtime: TaskRuntime
 
@@ -64,6 +72,14 @@ class TaskDefinition:
                 "sources": list(self.prompt_sources),
                 "prompt": self.prompt,
             },
+            "sessions": [
+                {
+                    "turn": session.turn,
+                    "prompt_source": session.prompt_source,
+                    "prompt": session.prompt,
+                }
+                for session in self.sessions
+            ],
             "environment": {
                 "asset": self.asset,
                 "workspace_context_files": list(self.runtime.workspace_context_files),
@@ -380,14 +396,23 @@ def _load_prompt_sources(
 ) -> tuple[str, tuple[str, ...]]:
     legacy_task = payload.get("task")
     prompts_block = payload.get("prompts")
+    sessions_block = payload.get("sessions")
 
     if legacy_task is not None and prompts_block is not None:
         raise ValueError("Use either top-level 'prompts' or legacy 'task', not both")
-    if legacy_task is None and prompts_block is None:
+    if legacy_task is None and prompts_block is None and sessions_block is None:
         raise ValueError("Task must define either top-level 'prompts' or legacy 'task'")
 
     if prompts_block is not None:
         return _load_prompt_bundle(prompts_block, source_path=source_path)
+    if sessions_block is not None:
+        sessions = _load_sessions(sessions_block, source_path=source_path)
+        if not sessions:
+            raise ValueError("Field 'sessions' cannot be empty")
+        return (
+            "\n\n".join(session.prompt.rstrip() for session in sessions if session.prompt.strip()),
+            tuple(session.prompt_source for session in sessions),
+        )
 
     task_block = _require_mapping(legacy_task, "task")
     prompt_inline = _optional_string(task_block.get("prompt"), "task.prompt")
@@ -399,6 +424,44 @@ def _load_prompt_sources(
         prompt_text, prompt_source = _read_prompt_file(source_path, prompt_file_raw)
         return prompt_text, (prompt_source,)
     return prompt_inline or "", ("<inline>",)
+
+
+def _load_sessions(value: Any, *, source_path: Path) -> tuple[TaskSession, ...]:
+    if value is None:
+        return ()
+    if not isinstance(value, list):
+        raise ValueError("Field 'sessions' must be a list")
+
+    sessions: list[TaskSession] = []
+    seen_turns: set[int] = set()
+    for index, item in enumerate(value, start=1):
+        if not isinstance(item, dict):
+            raise ValueError(f"Field 'sessions[{index}]' must be a mapping")
+        turn_raw = item.get("turn")
+        try:
+            turn = int(turn_raw)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"Field 'sessions[{index}].turn' must be an integer") from exc
+        if turn <= 0:
+            raise ValueError(f"Field 'sessions[{index}].turn' must be positive")
+        if turn in seen_turns:
+            raise ValueError(f"Duplicate session turn: {turn}")
+        seen_turns.add(turn)
+
+        prompt_file_raw = _optional_string(item.get("prompt"), f"sessions[{index}].prompt")
+        inline_raw = _optional_string(item.get("inline"), f"sessions[{index}].inline")
+        if bool(prompt_file_raw) == bool(inline_raw):
+            raise ValueError(
+                f"Field 'sessions[{index}]' must define exactly one of 'prompt' or 'inline'"
+            )
+        if prompt_file_raw:
+            prompt_text, prompt_source = _read_prompt_file(source_path, prompt_file_raw)
+        else:
+            prompt_text = inline_raw or ""
+            prompt_source = f"<session:{turn}:inline>"
+        sessions.append(TaskSession(turn=turn, prompt=prompt_text, prompt_source=prompt_source))
+
+    return tuple(sorted(sessions, key=lambda session: session.turn))
 
 
 def _load_prompt_bundle(value: Any, *, source_path: Path) -> tuple[str, tuple[str, ...]]:
@@ -461,7 +524,8 @@ def _load_prompt_bundle(value: Any, *, source_path: Path) -> tuple[str, tuple[st
 
 
 def _read_prompt_file(source_path: Path, relative_path: str) -> tuple[str, str]:
-    prompt_path = (source_path.parent / relative_path).resolve()
+    normalized_relative = relative_path.strip().replace("tasks/prompts/", "prompts/")
+    prompt_path = (source_path.parent / normalized_relative).resolve()
     if not prompt_path.exists():
         raise FileNotFoundError(
             f"Task prompt file not found: {relative_path} ({prompt_path})"
@@ -503,6 +567,7 @@ def load_task_definition(task_path: Path, settings: Settings) -> TaskDefinition:
     name = _optional_string(payload.get("name"), "name") or task_id
     description = _optional_string(payload.get("description"), "description")
     prompt, prompt_sources = _load_prompt_sources(payload, source_path=source_path)
+    sessions = _load_sessions(payload.get("sessions"), source_path=source_path)
     asset, environment_workspace_context = _load_environment(payload)
     skills = _load_task_skills(payload.get("skills"))
 
@@ -548,6 +613,7 @@ def load_task_definition(task_path: Path, settings: Settings) -> TaskDefinition:
         asset=asset,
         prompt=prompt,
         prompt_sources=prompt_sources,
+        sessions=sessions,
         skills=skills,
         runtime=runtime,
     )

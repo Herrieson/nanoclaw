@@ -22,6 +22,7 @@ SUPPORTED_RUNTIME_KEYS = frozenset(
         "workspace_context_files",
         "max_steps",
         "temperature",
+        "assets",
     }
 )
 SUPPORTED_SKILL_KEYS = frozenset({"available", "include", "auto"})
@@ -142,6 +143,18 @@ def _normalize_prompt_sources(
         if isinstance(prompts, dict):
             return prompts
 
+    sessions = payload.get("sessions")
+    if isinstance(sessions, list):
+        session_prompts: list[str] = []
+        for item in sessions:
+            if not isinstance(item, dict):
+                continue
+            prompt = item.get("prompt")
+            if isinstance(prompt, str) and prompt.strip():
+                session_prompts.append(_normalize_prompt_reference(prompt))
+        if session_prompts:
+            return session_prompts
+
     legacy_task = payload.get("task")
     if isinstance(legacy_task, dict):
         task_file = legacy_task.get("task_file")
@@ -158,6 +171,13 @@ def _normalize_prompt_sources(
     raise FileNotFoundError(
         f"Unable to infer prompt source for {source_path}; expected {prompt_path}"
     )
+
+
+def _normalize_prompt_reference(value: str) -> str:
+    normalized = value.strip().replace("tasks/prompts/", "prompts/")
+    if "/" not in normalized and Path(normalized).suffix.lower() != ".md":
+        return f"prompts/{normalized}.md"
+    return normalized
 
 
 def _normalize_environment(payload: dict[str, Any], *, task_id: str) -> dict[str, Any]:

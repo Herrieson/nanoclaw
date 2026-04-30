@@ -31,6 +31,13 @@ _SCORE_TAG_PATTERN = re.compile(r"<score>\s*([0-9]+(?:\.[0-9]+)?)\s*</score>", r
 
 
 @dataclass(frozen=True, slots=True)
+class TurnVerifier:
+    turn: int
+    workplace_script: str | None
+    trace_prompt: str | None
+
+
+@dataclass(frozen=True, slots=True)
 class WorkplaceTraceVerifier:
     source_task_id: str
     imported_task_id: str
@@ -38,6 +45,7 @@ class WorkplaceTraceVerifier:
     source_line: int
     workplace_script: str | None
     trace_prompt: str | None
+    turn_verifiers: tuple[TurnVerifier, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -222,7 +230,7 @@ def load_verifier_bundle(
                 if raw_output is None:
                     continue
                 blocks = extract_file_blocks(raw_output)
-                source_task_id = _find_source_task_id(blocks)
+                source_task_id = _find_source_task_id(blocks) or _extract_payload_task_id(payload)
                 if source_task_id is None:
                     continue
                 imported_task_id = source_to_imported.get(source_task_id)
@@ -250,6 +258,7 @@ def load_verifier_bundle(
                             f"tasks/{source_task_id}/verify_prompt.md",
                         ],
                     ),
+                    turn_verifiers=_extract_turn_verifiers(blocks, source_task_id=source_task_id),
                 )
 
     return VerifierBundle(
@@ -362,6 +371,7 @@ def evaluate_workplace_trace_run(
             judge_config=judge_config,
         )
 
+    turn_workspace_after_dirs = _load_turn_workspace_after_dirs(summary, run_dir=resolved_run_dir)
     workplace_status = "not_requested"
     workplace_score = None
     workplace_score_source = None
@@ -371,7 +381,29 @@ def evaluate_workplace_trace_run(
     workplace_stderr = ""
     workplace_error = None
     if components in {"full", "workplace"}:
-        if verifier.workplace_script is None:
+        if verifier.turn_verifiers:
+            (
+                workplace_score,
+                workplace_score_source,
+                workplace_data,
+                workplace_exit_code,
+                workplace_stdout,
+                workplace_stderr,
+                workplace_error,
+            ) = _execute_turn_workplace_verifiers(
+                verifier,
+                workspace_after=workspace_after,
+                turn_workspace_after_dirs=turn_workspace_after_dirs,
+                imported_task_id=task_id,
+                env_overrides=workplace_env or {},
+                timeout=workplace_timeout,
+            )
+            workplace_status = (
+                "evaluated"
+                if workplace_error is None and workplace_score is not None
+                else "workplace_error"
+            )
+        elif verifier.workplace_script is None:
             workplace_status = "missing_workplace_verifier"
             workplace_error = f"Missing verify_workplace.py for {task_id}"
         else:
@@ -443,8 +475,12 @@ def evaluate_workplace_trace_run(
         model=str(model) if isinstance(model, str) else None,
         verifier_source_path=verifier.source_path,
         verifier_source_line=verifier.source_line,
-        workplace_available=verifier.workplace_script is not None,
-        trace_available=verifier.trace_prompt is not None,
+        workplace_available=verifier.workplace_script is not None or any(
+            item.workplace_script is not None for item in verifier.turn_verifiers
+        ),
+        trace_available=verifier.trace_prompt is not None or any(
+            item.trace_prompt is not None for item in verifier.turn_verifiers
+        ),
         workplace_status=workplace_status,
         workplace_score=workplace_score,
         workplace_score_source=workplace_score_source,
@@ -629,16 +665,82 @@ def _summary_error(summary: dict[str, Any]) -> str | None:
     return str(error) if isinstance(error, str) and error.strip() else None
 
 
+def _load_turn_workspace_after_dirs(summary: dict[str, Any], *, run_dir: Path) -> dict[int, Path]:
+    turns = summary.get("turns")
+    if not isinstance(turns, list):
+        return {}
+
+    paths: dict[int, Path] = {}
+    for item in turns:
+        if not isinstance(item, dict):
+            continue
+        turn = _optional_positive_int(item.get("turn"))
+        after_state_dir = item.get("after_state_dir")
+        if turn is None or not isinstance(after_state_dir, str):
+            continue
+        relative = Path(after_state_dir.strip())
+        if (
+            not relative.parts
+            or relative.is_absolute()
+            or ".." in relative.parts
+            or len(relative.parts) != 1
+        ):
+            continue
+        paths[turn] = run_dir / relative
+    return paths
+
+
+def _optional_positive_int(value: Any) -> int | None:
+    try:
+        integer = int(value)
+    except (TypeError, ValueError):
+        return None
+    return integer if integer > 0 else None
+
+
 def _find_source_task_id(blocks: dict[str, str]) -> str | None:
     for relative_path in blocks:
         match = _TASK_YAML_PATTERN.fullmatch(relative_path)
         if match:
             return match.group(1)
     for relative_path in blocks:
-        match = re.fullmatch(r"scripts/(data_\d+)/(?:verify_workplace\.py|verify_trace\.md)", relative_path)
+        match = re.fullmatch(
+            r"scripts/(data_\d+)/(?:verify_workplace\.py|verify_trace\.md|verify_turn_\d+\.py|verify_trace_turn_\d+\.md)",
+            relative_path,
+        )
         if match:
             return match.group(1)
     return None
+
+
+def _extract_payload_task_id(payload: dict[str, Any]) -> str | None:
+    task_id = payload.get("task_id")
+    if isinstance(task_id, str) and re.fullmatch(r"data_\d+", task_id.strip()):
+        return task_id.strip()
+    return None
+
+
+def _extract_turn_verifiers(blocks: dict[str, str], *, source_task_id: str) -> tuple[TurnVerifier, ...]:
+    turns = sorted(
+        {
+            int(match.group(1))
+            for relative_path in blocks
+            if (
+                match := re.fullmatch(
+                    rf"scripts/{re.escape(source_task_id)}/verify_(?:trace_)?turn_(\d+)\.(?:py|md)",
+                    relative_path,
+                )
+            )
+        }
+    )
+    return tuple(
+        TurnVerifier(
+            turn=turn,
+            workplace_script=blocks.get(f"scripts/{source_task_id}/verify_turn_{turn}.py"),
+            trace_prompt=blocks.get(f"scripts/{source_task_id}/verify_trace_turn_{turn}.md"),
+        )
+        for turn in turns
+    )
 
 
 def _clean_relative_path(raw_path: str) -> str | None:
@@ -671,6 +773,126 @@ def _strip_outer_fence(content: str) -> str:
     while stripped.endswith("```"):
         stripped = stripped[:-3].rstrip()
     return stripped + "\n"
+
+
+def _execute_turn_workplace_verifiers(
+    verifier: WorkplaceTraceVerifier,
+    *,
+    workspace_after: Path,
+    turn_workspace_after_dirs: dict[int, Path],
+    imported_task_id: str,
+    env_overrides: dict[str, str],
+    timeout: float | None,
+) -> tuple[float | None, str | None, dict[str, Any] | None, int | None, str, str, str | None]:
+    turn_results: list[dict[str, Any]] = []
+    scores: list[float] = []
+    stdout_parts: list[str] = []
+    stderr_parts: list[str] = []
+    exit_codes: list[int] = []
+    errors: list[str] = []
+
+    for turn_verifier in verifier.turn_verifiers:
+        if turn_verifier.workplace_script is None:
+            errors.append(f"Missing verify_turn_{turn_verifier.turn}.py for {imported_task_id}")
+            turn_results.append(
+                {
+                    "turn": turn_verifier.turn,
+                    "score": None,
+                    "score_source": None,
+                    "error": errors[-1],
+                }
+            )
+            continue
+
+        turn_workspace_after = _select_turn_workspace_after(
+            turn_verifier.turn,
+            workspace_after=workspace_after,
+            turn_workspace_after_dirs=turn_workspace_after_dirs,
+        )
+        if not turn_workspace_after.exists():
+            errors.append(
+                f"turn {turn_verifier.turn}: missing workspace snapshot {turn_workspace_after}"
+            )
+            turn_results.append(
+                {
+                    "turn": turn_verifier.turn,
+                    "workspace_after_dir": turn_workspace_after.name,
+                    "score": None,
+                    "score_source": None,
+                    "error": errors[-1],
+                }
+            )
+            continue
+
+        execution = _execute_workplace_script(
+            script_text=turn_verifier.workplace_script,
+            workspace_after=turn_workspace_after,
+            imported_task_id=imported_task_id,
+            source_task_id=verifier.source_task_id,
+            env_overrides=env_overrides,
+            timeout=timeout,
+        )
+        if execution.exit_code is not None:
+            exit_codes.append(execution.exit_code)
+        if execution.stdout:
+            stdout_parts.append(f"--- turn {turn_verifier.turn} stdout ---\n{execution.stdout}")
+        if execution.stderr:
+            stderr_parts.append(f"--- turn {turn_verifier.turn} stderr ---\n{execution.stderr}")
+        score, score_source = _derive_component_score(execution.data, component_name="workplace")
+        if execution.error:
+            errors.append(f"turn {turn_verifier.turn}: {execution.error}")
+        if score is not None:
+            scores.append(score)
+        turn_results.append(
+            {
+                "turn": turn_verifier.turn,
+                "workspace_after_dir": turn_workspace_after.name,
+                "score": score,
+                "score_source": score_source,
+                "data": execution.data,
+                "exit_code": execution.exit_code,
+                "error": execution.error,
+            }
+        )
+
+    if len(scores) != len(verifier.turn_verifiers):
+        average_score = None
+        score_source = None
+    else:
+        average_score = round(sum(scores) / len(scores), 2) if scores else None
+        score_source = "multi_turn_workplace_average" if scores else None
+
+    data = {
+        "total_score": average_score,
+        "score_source": score_source,
+        "turns": turn_results,
+    }
+    exit_code = max(exit_codes) if exit_codes else None
+    error = "; ".join(errors) if errors else None
+    return (
+        average_score,
+        score_source,
+        data,
+        exit_code,
+        "\n".join(stdout_parts),
+        "\n".join(stderr_parts),
+        error,
+    )
+
+
+def _select_turn_workspace_after(
+    turn: int,
+    *,
+    workspace_after: Path,
+    turn_workspace_after_dirs: dict[int, Path],
+) -> Path:
+    configured = turn_workspace_after_dirs.get(turn)
+    if configured is not None:
+        return configured
+    conventional = workspace_after.parent / f"workspace_after_turn_{turn}"
+    if conventional.exists():
+        return conventional
+    return workspace_after
 
 
 def _execute_workplace_script(

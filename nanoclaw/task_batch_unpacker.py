@@ -8,7 +8,7 @@ import re
 
 
 CODE_BLOCK_PATTERN = re.compile(r"```(?P<header>[^\n`]*)\n(?P<body>.*?)```", re.DOTALL)
-ALLOWED_PATH_PREFIXES = ("tasks/", "skills/")
+ALLOWED_PATH_PREFIXES = ("tasks/", "skills/", "scripts/")
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,6 +23,7 @@ class _CandidateRecord:
     source_index: int
     raw_output: str
     total_score: float | None
+    task_id: str | None
 
 
 def unpack_jsonl_records(
@@ -46,7 +47,7 @@ def unpack_jsonl_records(
     )
     unpacked: list[UnpackedRecord] = []
     for accepted, candidate in enumerate(candidates, start=1):
-        matches = _iter_code_blocks(candidate.raw_output)
+        matches = _iter_code_blocks(candidate.raw_output, fallback_task_id=candidate.task_id)
         record_id = f"record_{accepted:04d}"
         record_root = resolved_output / record_id
         files_written = 0
@@ -101,7 +102,9 @@ def _load_candidates(
                 raw_output = _extract_raw_output(payload)
                 if raw_output is None:
                     continue
-                if not _extract_writable_blocks(raw_output):
+                task_id = _extract_task_id(payload)
+                writable_blocks = _iter_code_blocks(raw_output, fallback_task_id=task_id)
+                if not writable_blocks or not _has_nonempty_task_yaml(writable_blocks):
                     continue
                 global_index += 1
                 candidates.append(
@@ -109,6 +112,7 @@ def _load_candidates(
                         source_index=global_index,
                         raw_output=raw_output,
                         total_score=_extract_total_score(payload),
+                        task_id=task_id,
                     )
                 )
                 if (
@@ -156,29 +160,92 @@ def _extract_total_score(payload: dict[str, object]) -> float | None:
     return None
 
 
+def _extract_task_id(payload: dict[str, object]) -> str | None:
+    task_id = payload.get("task_id")
+    if isinstance(task_id, str) and re.fullmatch(r"data_\d+", task_id.strip()):
+        return task_id.strip()
+    return None
+
+
 def _extract_writable_blocks(raw_output: str) -> list[tuple[str, str]]:
     return list(_iter_code_blocks(raw_output))
 
 
-def _iter_code_blocks(raw_output: str) -> list[tuple[str, str]]:
+def _iter_code_blocks(raw_output: str, *, fallback_task_id: str | None = None) -> list[tuple[str, str]]:
     blocks: list[tuple[str, str]] = []
+    seen_paths: set[str] = set()
+    pending_path: str | None = None
     for match in CODE_BLOCK_PATTERN.finditer(raw_output):
         header = match.group("header")
         body = match.group("body")
         header_path = _clean_relative_path(header)
         if header_path is not None:
-            blocks.append((header_path, body))
+            if body.strip():
+                if header_path not in seen_paths:
+                    blocks.append((header_path, body))
+                    seen_paths.add(header_path)
+                pending_path = None
+            else:
+                pending_path = header_path
+            continue
+
+        if pending_path is not None and body.strip() and _clean_relative_path(body.strip()) is None:
+            if pending_path not in seen_paths:
+                blocks.append((pending_path, body))
+                seen_paths.add(pending_path)
+            pending_path = None
+            continue
+
+        if pending_path is not None and not body.strip():
+            continue
+
+        header_path = _clean_relative_path(header)
+        if header_path is not None:
+            if header_path not in seen_paths and body.strip():
+                blocks.append((header_path, body))
+                seen_paths.add(header_path)
             continue
 
         first_line, separator, remainder = body.partition("\n")
         body_path = _clean_relative_path(first_line) if separator else None
         if body_path is not None and separator:
-            blocks.append((body_path, remainder))
+            if remainder.strip():
+                if body_path not in seen_paths:
+                    blocks.append((body_path, remainder))
+                    seen_paths.add(body_path)
+                pending_path = None
+            else:
+                pending_path = body_path
+            continue
+
+        if pending_path is not None and body.strip() and _clean_relative_path(body.strip()) is None:
+            if pending_path not in seen_paths:
+                blocks.append((pending_path, body))
+                seen_paths.add(pending_path)
+            pending_path = None
+            continue
+
+        if pending_path is not None and not body.strip():
+            continue
+
+        if body_path is not None and separator:
+            if body_path not in seen_paths and remainder.strip():
+                blocks.append((body_path, remainder))
+                seen_paths.add(body_path)
             continue
 
         preceding_path = _clean_relative_path(_previous_nonempty_line(raw_output, match.start()))
         if preceding_path is not None:
-            blocks.append((preceding_path, body))
+            if preceding_path not in seen_paths and body.strip():
+                blocks.append((preceding_path, body))
+                seen_paths.add(preceding_path)
+            continue
+
+        if fallback_task_id is not None and _looks_like_unlabeled_task_yaml(header, body):
+            fallback_path = f"tasks/{fallback_task_id}.yaml"
+            if fallback_path not in seen_paths:
+                blocks.append((fallback_path, body))
+                seen_paths.add(fallback_path)
     return blocks
 
 
@@ -187,6 +254,20 @@ def _previous_nonempty_line(raw_output: str, end: int) -> str:
     if not prefix:
         return ""
     return prefix.rsplit("\n", maxsplit=1)[-1]
+
+
+def _looks_like_unlabeled_task_yaml(header: str, body: str) -> bool:
+    language = header.strip().split(maxsplit=1)[0].lower() if header.strip() else ""
+    if language not in {"yaml", "yml"}:
+        return False
+    return bool(re.search(r"(?m)^(name|description|runtime|sessions|prompts?|asset):", body))
+
+
+def _has_nonempty_task_yaml(blocks: Sequence[tuple[str, str]]) -> bool:
+    for relative_path, content in blocks:
+        if re.fullmatch(r"tasks/[^/]+\.ya?ml", relative_path) and content.strip():
+            return True
+    return False
 
 
 def _clean_relative_path(raw_path: str) -> str | None:
@@ -215,7 +296,7 @@ def _order_candidates_by_task_ids(
 ) -> list[_CandidateRecord]:
     by_task_id: dict[str, _CandidateRecord] = {}
     for candidate in candidates:
-        task_id = _candidate_task_id(candidate.raw_output)
+        task_id = _candidate_task_id(candidate.raw_output) or candidate.task_id
         if task_id is None or task_id in by_task_id:
             continue
         by_task_id[task_id] = candidate

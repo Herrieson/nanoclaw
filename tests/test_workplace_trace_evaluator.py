@@ -208,6 +208,69 @@ Judge trace.
         self.assertEqual(result.objective_score, 70.0)
         self.assertEqual(result.objective_score_source, "workplace")
 
+    def test_multi_turn_workplace_uses_turn_snapshots(self) -> None:
+        manifest_path = self._write_manifest()
+
+        def verifier_script(expected: str) -> str:
+            return "\n".join(
+                [
+                    "import json",
+                    "from pathlib import Path",
+                    f"expected = {expected!r}",
+                    "content = Path('answer.txt').read_text(encoding='utf-8').strip()",
+                    "score = 100 if content == expected else 0",
+                    "Path('workplace_score.json').write_text(json.dumps({'total_score': score}), encoding='utf-8')",
+                ]
+            )
+
+        raw_output = f"""```yaml
+tasks/data_1.yaml
+id: data_1
+```
+
+```python
+# scripts/data_1/verify_turn_1.py
+{verifier_script("turn1")}
+```
+
+```python
+# scripts/data_1/verify_turn_2.py
+{verifier_script("turn2")}
+```
+"""
+        jsonl_path = self.root / "multi_turn_new_verifier.jsonl"
+        jsonl_path.write_text(json.dumps({"raw_output": raw_output}) + "\n", encoding="utf-8")
+        bundle = load_verifier_bundle([jsonl_path], manifest_path=manifest_path)
+        run_dir = self._create_run()
+        (run_dir / "workspace_after" / "answer.txt").write_text("final\n", encoding="utf-8")
+        (run_dir / "workspace_after_turn_1").mkdir()
+        (run_dir / "workspace_after_turn_1" / "answer.txt").write_text("turn1\n", encoding="utf-8")
+        (run_dir / "workspace_after_turn_2").mkdir()
+        (run_dir / "workspace_after_turn_2" / "answer.txt").write_text("turn2\n", encoding="utf-8")
+        summary_path = run_dir / "summary.json"
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        summary["multi_turn"] = True
+        summary["turns"] = [
+            {"turn": 1, "after_state_dir": "workspace_after_turn_1"},
+            {"turn": 2, "after_state_dir": "workspace_after_turn_2"},
+        ]
+        summary_path.write_text(json.dumps(summary), encoding="utf-8")
+
+        result = evaluate_workplace_trace_run(
+            run_dir,
+            verifiers=bundle.verifiers,
+            components="workplace",
+            judge_config=EvaluationJudgeConfig.disabled(),
+        )
+
+        self.assertEqual(result.evaluation_status, "evaluated")
+        self.assertEqual(result.workplace_score, 100.0)
+        self.assertEqual(result.workplace_score_source, "multi_turn_workplace_average")
+        self.assertEqual(
+            [item["workspace_after_dir"] for item in result.workplace_data["turns"]],
+            ["workspace_after_turn_1", "workspace_after_turn_2"],
+        )
+
     def test_workplace_evaluates_failed_max_steps_runs(self) -> None:
         manifest_path = self._write_manifest()
         jsonl_path = self._write_jsonl(

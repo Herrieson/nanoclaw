@@ -401,7 +401,8 @@ def _infer_model_group(run_dir: Path) -> str:
     if (
         len(parts) >= 5
         and parts[0] == "results"
-        and parts[1] in {"base", "skills", "skills_aligned", "hard", "hard_100"}
+        and parts[1]
+        in {"base", "skills", "skills_aligned", "hard", "hard_100", "multi_turn", "multi_turn_100"}
     ):
         return parts[2]
     if len(parts) >= 4 and parts[0] == "results":

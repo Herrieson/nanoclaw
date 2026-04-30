@@ -167,7 +167,7 @@ def _import_single_task(
 
     staged_tasks_dir = staged_task_path.parent
     staged_record_root = staged_tasks_dir.parent
-    prompt_source_path = staged_tasks_dir / "prompts" / f"{source_task_id}.md"
+    prompt_source_paths = _discover_prompt_source_paths(staged_tasks_dir, source_task_id)
     task_dir_source_path = staged_tasks_dir / source_task_id
     skill_source_dir = staged_record_root / "skills" / source_task_id
 
@@ -175,14 +175,17 @@ def _import_single_task(
     _rewrite_text_file(destination_task_path, source_task_id=source_task_id, imported_task_id=imported_task_id)
     _rewrite_task_yaml_metadata(destination_task_path)
 
-    if prompt_source_path.exists():
-        destination_prompt_path = repo_prompts_root / f"{imported_task_id}.md"
-        shutil.copy2(prompt_source_path, destination_prompt_path)
+    for prompt_source_path in prompt_source_paths:
+        destination_name = imported_task_id + prompt_source_path.name[len(source_task_id) :]
+        destination_path = repo_prompts_root / destination_name
+        shutil.copy2(prompt_source_path, destination_path)
         _rewrite_text_file(
-            destination_prompt_path,
+            destination_path,
             source_task_id=source_task_id,
             imported_task_id=imported_task_id,
         )
+        if destination_prompt_path is None:
+            destination_prompt_path = destination_path
 
     if task_dir_source_path.exists():
         destination_task_dir = repo_tasks_root / imported_task_id
@@ -217,6 +220,17 @@ def _import_single_task(
         task_path=destination_task_path.resolve(),
         prompt_path=destination_prompt_path.resolve() if destination_prompt_path is not None else None,
         task_dir=destination_task_dir.resolve() if destination_task_dir is not None else None,
+    )
+
+
+def _discover_prompt_source_paths(staged_tasks_dir: Path, source_task_id: str) -> list[Path]:
+    prompts_dir = staged_tasks_dir / "prompts"
+    if not prompts_dir.exists():
+        return []
+    return sorted(
+        path
+        for path in prompts_dir.glob(f"{source_task_id}*.md")
+        if path.is_file()
     )
 
 
@@ -377,6 +391,7 @@ def _merge_available_skills(task_yaml_path: Path, skill_slugs: list[str]) -> Non
 
 def _rewrite_task_yaml_metadata(task_yaml_path: Path) -> None:
     original = task_yaml_path.read_text(encoding="utf-8")
+    original = _quote_fragile_top_level_scalars(original)
     payload = yaml.safe_load(original) or {}
     if not isinstance(payload, dict):
         updated = original.replace("tasks/prompts/", "prompts/")
@@ -400,6 +415,19 @@ def _rewrite_task_yaml_metadata(task_yaml_path: Path) -> None:
         payload["prompts"] = normalized_prompts
         changed = True
 
+    sessions = payload.get("sessions")
+    if isinstance(sessions, list):
+        for item in sessions:
+            if not isinstance(item, dict):
+                continue
+            prompt = item.get("prompt")
+            if not isinstance(prompt, str):
+                continue
+            normalized = _normalize_prompt_reference(prompt)
+            if normalized != prompt:
+                item["prompt"] = normalized
+                changed = True
+
     if prompts is None:
         fallback_paths: list[str] = []
         for key in ("prompt", "prompt_file"):
@@ -411,8 +439,29 @@ def _rewrite_task_yaml_metadata(task_yaml_path: Path) -> None:
             changed = True
 
     if not changed:
+        if original != task_yaml_path.read_text(encoding="utf-8"):
+            task_yaml_path.write_text(original, encoding="utf-8")
         return
     task_yaml_path.write_text(yaml.safe_dump(payload, sort_keys=False, allow_unicode=True), encoding="utf-8")
+
+
+def _quote_fragile_top_level_scalars(text: str) -> str:
+    lines: list[str] = []
+    changed = False
+    for line in text.splitlines():
+        match = re.fullmatch(r"(name|description):\s+(.+)", line)
+        if not match:
+            lines.append(line)
+            continue
+        value = match.group(2).strip()
+        if value.startswith(("'", '"', "|", ">")):
+            lines.append(line)
+            continue
+        lines.append(f"{match.group(1)}: {json.dumps(value, ensure_ascii=False)}")
+        changed = True
+    if not changed:
+        return text
+    return "\n".join(lines) + ("\n" if text.endswith("\n") else "")
 
 
 def _normalize_import_prompt_sources(prompts: Any) -> Any | None:

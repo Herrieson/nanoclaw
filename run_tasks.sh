@@ -2,8 +2,8 @@
 
 set -u
 
-TASK_GLOB="tasks/data_round_01_hard_100_*.yaml"
-RESULTS_ROOT="results/hard_100"
+TASK_GLOB="tasks/data_round_01_multi_turn_100_*.yaml"
+RESULTS_ROOT="results/multi_turn_100"
 
 slugify_model_name() {
     echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+//g'
@@ -14,24 +14,24 @@ TASK_FILES=(${TASK_GLOB})
 shopt -u nullglob
 
 if [ ${#TASK_FILES[@]} -eq 0 ]; then
-    echo "❌ 未找到 hard-100 任务: ${TASK_GLOB}"
+    echo "❌ 未找到 multi-turn-100 任务: ${TASK_GLOB}"
     exit 1
 fi
 
-echo "🎯 本次仅运行 hard-100 任务: ${TASK_GLOB} (${#TASK_FILES[@]} 个)"
+echo "🎯 本次仅运行 multi-turn-100 任务: ${TASK_GLOB} (${#TASK_FILES[@]} 个)"
 
 # 定义需要运行的模型数组
 MODELS=(
-    # "MiniMax-M2.1"
-    # "MiniMax-M2.5"
-    # "deepseek-v3.2"
-    # "deepseek-v3"
-    "qwen3-vl-flash"
-    "qwen-plus"
-    "qwen2.5-14b-instruct-1m"
-    "qwen3.5-flash"
-    "qwen3.5-plus"
-    "qwen3.5-27b"
+    "MiniMax-M2.1"
+    "MiniMax-M2.5"
+    "deepseek-v3.2"
+    "deepseek-v3"
+    # "qwen3-vl-flash"
+    # "qwen-plus"
+    # "qwen2.5-14b-instruct-1m"
+    # "qwen3.5-flash"
+    # "qwen3.5-plus"
+    # "qwen3.5-27b"
 )
 
 # 遍历每个模型并执行命令
@@ -51,7 +51,7 @@ for MODEL in "${MODELS[@]}"; do
         "${TASK_FILES[@]}" \
         --model "${MODEL}" \
         --approval-mode approve-all \
-        --workers 4 \
+        --workers 1 \
         --run-builder-validation \
         --strict \
         --quarantine-invalid \

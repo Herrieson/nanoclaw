@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import json
 import os
 from pathlib import Path
@@ -13,7 +13,22 @@ import threading
 from typing import Sequence
 
 from .config import Settings
-from .task_loader import load_task_definition
+from .core_loop import MinimalClaw
+from .run_store import (
+    RunRecorder,
+    create_task_run,
+    snapshot_workspace,
+    utc_now_iso,
+    write_final_answer,
+    write_summary,
+)
+from .skills import (
+    auto_select_skills,
+    discover_skills,
+    resolve_requested_skills,
+    serialize_skill,
+)
+from .task_loader import TaskSession, load_task_definition
 
 
 RUN_DIR_PATTERN = re.compile(r"^Run dir:\s+(.+)$", re.MULTILINE)
@@ -27,6 +42,11 @@ class BatchTaskSpec:
     task_id: str
     asset_name: str
     builder_path: Path | None
+    sessions: tuple[TaskSession, ...] = ()
+
+    @property
+    def is_multi_turn(self) -> bool:
+        return bool(self.sessions)
 
 
 @dataclass(frozen=True, slots=True)
@@ -114,6 +134,7 @@ def resolve_task_specs(
                     task_id=task.task_id,
                     asset_name=task.asset,
                     builder_path=builder_path if builder_path.exists() else None,
+                    sessions=task.sessions,
                 )
             )
 
@@ -197,6 +218,21 @@ def prepare_environment(
     if asset_dir.exists():
         shutil.rmtree(asset_dir)
 
+    if spec.is_multi_turn:
+        if spec.builder_path is None:
+            raise FileNotFoundError(f"Missing env_builder.py for multi-turn task: {spec.task_id}")
+        asset_dir.mkdir(parents=True, exist_ok=True)
+        _run_builder_for_workspace(
+            spec,
+            workspace_dir=asset_dir,
+            turn=spec.sessions[0].turn,
+            env={
+                **os.environ,
+                "NANOCLAW_ASSETS_ROOT": str(runtime_assets_root),
+            },
+        )
+        return asset_dir
+
     builder_workspace_root = runtime_assets_root.parent
     builder_workspace_root.mkdir(parents=True, exist_ok=True)
     wrapped_impl = spec.builder_path.with_name("_env_builder_impl.py")
@@ -255,6 +291,25 @@ def run_single_task(
 
     try:
         prepare_environment(spec, repo_root=repo_root, assets_root=assets_root)
+        if spec.is_multi_turn:
+            run_dir = _run_multi_turn_task(
+                spec,
+                repo_root=repo_root,
+                results_dir=results_dir,
+                assets_root=assets_root,
+                model=model,
+                approval_mode=approval_mode,
+            )
+            stdout = f"Run dir: {run_dir}\n"
+            return BatchTaskResult(
+                spec=spec,
+                success=True,
+                run_dir=run_dir,
+                returncode=0,
+                stdout=stdout,
+                stderr=stderr,
+                error=None,
+            )
         command = [
             sys.executable,
             str(repo_root / "main.py"),
@@ -350,6 +405,253 @@ def _load_run_summary(run_dir: Path) -> dict[str, object] | None:
     if not isinstance(payload, dict):
         return None
     return payload
+
+
+def _run_multi_turn_task(
+    spec: BatchTaskSpec,
+    *,
+    repo_root: Path,
+    results_dir: Path,
+    assets_root: Path | None,
+    model: str | None,
+    approval_mode: str | None,
+) -> Path:
+    settings = Settings.from_env()
+    task = load_task_definition(spec.task_path, settings)
+    task_runtime = replace(
+        task.runtime,
+        model=model or task.runtime.model,
+        approval_mode=approval_mode or task.runtime.approval_mode,
+    )
+    task = replace(task, runtime=task_runtime)
+    resolved_assets_root = assets_root.expanduser().resolve() if assets_root is not None else (repo_root / "assets").resolve()
+    skill_workspace_dir = resolved_assets_root / task.asset
+    catalog, available_skills, activated_skills = _select_task_skills(
+        task_text=task.prompt,
+        settings=settings,
+        workspace_dir=skill_workspace_dir,
+        available_skill_names=task.skills.available if task.skills.available_explicit else None,
+        requested_skill_names=task.skills.include,
+        auto_skills=task.skills.auto,
+    )
+    layout = create_task_run(
+        task,
+        assets_root=resolved_assets_root,
+        results_root=results_dir,
+        resolved_payload=task.resolved_payload(
+            activated_skills=tuple(serialize_skill(skill) for skill in activated_skills)
+        ),
+    )
+    task_settings = replace(
+        settings,
+        workspace_dir=layout.workspace_dir,
+        model=task.runtime.model,
+        workspace_context_files=task.runtime.workspace_context_files,
+        run_mode=task.runtime.mode,
+        memory_policy=task.runtime.memory_policy,
+        approval_mode=task.runtime.approval_mode,
+        max_steps=task.runtime.max_steps,
+        temperature=task.runtime.temperature,
+    )
+
+    agent = MinimalClaw(
+        task_settings,
+        available_skills=available_skills,
+        activated_skills=activated_skills,
+    )
+    _materialize_skill_pool(layout.workspace_dir, available_skills)
+    agent.bootstrap_workspace()
+    snapshot_workspace(layout.workspace_dir, layout.before_dir)
+
+    recorder = RunRecorder(layout)
+    started_at = utc_now_iso()
+    run_error: Exception | None = None
+    prior_messages: list[dict[str, str]] = []
+    turn_summaries: list[dict[str, object]] = []
+    final_texts: list[str] = []
+    total_steps_used = 0
+    final_report = None
+
+    try:
+        for index, session in enumerate(task.sessions):
+            if index > 0:
+                _run_builder_for_workspace(
+                    spec,
+                    workspace_dir=layout.workspace_dir,
+                    turn=session.turn,
+                    env={
+                        **os.environ,
+                        "NANOCLAW_ASSETS_ROOT": str(resolved_assets_root),
+                    },
+                )
+
+            recorder.record_event({"type": "turn_started", "turn": session.turn})
+            turn_error: str | None = None
+            turn_final_answer_path = layout.run_dir / f"final_answer_turn_{session.turn}.md"
+            try:
+                final_text = agent.run(
+                    session.prompt,
+                    echo=False,
+                    event_handler=recorder.record_event,
+                    prior_messages=tuple(prior_messages),
+                )
+                final_texts.append(f"## Turn {session.turn}\n\n{final_text}")
+                write_final_answer(turn_final_answer_path, final_text)
+                prior_messages.append({"role": "user", "content": session.prompt})
+                prior_messages.append({"role": "assistant", "content": final_text})
+            except Exception as exc:
+                run_error = exc
+                turn_error = f"{type(exc).__name__}: {exc}"
+                final_text = turn_error
+                final_texts.append(f"## Turn {session.turn}\n\n{turn_error}")
+                write_final_answer(turn_final_answer_path, turn_error)
+
+            report = agent.last_run_report
+            final_report = report
+            if report is not None:
+                total_steps_used += report.steps_used
+            turn_after_dir = _turn_after_dir(layout.run_dir, session.turn)
+            snapshot_workspace(layout.workspace_dir, turn_after_dir)
+            turn_summary = {
+                "turn": session.turn,
+                "prompt_source": session.prompt_source,
+                "status": report.status if report else "failed",
+                "result_type": report.result_type if report else "failure",
+                "error": turn_error or (report.error if report else None),
+                "steps_used": report.steps_used if report else 0,
+                "final_answer_file": turn_final_answer_path.name,
+                "after_state_dir": turn_after_dir.name,
+            }
+            turn_summaries.append(turn_summary)
+            recorder.record_event({"type": "turn_finished", **turn_summary})
+            if run_error is not None:
+                break
+    finally:
+        snapshot_workspace(layout.workspace_dir, layout.after_dir)
+        finished_at = utc_now_iso()
+        write_final_answer(layout.final_answer_path, "\n\n".join(final_texts))
+        all_completed = (
+            run_error is None
+            and len(turn_summaries) == len(task.sessions)
+            and all(item.get("status") == "completed" for item in turn_summaries)
+        )
+        summary = {
+            "task_id": task.task_id,
+            "task_name": task.name,
+            "description": task.description,
+            "asset": task.asset,
+            "asset_dir": str(layout.asset_dir),
+            "task_file": str(task.source_path),
+            "run_id": layout.run_id,
+            "result_dir": str(layout.run_dir),
+            "status": "completed" if all_completed else "failed",
+            "result_type": final_report.result_type if final_report else "failure",
+            "error": str(run_error) if run_error is not None else None,
+            "model": task_settings.model,
+            "max_steps": task_settings.max_steps,
+            "temperature": task_settings.temperature,
+            "run_mode": task_settings.run_mode,
+            "memory_policy": task_settings.memory_policy,
+            "approval_mode": task_settings.approval_mode,
+            "session": task.runtime.session,
+            "turns": turn_summaries,
+            "workspace_context_files": list(agent.last_workspace_context_files),
+            "runtime_metadata": agent.last_runtime_metadata,
+            "skills": {
+                "available": [serialize_skill(skill) for skill in available_skills],
+                "requested": list(task.skills.include),
+                "auto": task.skills.auto,
+                "activated": [serialize_skill(skill) for skill in activated_skills],
+            },
+            "steps_used": total_steps_used,
+            "started_at": started_at,
+            "finished_at": finished_at,
+            "final_answer_file": layout.final_answer_path.name,
+            "trace_file": layout.trace_path.name,
+            "before_state_dir": layout.before_dir.name,
+            "after_state_dir": layout.after_dir.name,
+            "multi_turn": True,
+        }
+        if catalog.errors:
+            summary["skill_discovery_errors"] = [
+                {"source_path": str(error.source_path), "error": error.error}
+                for error in catalog.errors
+            ]
+        write_summary(layout.summary_path, summary)
+
+    if run_error is not None:
+        raise run_error
+    return layout.run_dir
+
+
+def _turn_after_dir(run_dir: Path, turn: int) -> Path:
+    return run_dir / f"workspace_after_turn_{turn}"
+
+
+def _run_builder_for_workspace(
+    spec: BatchTaskSpec,
+    *,
+    workspace_dir: Path,
+    turn: int,
+    env: dict[str, str],
+) -> None:
+    if spec.builder_path is None:
+        raise FileNotFoundError(f"Missing env_builder.py for {spec.task_id}")
+    script_path = _builder_execution_path(spec.builder_path)
+    workspace_dir.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        [sys.executable, str(script_path), "--turn", str(turn)],
+        cwd=workspace_dir,
+        check=True,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+
+
+def _builder_execution_path(builder_path: Path) -> Path:
+    wrapped_impl = builder_path.with_name("_env_builder_impl.py")
+    return wrapped_impl if wrapped_impl.exists() else builder_path
+
+
+def _select_task_skills(
+    *,
+    task_text: str,
+    settings: Settings,
+    workspace_dir: Path,
+    available_skill_names: tuple[str, ...] | None,
+    requested_skill_names: tuple[str, ...],
+    auto_skills: bool,
+):
+    catalog = discover_skills(workspace_dir, settings.extra_skill_dirs)
+    available_skills = catalog.skills
+    if available_skill_names is not None:
+        available_skills = (
+            resolve_requested_skills(catalog.skills, available_skill_names)
+            if available_skill_names
+            else ()
+        )
+
+    selected = list(resolve_requested_skills(available_skills, requested_skill_names))
+    selected_slugs = {skill.slug for skill in selected}
+    if auto_skills:
+        for skill in auto_select_skills(available_skills, task_text):
+            if skill.slug in selected_slugs:
+                continue
+            selected.append(skill)
+            selected_slugs.add(skill.slug)
+    return catalog, available_skills, tuple(selected)
+
+
+def _materialize_skill_pool(workspace_dir: Path, available_skills) -> None:
+    skill_root = workspace_dir / ".skills"
+    if skill_root.exists():
+        shutil.rmtree(skill_root)
+    if not available_skills:
+        return
+    skill_root.mkdir(parents=True, exist_ok=True)
+    for skill in available_skills:
+        shutil.copytree(skill.source_path.parent, skill_root / skill.slug)
 
 
 def _run_dir_sort_key(run_dir: Path) -> tuple[str, int, str]:

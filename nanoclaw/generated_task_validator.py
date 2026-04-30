@@ -198,17 +198,37 @@ def validate_generated_task(
                 asset_dir.mkdir(parents=True, exist_ok=True)
                 cwd = asset_dir
             try:
-                process = subprocess.run(
-                    command,
-                    cwd=cwd,
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                    env={
-                        **os.environ,
-                        "NANOCLAW_ASSETS_ROOT": str(runtime_assets_root),
-                    },
-                )
+                env = {
+                    **os.environ,
+                    "NANOCLAW_ASSETS_ROOT": str(runtime_assets_root),
+                }
+                processes = []
+                if task.sessions:
+                    if not asset_dir.exists():
+                        asset_dir.mkdir(parents=True, exist_ok=True)
+                    cwd = asset_dir
+                    for session in task.sessions:
+                        processes.append(
+                            subprocess.run(
+                                [*command, "--turn", str(session.turn)],
+                                cwd=cwd,
+                                check=True,
+                                capture_output=True,
+                                text=True,
+                                env=env,
+                            )
+                        )
+                else:
+                    processes.append(
+                        subprocess.run(
+                            command,
+                            cwd=cwd,
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                            env=env,
+                        )
+                    )
                 if not asset_dir.exists():
                     issues.append(
                         ValidationIssue(
@@ -219,12 +239,17 @@ def validate_generated_task(
                             ),
                         )
                     )
-                elif process.stderr.strip():
+                elif any(process.stderr.strip() for process in processes):
+                    stderr = "\n".join(
+                        process.stderr.strip().splitlines()[-1]
+                        for process in processes
+                        if process.stderr.strip()
+                    )
                     issues.append(
                         ValidationIssue(
                             severity="warning",
                             code="builder_stderr_output",
-                            message=process.stderr.strip().splitlines()[-1],
+                            message=stderr,
                         )
                     )
             except subprocess.CalledProcessError as exc:
