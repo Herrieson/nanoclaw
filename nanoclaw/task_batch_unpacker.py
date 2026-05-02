@@ -8,7 +8,7 @@ import re
 
 
 CODE_BLOCK_PATTERN = re.compile(r"```(?P<header>[^\n`]*)\n(?P<body>.*?)```", re.DOTALL)
-ALLOWED_PATH_PREFIXES = ("tasks/", "skills/", "scripts/")
+ALLOWED_PATH_PREFIXES = ("tasks/", "skills/", "scripts/", "prompts/")
 
 
 @dataclass(frozen=True, slots=True)
@@ -142,7 +142,7 @@ def _load_candidates(
 
 
 def _extract_raw_output(payload: dict[str, object]) -> str | None:
-    for key in ("raw_output", "enhanced_raw_output"):
+    for key in ("raw_output", "enhanced_raw_output", "dual_verified_raw_output"):
         raw_output = payload.get(key)
         if isinstance(raw_output, str) and raw_output.strip():
             return raw_output
@@ -287,6 +287,8 @@ def _clean_relative_path(raw_path: str) -> str | None:
         return None
     if ".." in Path(cleaned).parts:
         return None
+    if cleaned.startswith("prompts/"):
+        return f"tasks/{cleaned}"
     return cleaned
 
 

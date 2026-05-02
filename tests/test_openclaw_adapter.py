@@ -129,15 +129,112 @@ class OpenClawAdapterTest(unittest.TestCase):
         self.assertEqual(metadata["exit_code"], 7)
         self.assertEqual(metadata["final_answer_strategy"], "stderr_fallback")
 
-    def _run_adapter(self) -> subprocess.CompletedProcess[str]:
+    def test_seeds_openclaw_home_template_before_running(self) -> None:
+        template = self.root / "openclaw_home_template"
+        sentinel = template / ".openclaw" / "plugin-runtime-deps" / "runtime" / "sentinel.txt"
+        sentinel.parent.mkdir(parents=True)
+        sentinel.write_text("prewarmed\n", encoding="utf-8")
+        self._write_fake_openclaw(
+            """
+            test -f "$HOME/.openclaw/plugin-runtime-deps/runtime/sentinel.txt"
+            test "${OPENCLAW_PLUGIN_STAGE_DIR:-}" = "$NANOCLAW_OPENCLAW_HOME_TEMPLATE/.openclaw/plugin-runtime-deps"
+            printf '%s\\n' 'Seeded runtime deps.'
+            """
+        )
+
+        result = self._run_adapter(
+            {"NANOCLAW_OPENCLAW_HOME_TEMPLATE": str(template)}
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            (self.state / "home" / ".openclaw" / "plugin-runtime-deps" / "runtime" / "sentinel.txt").read_text(encoding="utf-8"),
+            "prewarmed\n",
+        )
+        self.assertTrue((self.state / "home" / ".openclaw" / "plugin-runtime-deps").is_symlink())
+        self.assertEqual(
+            (self.output / "final_answer.md").read_text(encoding="utf-8"),
+            "Seeded runtime deps.\n",
+        )
+
+    def test_sets_noninteractive_pnpm_environment(self) -> None:
+        self._write_fake_openclaw(
+            """
+            test "${CI:-}" = "true"
+            test "${NPM_CONFIG_CONFIRM_MODULES_PURGE:-}" = "false"
+            test "${PNPM_CONFIG_CONFIRM_MODULES_PURGE:-}" = "false"
+            test "${npm_config_confirm_modules_purge:-}" = "false"
+            test "${npm_config_confirmModulesPurge:-}" = "false"
+            printf '%s\\n' 'Noninteractive pnpm env ok.'
+            """
+        )
+
+        result = self._run_adapter()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            (self.output / "final_answer.md").read_text(encoding="utf-8"),
+            "Noninteractive pnpm env ok.\n",
+        )
+
+    def test_writes_direct_custom_config_without_onboarding(self) -> None:
+        self._write_fake_openclaw(
+            """
+            test "$1" != "onboard"
+            printf '%s\\n' 'Direct config ok.'
+            """
+        )
+
+        result = self._run_adapter(
+            {
+                "NANOCLAW_BASE_URL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                "OPENAI_API_KEY": "test-key",
+            },
+            auto_onboard=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        config_path = self.state / "home" / ".openclaw" / "openclaw.json"
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        provider = config["models"]["providers"]["custom-dashscope-aliyuncs-com"]
+        self.assertEqual(provider["baseUrl"], "https://dashscope.aliyuncs.com/compatible-mode/v1")
+        self.assertEqual(provider["api"], "openai-completions")
+        self.assertEqual(
+            provider["apiKey"],
+            {"source": "env", "provider": "default", "id": "CUSTOM_API_KEY"},
+        )
+        self.assertEqual(provider["models"][0]["id"], "gpt-4o")
+        self.assertEqual(
+            config["agents"]["defaults"]["model"]["primary"],
+            "custom-dashscope-aliyuncs-com/gpt-4o",
+        )
+        self.assertTrue((self.state / "home" / ".openclaw" / "agents" / "main" / "sessions").is_dir())
+        metadata = json.loads((self.output / "runner_metadata.json").read_text(encoding="utf-8"))
+        self.assertEqual(metadata["onboarding"]["reason"], "direct_config_written")
+
+        trace_events = [
+            json.loads(line)
+            for line in (self.output / "trace.jsonl").read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertIn("openclaw_config_written", [event["type"] for event in trace_events])
+
+    def _run_adapter(
+        self,
+        extra_env: dict[str, str] | None = None,
+        *,
+        auto_onboard: bool = False,
+    ) -> subprocess.CompletedProcess[str]:
         env = {
             **os.environ,
             "PATH": f"{self.fake_bin}{os.pathsep}{os.environ.get('PATH', '')}",
-            "NANOCLAW_OPENCLAW_AUTO_ONBOARD": "0",
             "FAKE_OPENCLAW_ARGS_FILE": str(self.root / "openclaw_args.txt"),
             "FAKE_OPENCLAW_CWD_FILE": str(self.root / "openclaw_cwd.txt"),
             "FAKE_OPENCLAW_HOME_FILE": str(self.root / "openclaw_home.txt"),
         }
+        if not auto_onboard:
+            env["NANOCLAW_OPENCLAW_AUTO_ONBOARD"] = "0"
+        if extra_env:
+            env.update(extra_env)
         return subprocess.run(
             [
                 "node",

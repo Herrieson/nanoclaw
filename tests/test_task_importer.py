@@ -128,6 +128,40 @@ class TaskImporterTests(unittest.TestCase):
         self.assertIn(f"prompts/{new_id}.md", task_yaml)
         self.assertNotIn("tasks/prompts/", task_yaml)
 
+    def test_import_staged_tasks_normalizes_path_prompt_sources(self) -> None:
+        (self.staging_root / "tasks" / "data_07.yaml").write_text(
+            "\n".join(
+                [
+                    "name: Example",
+                    "prompts:",
+                    "  - path: prompts/data_07.md",
+                    "environment:",
+                    "  asset: data_07",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        (self.staging_root / "tasks" / "prompts" / "data_07.md").write_text(
+            "Prompt body\n",
+            encoding="utf-8",
+        )
+
+        imported = import_staged_tasks(
+            self.staging_root,
+            repo_root=self.repo_root,
+            round_id="round_demo",
+            max_tasks=100,
+        )
+
+        task_yaml = (self.repo_root / "tasks" / f"{imported[0].imported_task_id}.yaml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(f"prompts/{imported[0].imported_task_id}.md", task_yaml)
+        self.assertNotIn("path:", task_yaml)
+
     def test_import_staged_tasks_converts_task_local_skills(self) -> None:
         self._write_staged_task("data_06")
         skill_dir = self.staging_root / "skills" / "data_06"
@@ -204,6 +238,40 @@ class TaskImporterTests(unittest.TestCase):
         )
         self.assertIn(f"prompts/{imported[0].imported_task_id}.md", task_yaml)
         self.assertNotIn("tasks/prompts/", task_yaml)
+
+    def test_import_staged_tasks_normalizes_main_prompt_sources(self) -> None:
+        (self.staging_root / "tasks" / "data_08.yaml").write_text(
+            "\n".join(
+                [
+                    "name: Example",
+                    "prompts:",
+                    "  main: prompts/data_08.md",
+                    "environment:",
+                    "  asset: data_08",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        (self.staging_root / "tasks" / "prompts" / "data_08.md").write_text(
+            "Prompt body\n",
+            encoding="utf-8",
+        )
+
+        imported = import_staged_tasks(
+            self.staging_root,
+            repo_root=self.repo_root,
+            round_id="round_demo",
+            max_tasks=100,
+        )
+
+        task_yaml = (self.repo_root / "tasks" / f"{imported[0].imported_task_id}.yaml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(f"prompts/{imported[0].imported_task_id}.md", task_yaml)
+        self.assertNotIn("main:", task_yaml)
 
     def test_import_staged_tasks_normalizes_bare_task_id_prompt_sources(self) -> None:
         (self.staging_root / "tasks" / "data_04.yaml").write_text(

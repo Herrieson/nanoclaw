@@ -653,7 +653,7 @@ def _load_source_to_imported_manifest(manifest_path: Path) -> dict[str, str]:
 
 
 def _extract_raw_output(payload: dict[str, Any]) -> str | None:
-    for key in ("raw_output", "enhanced_raw_output"):
+    for key in ("raw_output", "enhanced_raw_output", "dual_verified_raw_output"):
         value = payload.get(key)
         if isinstance(value, str) and value.strip():
             return value

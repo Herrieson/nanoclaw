@@ -182,6 +182,27 @@ Judge trace.
         self.assertEqual(verifier.workplace_script, 'print("ok")\n')
         self.assertEqual(verifier.trace_prompt, "Judge trace.\n")
 
+    def test_load_bundle_accepts_dual_verified_raw_output(self) -> None:
+        manifest_path = self._write_manifest()
+        raw_output = """```yaml tasks/data_1.yaml
+id: data_1
+```
+
+```python scripts/data_1/verify_workplace.py
+print("ok")
+```
+"""
+        jsonl_path = self.root / "dual_verified_new_verifier.jsonl"
+        jsonl_path.write_text(
+            json.dumps({"dual_verified_raw_output": raw_output}) + "\n",
+            encoding="utf-8",
+        )
+
+        bundle = load_verifier_bundle([jsonl_path], manifest_path=manifest_path)
+
+        self.assertEqual(bundle.mapped_record_count, 1)
+        self.assertEqual(bundle.verifiers["data_round_01_0001"].workplace_script, 'print("ok")\n')
+
     def test_workplace_only_evaluation_reads_workplace_score_json(self) -> None:
         manifest_path = self._write_manifest()
         jsonl_path = self._write_jsonl(

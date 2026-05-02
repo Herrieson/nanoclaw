@@ -156,6 +156,42 @@ class TaskBatchUnpackerTests(unittest.TestCase):
         self.assertTrue((self.unpack_root / "record_0001" / "tasks" / "data_high.yaml").exists())
         self.assertTrue((self.unpack_root / "record_0002" / "tasks" / "data_mid.yaml").exists())
 
+    def test_unpack_jsonl_records_supports_dual_verified_raw_output(self) -> None:
+        payload = self._build_payload("data_01")
+        payload["dual_verified_raw_output"] = payload.pop("raw_output")
+        self.jsonl_path.write_text(json.dumps(payload, ensure_ascii=False) + "\n", encoding="utf-8")
+
+        unpacked = unpack_jsonl_records(self.jsonl_path, output_root=self.unpack_root)
+
+        self.assertEqual(len(unpacked), 1)
+        self.assertTrue((self.unpack_root / "record_0001" / "tasks" / "data_01.yaml").exists())
+
+    def test_unpack_jsonl_records_normalizes_bare_prompt_paths(self) -> None:
+        payload = {
+            "raw_output": "\n".join(
+                [
+                    "```yaml",
+                    "tasks/data_01.yaml",
+                    "id: data_01",
+                    "prompt: prompts/data_01.md",
+                    "asset: data_01",
+                    "```",
+                    "```markdown",
+                    "prompts/data_01.md",
+                    "Prompt body",
+                    "```",
+                ]
+            )
+        }
+        self.jsonl_path.write_text(json.dumps(payload, ensure_ascii=False) + "\n", encoding="utf-8")
+
+        unpacked = unpack_jsonl_records(self.jsonl_path, output_root=self.unpack_root)
+
+        self.assertEqual(len(unpacked), 1)
+        self.assertTrue(
+            (self.unpack_root / "record_0001" / "tasks" / "prompts" / "data_01.md").exists()
+        )
+
     def test_unpack_jsonl_records_supports_enhanced_skill_records_and_manifest_order(self) -> None:
         first = self._build_payload("data_01", total_score=10)
         first["task_id"] = "data_01"

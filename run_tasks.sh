@@ -1,72 +1,114 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -u
+set -uo pipefail
 
-TASK_GLOB="tasks/data_round_01_multi_turn_100_*.yaml"
-RESULTS_ROOT="results/multi_turn_100"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "${SCRIPT_DIR}"
+
+TASK_GLOB="${TASK_GLOB:-tasks/data_round_01_aligned_mix_800_*.yaml}"
+RESULTS_ROOT="${RESULTS_ROOT:-results/round_01_aligned_mix_800}"
+RUNNER_PROFILE="${RUNNER_PROFILE:-runner_profiles/openclaw.yaml}"
+WORKERS="${WORKERS:-1}"
+APPROVAL_MODE="${APPROVAL_MODE:-reject}"
+RESUME="${RESUME:-1}"
+SKIP_PREFLIGHT="${SKIP_PREFLIGHT:-1}"
 
 slugify_model_name() {
     echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+//g'
 }
 
-shopt -s nullglob
-TASK_FILES=(${TASK_GLOB})
-shopt -u nullglob
-
-if [ ${#TASK_FILES[@]} -eq 0 ]; then
-    echo "❌ 未找到 multi-turn-100 任务: ${TASK_GLOB}"
-    exit 1
-fi
-
-echo "🎯 本次仅运行 multi-turn-100 任务: ${TASK_GLOB} (${#TASK_FILES[@]} 个)"
-
-# 定义需要运行的模型数组
-MODELS=(
-    "MiniMax-M2.1"
-    "MiniMax-M2.5"
-    "deepseek-v3.2"
-    "deepseek-v3"
+DEFAULT_MODELS=(
+    # "MiniMax-M2.1"
+    # "MiniMax-M2.5"
+    # "deepseek-v3.2"
+    # "deepseek-v3"
     # "qwen3-vl-flash"
     # "qwen-plus"
     # "qwen2.5-14b-instruct-1m"
-    # "qwen3.5-flash"
+    "qwen3.5-flash"
     # "qwen3.5-plus"
     # "qwen3.5-27b"
 )
 
-# 遍历每个模型并执行命令
+if [ -n "${MODELS_OVERRIDE:-}" ]; then
+    read -r -a MODELS <<< "${MODELS_OVERRIDE}"
+else
+    MODELS=("${DEFAULT_MODELS[@]}")
+fi
+
+shopt -s nullglob
+TASK_FILES=( ${TASK_GLOB} )
+shopt -u nullglob
+
+if [ ${#TASK_FILES[@]} -eq 0 ]; then
+    echo "[ERROR] No tasks matched: ${TASK_GLOB}"
+    exit 1
+fi
+
+if [ ${#MODELS[@]} -eq 0 ]; then
+    echo "[ERROR] No models configured. Set MODELS_OVERRIDE or edit DEFAULT_MODELS."
+    exit 1
+fi
+
+echo "=================================================="
+echo "[INFO] Dataset task glob: ${TASK_GLOB}"
+echo "[INFO] Matched tasks: ${#TASK_FILES[@]}"
+echo "[INFO] Results root: ${RESULTS_ROOT}"
+echo "[INFO] Runner profile: ${RUNNER_PROFILE:-<builtin>}"
+echo "[INFO] Workers per model: ${WORKERS}"
+echo "[INFO] Approval mode: ${APPROVAL_MODE}"
+echo "=================================================="
+
+EXIT_CODE=0
+
 for MODEL in "${MODELS[@]}"; do
-    # 动态生成目录名称：移除 /、-、. 等非字母数字字符，并统一小写
-    # 例如：qwen2.5-14b-instruct-1m -> qwen2514binstruct1m
-    #      MiniMax/MiniMax-M2.1 -> minimaxminimaxm21
     DIR_NAME="$(slugify_model_name "${MODEL}")"
     RESULTS_DIR="${RESULTS_ROOT}/${DIR_NAME}"
 
     echo "=================================================="
-    echo "🚀 开始运行模型: ${MODEL} ..."
-    echo "📂 结果输出目录: ${RESULTS_DIR}"
+    echo "[INFO] Running model: ${MODEL}"
+    echo "[INFO] Results dir: ${RESULTS_DIR}"
     echo "=================================================="
 
-    uv run python scripts/run_generated_tasks.py \
-        "${TASK_FILES[@]}" \
-        --model "${MODEL}" \
-        --approval-mode approve-all \
-        --workers 1 \
-        --run-builder-validation \
-        --strict \
-        --quarantine-invalid \
-        --results-dir "${RESULTS_DIR}" \
-        --resume
+    RUN_ARGS=(
+        scripts/run_generated_tasks.py
+        "${TASK_FILES[@]}"
+        --model "${MODEL}"
+        --approval-mode "${APPROVAL_MODE}"
+        --workers "${WORKERS}"
+        --results-dir "${RESULTS_DIR}"
+    )
 
-    # 检查上一条命令是否执行成功
-    if [ $? -eq 0 ]; then
-        echo "✅ 模型 ${MODEL} 任务执行成功！"
+    if [ -n "${RUNNER_PROFILE}" ]; then
+        RUN_ARGS+=(--runner-profile "${RUNNER_PROFILE}")
+    fi
+
+    if [ "${RESUME}" != "0" ]; then
+        RUN_ARGS+=(--resume)
+    fi
+
+    if [ "${SKIP_PREFLIGHT}" != "0" ]; then
+        RUN_ARGS+=(--skip-validation --skip-normalize --skip-auto-fix)
     else
-        echo "❌ 模型 ${MODEL} 任务执行出错，请检查日志。"
-        # 如果希望某个模型出错时直接终止整个脚本，取消下面这行注释：
-        # exit 1
+        RUN_ARGS+=(--run-builder-validation --strict --quarantine-invalid)
+    fi
+
+    uv run python "${RUN_ARGS[@]}"
+    STATUS=$?
+
+    if [ ${STATUS} -eq 0 ]; then
+        echo "[OK] Model ${MODEL} finished."
+    else
+        echo "[ERROR] Model ${MODEL} failed with exit code ${STATUS}."
+        EXIT_CODE=1
     fi
     echo ""
 done
 
-echo "🎉 所有模型的任务已全部执行完毕！"
+if [ ${EXIT_CODE} -eq 0 ]; then
+    echo "[OK] All configured model runs finished."
+else
+    echo "[ERROR] One or more model runs failed. Check the logs above."
+fi
+
+exit ${EXIT_CODE}

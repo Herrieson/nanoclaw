@@ -3,9 +3,11 @@ import { createWriteStream } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
+import { randomBytes } from "node:crypto";
 
 const ADAPTER_NAME = "nanoclaw-openclaw-adapter";
 const CAPTURE_LIMIT_BYTES = 2_000_000;
+const DEFAULT_HOME_TEMPLATE = "/opt/nanoclaw-openclaw-home";
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
@@ -161,6 +163,11 @@ function toKebabCase(value) {
 
 async function buildOpenClawEnv(options, runnerRequest) {
   const env = { ...process.env };
+  env.CI = env.CI || "true";
+  env.NPM_CONFIG_CONFIRM_MODULES_PURGE = env.NPM_CONFIG_CONFIRM_MODULES_PURGE || "false";
+  env.PNPM_CONFIG_CONFIRM_MODULES_PURGE = env.PNPM_CONFIG_CONFIRM_MODULES_PURGE || "false";
+  env.npm_config_confirm_modules_purge = env.npm_config_confirm_modules_purge || "false";
+  env.npm_config_confirmModulesPurge = env.npm_config_confirmModulesPurge || "false";
   if (!env.NANOCLAW_MODEL && runnerRequest.model) {
     env.NANOCLAW_MODEL = String(runnerRequest.model);
   }
@@ -182,9 +189,101 @@ async function buildOpenClawEnv(options, runnerRequest) {
     await ensureDir(env.XDG_CONFIG_HOME);
     await ensureDir(env.XDG_STATE_HOME);
     await ensureDir(env.XDG_CACHE_HOME);
+    await seedOpenClawHome(homeDir, env);
   }
+  configureOpenClawRuntimeDeps(env);
 
   return env;
+}
+
+async function seedOpenClawHome(homeDir, env) {
+  const templateRoot = env.NANOCLAW_OPENCLAW_HOME_TEMPLATE || DEFAULT_HOME_TEMPLATE;
+  if (env.NANOCLAW_OPENCLAW_SEED_HOME === "0") {
+    return { seeded: false, reason: "disabled" };
+  }
+  if (!templateRoot || templateRoot === homeDir || !await fileExists(templateRoot)) {
+    return { seeded: false, reason: "template_missing" };
+  }
+
+  const markerPath = path.join(homeDir, ".openclaw", "plugin-runtime-deps");
+  if (await fileExists(markerPath)) {
+    return { seeded: false, reason: "already_seeded" };
+  }
+
+  const entries = await fs.readdir(templateRoot);
+  for (const entry of entries) {
+    const source = path.join(templateRoot, entry);
+    const destination = path.join(homeDir, entry);
+    if (entry === ".openclaw") {
+      await seedOpenClawStateDir(source, destination, env);
+      continue;
+    }
+    await fs.cp(source, destination, {
+      recursive: true,
+      errorOnExist: false,
+      force: false,
+    });
+  }
+  return { seeded: true, source: templateRoot };
+}
+
+async function seedOpenClawStateDir(sourceDir, destinationDir, env) {
+  await ensureDir(destinationDir);
+  const entries = await fs.readdir(sourceDir);
+  for (const entry of entries) {
+    const source = path.join(sourceDir, entry);
+    const destination = path.join(destinationDir, entry);
+    if (
+      entry === "plugin-runtime-deps"
+      && env.NANOCLAW_OPENCLAW_COPY_RUNTIME_DEPS !== "1"
+    ) {
+      await linkRuntimeDeps(source, destination);
+      continue;
+    }
+    await fs.cp(source, destination, {
+      recursive: true,
+      errorOnExist: false,
+      force: false,
+    });
+  }
+}
+
+async function linkRuntimeDeps(source, destination) {
+  if (await fileExists(destination)) {
+    return;
+  }
+  try {
+    await fs.symlink(source, destination, "dir");
+  } catch (error) {
+    await fs.writeFile(
+      `${destination}.link-error.txt`,
+      [
+        "OpenClaw runtime deps were not copied into this run directory.",
+        `Expected shared runtime deps at: ${source}`,
+        `Symlink error: ${error.message}`,
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+  }
+}
+
+function configureOpenClawRuntimeDeps(env) {
+  if (
+    env.OPENCLAW_PLUGIN_STAGE_DIR
+    || env.NANOCLAW_OPENCLAW_USE_TEMPLATE_RUNTIME_DEPS === "0"
+  ) {
+    return;
+  }
+  const templateRoot = env.NANOCLAW_OPENCLAW_HOME_TEMPLATE || DEFAULT_HOME_TEMPLATE;
+  if (!templateRoot) {
+    return;
+  }
+  env.OPENCLAW_PLUGIN_STAGE_DIR = path.join(
+    templateRoot,
+    ".openclaw",
+    "plugin-runtime-deps",
+  );
 }
 
 function buildMessage(taskText, priorMessages, env) {
@@ -267,6 +366,28 @@ async function maybeOnboardOpenClaw({ command, env, workspace, outputDir, traceP
     return { attempted: false, reason };
   }
 
+  const directConfig = buildDirectOpenClawConfig(env, workspace);
+  if (env.NANOCLAW_OPENCLAW_CONFIGURE_DIRECT !== "0" && directConfig) {
+    await writeDirectOpenClawConfig({
+      configPath,
+      homeDir: env.HOME,
+      config: directConfig.config,
+    });
+    await appendTrace(tracePath, {
+      type: "openclaw_config_written",
+      provider_id: directConfig.providerId,
+      model_id: directConfig.modelId,
+      config_path: configPath,
+    });
+    return {
+      attempted: false,
+      reason: "direct_config_written",
+      provider_id: directConfig.providerId,
+      model_id: directConfig.modelId,
+      config_file: path.basename(configPath),
+    };
+  }
+
   const onboardArgs = buildOnboardArgs(env, workspace);
   if (!onboardArgs) {
     await appendTrace(tracePath, {
@@ -347,6 +468,142 @@ function buildOnboardArgs(env, workspace) {
   }
 
   return null;
+}
+
+function buildDirectOpenClawConfig(env, workspace) {
+  if (!env.NANOCLAW_BASE_URL || !env.NANOCLAW_MODEL || !env.CUSTOM_API_KEY) {
+    return null;
+  }
+
+  const providerId = buildCustomProviderId(env.NANOCLAW_BASE_URL);
+  const modelId = env.NANOCLAW_MODEL;
+  const qualifiedModelId = `${providerId}/${modelId}`;
+  const now = new Date().toISOString();
+
+  return {
+    providerId,
+    modelId,
+    config: {
+      agents: {
+        defaults: {
+          workspace,
+          model: {
+            primary: qualifiedModelId,
+          },
+          models: {
+            [qualifiedModelId]: {},
+          },
+        },
+      },
+      gateway: {
+        mode: "local",
+        auth: {
+          mode: "token",
+          token: randomBytes(24).toString("hex"),
+        },
+        port: 18789,
+        bind: "loopback",
+        tailscale: {
+          mode: "off",
+          resetOnExit: false,
+        },
+      },
+      session: {
+        dmScope: "per-channel-peer",
+      },
+      tools: {
+        profile: "coding",
+      },
+      models: {
+        mode: "merge",
+        providers: {
+          [providerId]: {
+            baseUrl: env.NANOCLAW_BASE_URL,
+            api: resolveCustomProviderApi(env),
+            apiKey: {
+              source: "env",
+              provider: "default",
+              id: "CUSTOM_API_KEY",
+            },
+            models: [
+              {
+                id: modelId,
+                name: `${modelId} (Custom Provider)`,
+                contextWindow: parsePositiveInteger(
+                  env.NANOCLAW_OPENCLAW_CONTEXT_WINDOW,
+                  32768,
+                ),
+                maxTokens: parsePositiveInteger(
+                  env.NANOCLAW_OPENCLAW_MAX_TOKENS,
+                  4096,
+                ),
+                input: ["text"],
+                cost: {
+                  input: 0,
+                  output: 0,
+                  cacheRead: 0,
+                  cacheWrite: 0,
+                },
+                reasoning: false,
+              },
+            ],
+          },
+        },
+      },
+      wizard: {
+        lastRunAt: now,
+        lastRunCommand: "nanoclaw-direct-config",
+        lastRunMode: "local",
+      },
+      meta: {
+        lastTouchedAt: now,
+      },
+    },
+  };
+}
+
+async function writeDirectOpenClawConfig({ configPath, homeDir, config }) {
+  await ensureDir(path.dirname(configPath));
+  await ensureDir(path.join(homeDir, ".openclaw", "agents", "main", "sessions"));
+  await fs.writeFile(
+    configPath,
+    JSON.stringify(config, null, 2) + "\n",
+    "utf8",
+  );
+}
+
+function buildCustomProviderId(rawBaseUrl) {
+  let host = rawBaseUrl;
+  try {
+    host = new URL(rawBaseUrl).hostname || rawBaseUrl;
+  } catch {
+    host = rawBaseUrl;
+  }
+  const slug = String(host)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `custom-${slug || "provider"}`;
+}
+
+function resolveCustomProviderApi(env) {
+  const raw = String(env.NANOCLAW_OPENCLAW_CUSTOM_COMPATIBILITY || "openai")
+    .trim()
+    .toLowerCase();
+  const aliases = {
+    openai: "openai-completions",
+    "openai-compatible": "openai-completions",
+    "openai-completions": "openai-completions",
+  };
+  return aliases[raw] || raw || "openai-completions";
+}
+
+function parsePositiveInteger(raw, fallback) {
+  if (raw === undefined || raw === null || raw === "") {
+    return fallback;
+  }
+  const value = Number.parseInt(String(raw), 10);
+  return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
 async function runCommand(command, args, { cwd, env, stdoutPath, stderrPath }) {

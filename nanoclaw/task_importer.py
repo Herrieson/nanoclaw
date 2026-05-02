@@ -499,7 +499,7 @@ def _normalize_import_prompt_sources(prompts: Any) -> Any | None:
             return {"files": normalized_files} if normalized_files else {"files": []}
 
         extracted_paths: list[str] = []
-        for key in ("file", "user", "assistant", "system", "prompt"):
+        for key in ("file", "path", "main", "user", "assistant", "system", "prompt"):
             value = prompts.get(key)
             if isinstance(value, str) and value.strip():
                 extracted_paths.append(_normalize_prompt_reference(value))
@@ -518,7 +518,7 @@ def _normalize_import_prompt_sources(prompts: Any) -> Any | None:
 
 
 def _extract_prompt_path_from_mapping(item: dict[str, Any]) -> str | None:
-    for key in ("file", "user", "assistant", "system", "prompt"):
+    for key in ("file", "path", "main", "user", "assistant", "system", "prompt"):
         value = item.get(key)
         if isinstance(value, str) and value.strip():
             return _normalize_prompt_reference(value)

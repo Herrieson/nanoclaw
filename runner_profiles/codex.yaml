@@ -1,0 +1,50 @@
+id: codex
+type: docker
+image: nanoclaw-runner-codex:latest
+
+command:
+  - /opt/nanoclaw-adapter/run_task
+  - --task
+  - /input/task.md
+  - --resolved-task
+  - /input/resolved_task.json
+  - --workspace
+  - /workspace
+  - --output
+  - /output
+  - --state
+  - /state
+
+timeout_seconds: 900
+network: bridge
+workdir: /workspace
+
+env:
+  pass:
+    - OPENAI_API_KEY
+    - OPENAI_BASE_URL
+    - NANOCLAW_BASE_URL
+    - NANOCLAW_MODEL
+    - NANOCLAW_CODEX_API_KEY_ENV
+    - NANOCLAW_CODEX_APPROVAL_POLICY
+    - NANOCLAW_CODEX_BASE_URL
+    - NANOCLAW_CODEX_CLI
+    - NANOCLAW_CODEX_EPHEMERAL
+    - NANOCLAW_CODEX_FULL_AUTO
+    - NANOCLAW_CODEX_IGNORE_RULES
+    - NANOCLAW_CODEX_IGNORE_USER_CONFIG
+    - NANOCLAW_CODEX_INCLUDE_PRIOR_MESSAGES
+    - NANOCLAW_CODEX_MODEL
+    - NANOCLAW_CODEX_MODEL_PROVIDER
+    - NANOCLAW_CODEX_NETWORK_ACCESS
+    - NANOCLAW_CODEX_PROFILE
+    - NANOCLAW_CODEX_SANDBOX
+    - NANOCLAW_CODEX_WIRE_API
+    - NANOCLAW_CODEX_YOLO
+  set:
+    NANOCLAW_RUNNER_FRAMEWORK: codex
+
+resources:
+  cpus: "2"
+  memory: 4g
+  pids_limit: 512

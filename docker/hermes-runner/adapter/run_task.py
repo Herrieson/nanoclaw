@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -69,6 +70,7 @@ def main(argv: list[str] | None = None) -> int:
     extraction = extract_final_answer(result.stdout, result.stderr)
     final_answer = ensure_trailing_newline(extraction["content"])
     (options.output / "final_answer.md").write_text(final_answer, encoding="utf-8")
+    state_cleanup = cleanup_hermes_state(env, options.state)
 
     metadata = {
         "adapter": ADAPTER_NAME,
@@ -82,6 +84,7 @@ def main(argv: list[str] | None = None) -> int:
         "final_answer_bytes": len(final_answer.encode("utf-8")),
         "stdout_file": stdout_path.name,
         "stderr_file": stderr_path.name,
+        "state_cleanup": state_cleanup,
         "duration_ms": int((time.monotonic() - started_at) * 1000),
     }
     (options.output / "runner_metadata.json").write_text(
@@ -94,6 +97,7 @@ def main(argv: list[str] | None = None) -> int:
             "type": "hermes_finished",
             "exit_code": result.returncode,
             "final_answer_strategy": extraction["strategy"],
+            "state_cleanup": state_cleanup,
             "duration_ms": metadata["duration_ms"],
         },
     )
@@ -128,6 +132,12 @@ def build_hermes_env(options: argparse.Namespace, runner_request: dict[str, Any]
         env["HERMES_INFERENCE_PROVIDER"] = env["NANOCLAW_HERMES_PROVIDER"]
     if env.get("NANOCLAW_BASE_URL") and not env.get("OPENAI_BASE_URL"):
         env["OPENAI_BASE_URL"] = env["NANOCLAW_BASE_URL"]
+    if env.get("NANOCLAW_BASE_URL") and not env.get("CUSTOM_BASE_URL"):
+        env["CUSTOM_BASE_URL"] = env["NANOCLAW_BASE_URL"]
+    elif env.get("OPENAI_BASE_URL") and not env.get("CUSTOM_BASE_URL"):
+        env["CUSTOM_BASE_URL"] = env["OPENAI_BASE_URL"]
+    if env.get("CUSTOM_BASE_URL") and not env.get("HERMES_INFERENCE_PROVIDER"):
+        env["HERMES_INFERENCE_PROVIDER"] = "custom"
 
     for directory in [
         Path(env["HERMES_HOME"]),
@@ -248,6 +258,42 @@ def run_command(
     stdout_path.write_text(result.stdout or "", encoding="utf-8")
     stderr_path.write_text(result.stderr or "", encoding="utf-8")
     return result
+
+
+def cleanup_hermes_state(env: dict[str, str], state_dir: Path) -> dict[str, Any]:
+    skills_dir = Path(env.get("HERMES_HOME") or state_dir) / "skills"
+    payload: dict[str, Any] = {
+        "skills_dir": str(skills_dir),
+        "removed_skills": False,
+    }
+    if env.get("NANOCLAW_HERMES_KEEP_STATE_SKILLS") == "1":
+        payload["skipped_reason"] = "disabled_by_env"
+        return payload
+
+    if not skills_dir.exists():
+        payload["skipped_reason"] = "missing"
+        return payload
+
+    try:
+        resolved_skills_dir = skills_dir.resolve(strict=False)
+        resolved_state_dir = state_dir.resolve(strict=False)
+        if not resolved_skills_dir.is_relative_to(resolved_state_dir):
+            payload["skipped_reason"] = "outside_state_dir"
+            return payload
+    except OSError as exc:
+        payload["skipped_reason"] = "path_resolution_failed"
+        payload["error"] = str(exc)
+        return payload
+
+    try:
+        shutil.rmtree(skills_dir)
+    except OSError as exc:
+        payload["skipped_reason"] = "remove_failed"
+        payload["error"] = str(exc)
+        return payload
+
+    payload["removed_skills"] = True
+    return payload
 
 
 def extract_final_answer(stdout: str, stderr: str) -> dict[str, str]:

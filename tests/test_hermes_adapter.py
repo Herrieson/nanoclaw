@@ -124,6 +124,67 @@ class HermesAdapterTest(unittest.TestCase):
         metadata = json.loads((self.output / "runner_metadata.json").read_text(encoding="utf-8"))
         self.assertEqual(metadata["mode"], "chat")
 
+    def test_openai_compatible_base_url_defaults_to_custom_provider(self) -> None:
+        self._write_fake_hermes(
+            """
+            for arg in "$@"; do printf '%s\\n' "$arg"; done > "$FAKE_HERMES_ARGS_FILE"
+            printf '%s\\n' "${CUSTOM_BASE_URL:-}" > "$FAKE_HERMES_CWD_FILE.custom_base_url"
+            printf '%s\\n' 'Custom provider answer.'
+            """
+        )
+
+        result = self._run_adapter(
+            {
+                "NANOCLAW_BASE_URL": "https://openai-compatible.example/v1",
+            }
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        args = (self.root / "hermes_args.txt").read_text(encoding="utf-8").splitlines()
+        self.assertIn("--provider", args)
+        self.assertEqual(args[args.index("--provider") + 1], "custom")
+        self.assertEqual(
+            (self.root / "hermes_cwd.txt.custom_base_url").read_text(encoding="utf-8").strip(),
+            "https://openai-compatible.example/v1",
+        )
+
+    def test_removes_state_skills_after_run_by_default(self) -> None:
+        self._write_fake_hermes(
+            """
+            mkdir -p "$HERMES_HOME/skills/bundled"
+            printf '%s\\n' 'large bundled skill payload' > "$HERMES_HOME/skills/bundled/SKILL.md"
+            mkdir -p "$HERMES_HOME/sessions"
+            printf '%s\\n' 'session payload' > "$HERMES_HOME/sessions/session.json"
+            printf '%s\\n' 'Cleanup answer.'
+            """
+        )
+
+        result = self._run_adapter()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse((self.state / "skills").exists())
+        self.assertTrue((self.state / "sessions" / "session.json").exists())
+        metadata = json.loads((self.output / "runner_metadata.json").read_text(encoding="utf-8"))
+        self.assertTrue(metadata["state_cleanup"]["removed_skills"])
+        self.assertEqual(metadata["state_cleanup"]["skills_dir"], str(self.state / "skills"))
+
+    def test_can_keep_state_skills_for_debugging(self) -> None:
+        self._write_fake_hermes(
+            """
+            mkdir -p "$HERMES_HOME/skills/bundled"
+            printf '%s\\n' 'large bundled skill payload' > "$HERMES_HOME/skills/bundled/SKILL.md"
+            printf '%s\\n' 'Keep skills answer.'
+            """
+        )
+
+        result = self._run_adapter({"NANOCLAW_HERMES_KEEP_STATE_SKILLS": "1"})
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue((self.state / "skills" / "bundled" / "SKILL.md").exists())
+        metadata = json.loads((self.output / "runner_metadata.json").read_text(encoding="utf-8"))
+        self.assertFalse(metadata["state_cleanup"]["removed_skills"])
+        self.assertEqual(metadata["state_cleanup"]["skipped_reason"], "disabled_by_env")
+
     def test_nonzero_hermes_exit_still_records_logs_and_answer(self) -> None:
         self._write_fake_hermes(
             """
