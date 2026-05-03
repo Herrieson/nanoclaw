@@ -23,8 +23,8 @@ COMPONENTS="${COMPONENTS:-workplace}"
 SELECT_RUN_PER_TASK="${SELECT_RUN_PER_TASK:-latest-completed}"
 
 DEFAULT_DATASETS=(
-    "round_01_aligned_mix_800"
-    "persona_aligned_mix_200"
+    "round_01_aligned_mix_subset_100"
+    "persona_aligned_mix_subset_100"
 )
 
 DEFAULT_MODELS=(
@@ -52,7 +52,13 @@ dataset_task_glob() {
         round_01_aligned_mix_800)
             echo "tasks/data_round_01_aligned_mix_800_*.yaml"
             ;;
+        round_01_aligned_mix_subset_100)
+            echo "tasks/data_round_01_aligned_mix_800_*.yaml"
+            ;;
         persona_aligned_mix_200)
+            echo "tasks/data_persona_aligned_*_50_*.yaml"
+            ;;
+        persona_aligned_mix_subset_100)
             echo "tasks/data_persona_aligned_*_50_*.yaml"
             ;;
         *)
@@ -67,8 +73,14 @@ dataset_staging_root() {
         round_01_aligned_mix_800)
             echo ".staging/round_01_aligned_mix_800"
             ;;
+        round_01_aligned_mix_subset_100)
+            echo ".staging/round_01_aligned_mix_subset_100"
+            ;;
         persona_aligned_mix_200)
             echo ".staging/persona_aligned_mix_200"
+            ;;
+        persona_aligned_mix_subset_100)
+            echo ".staging/persona_aligned_mix_subset_100"
             ;;
         *)
             echo "[ERROR] Unknown dataset: $1" >&2
@@ -79,10 +91,10 @@ dataset_staging_root() {
 
 dataset_groups() {
     case "$1" in
-        round_01_aligned_mix_800)
+        round_01_aligned_mix_800|round_01_aligned_mix_subset_100)
             echo "multi_turn_aligned skills_aligned hard_aligned base"
             ;;
-        persona_aligned_mix_200)
+        persona_aligned_mix_200|persona_aligned_mix_subset_100)
             echo "base multi_turn hard skills"
             ;;
         *)
@@ -97,8 +109,14 @@ dataset_title() {
         round_01_aligned_mix_800)
             echo "Round 01 Aligned Mix 800"
             ;;
+        round_01_aligned_mix_subset_100)
+            echo "Round 01 Aligned Mix Subset 100"
+            ;;
         persona_aligned_mix_200)
             echo "Persona Aligned Mix 200"
+            ;;
+        persona_aligned_mix_subset_100)
+            echo "Persona Aligned Mix Subset 100"
             ;;
         *)
             echo "$1"
@@ -111,28 +129,28 @@ dataset_group_verifiers() {
     local GROUP_NAME="$2"
 
     case "${DATASET}:${GROUP_NAME}" in
-        round_01_aligned_mix_800:multi_turn_aligned)
+        round_01_aligned_mix_800:multi_turn_aligned|round_01_aligned_mix_subset_100:multi_turn_aligned)
             echo "doc/todo/gemini3_2000_score_new_verifier_multi_turn_1.jsonl doc/todo/gemini3_2000_score_new_verifier_multi_turn_2.jsonl doc/todo/gemini3_2000_score_new_verifier_multi_turn_3.jsonl doc/todo/gemini3_2000_score_new_verifier_multi_turn_4.jsonl doc/todo/gemini3_2000_score_new_verifier_multi_turn_5.jsonl"
             ;;
-        round_01_aligned_mix_800:skills_aligned)
+        round_01_aligned_mix_800:skills_aligned|round_01_aligned_mix_subset_100:skills_aligned)
             echo "doc/todo/gemini3_2000_skills_score_new_verifier_1.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_2.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_3.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_4.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_5.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_6.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_7.jsonl"
             ;;
-        round_01_aligned_mix_800:hard_aligned)
+        round_01_aligned_mix_800:hard_aligned|round_01_aligned_mix_subset_100:hard_aligned)
             echo "doc/todo/gemini3_2000_score_new_verifier_hard_1.jsonl doc/todo/gemini3_2000_score_new_verifier_hard_2.jsonl doc/todo/gemini3_2000_score_new_verifier_hard_3.jsonl doc/todo/gemini3_2000_score_new_verifier_hard_4.jsonl"
             ;;
-        round_01_aligned_mix_800:base)
+        round_01_aligned_mix_800:base|round_01_aligned_mix_subset_100:base)
             echo "doc/todo/gemini3_2000_score_new_verifier_1.jsonl doc/todo/gemini3_2000_score_new_verifier_2.jsonl doc/todo/gemini3_2000_score_new_verifier_3.jsonl"
             ;;
-        persona_aligned_mix_200:base)
+        persona_aligned_mix_200:base|persona_aligned_mix_subset_100:base)
             echo "doc/todo/persona/base.jsonl"
             ;;
-        persona_aligned_mix_200:multi_turn)
+        persona_aligned_mix_200:multi_turn|persona_aligned_mix_subset_100:multi_turn)
             echo "doc/todo/persona/multi_turn.jsonl"
             ;;
-        persona_aligned_mix_200:hard)
+        persona_aligned_mix_200:hard|persona_aligned_mix_subset_100:hard)
             echo "doc/todo/persona/hard.jsonl"
             ;;
-        persona_aligned_mix_200:skills)
+        persona_aligned_mix_200:skills|persona_aligned_mix_subset_100:skills)
             echo "doc/todo/persona/skills.jsonl"
             ;;
         *)
@@ -246,14 +264,29 @@ PY
 run_dataset_tasks() {
     local DATASET="$1"
     local TASK_GLOB
+    local STAGING_ROOT
+    local TASK_IDS_FILE
     local DATASET_RESULTS_ROOT
 
     TASK_GLOB="$(dataset_task_glob "${DATASET}")" || return 1
+    STAGING_ROOT="$(dataset_staging_root "${DATASET}")" || return 1
+    TASK_IDS_FILE="${STAGING_ROOT}/task_ids"
     DATASET_RESULTS_ROOT="${RESULTS_ROOT}/${DATASET}"
 
-    shopt -s nullglob
-    local TASK_FILES=( ${TASK_GLOB} )
-    shopt -u nullglob
+    local TASK_FILES=()
+    if [ -f "${TASK_IDS_FILE}" ]; then
+        local TASK_IDS=()
+        local TASK_ID
+        mapfile -t TASK_IDS < "${TASK_IDS_FILE}"
+        for TASK_ID in "${TASK_IDS[@]}"; do
+            [ -n "${TASK_ID}" ] || continue
+            TASK_FILES+=( "tasks/${TASK_ID}.yaml" )
+        done
+    else
+        shopt -s nullglob
+        TASK_FILES=( ${TASK_GLOB} )
+        shopt -u nullglob
+    fi
 
     if [ ${#TASK_FILES[@]} -eq 0 ]; then
         echo "[ERROR] ${DATASET}: no tasks matched ${TASK_GLOB}"
@@ -263,6 +296,9 @@ run_dataset_tasks() {
     echo "=================================================="
     echo "[INFO] Running dataset with built-in nanoclaw: ${DATASET}"
     echo "[INFO] Task glob: ${TASK_GLOB}"
+    if [ -f "${TASK_IDS_FILE}" ]; then
+        echo "[INFO] Task ids file: ${TASK_IDS_FILE}"
+    fi
     echo "[INFO] Matched tasks: ${#TASK_FILES[@]}"
     echo "[INFO] Results root: ${DATASET_RESULTS_ROOT}"
     echo "[INFO] Runner: ${RUNNER_NAME}"

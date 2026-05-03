@@ -18,8 +18,8 @@ DEFAULT_RUNNERS=(
 )
 
 DEFAULT_DATASETS=(
-    "round_01_aligned_mix_800"
-    "persona_aligned_mix_200"
+    "round_01_aligned_mix_subset_100"
+    "persona_aligned_mix_subset_100"
 )
 
 DEFAULT_MODELS=(

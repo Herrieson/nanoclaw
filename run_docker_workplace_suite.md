@@ -1,9 +1,11 @@
 # run_docker_workplace_suite.sh
 
-这个脚本用于用 Docker runner 运行并评估：
+这个脚本用于用 Docker runner 运行并评估 200 条子集：
 
-- `round_01_aligned_mix_800`
-- `persona_aligned_mix_200`
+- `round_01_aligned_mix_subset_100`
+- `persona_aligned_mix_subset_100`
+
+这两个子集合计 200 条。每个子集 100 条，四类各 25 条。
 
 默认会依次跑这三个镜像 runner：
 
@@ -38,6 +40,17 @@ export MOCK_MODEL_NAME="qwen3.5-flash"
 ## 运行
 
 ```bash
+RUNNERS_OVERRIDE='openclaw hermes codex' \
+MODELS_OVERRIDE='qwen3.5-flash qwen3.5-plus deepseek-v3.2' \
+WORKERS=8 \
+EVAL_WORKERS=16 \
+bash run_docker_workplace_suite.sh
+```
+
+如果要跑全量 1000 条，再显式指定：
+
+```bash
+DATASETS_OVERRIDE='round_01_aligned_mix_800 persona_aligned_mix_200' \
 RUNNERS_OVERRIDE='openclaw hermes codex' \
 MODELS_OVERRIDE='qwen3.5-flash qwen3.5-plus deepseek-v3.2' \
 WORKERS=8 \
@@ -85,6 +98,6 @@ results/docker_workplace_suite_eval/docker_runner_dataset_model_comparison.svg
 例如：
 
 ```text
-results/docker_workplace_suite/openclaw/persona_aligned_mix_200/qwen35flash/
-results/docker_workplace_suite_eval/openclaw/persona_aligned_mix_200/merged/qwen35flash/evaluation_summary.json
+results/docker_workplace_suite/openclaw/persona_aligned_mix_subset_100/qwen35flash/
+results/docker_workplace_suite_eval/openclaw/persona_aligned_mix_subset_100/merged/qwen35flash/evaluation_summary.json
 ```

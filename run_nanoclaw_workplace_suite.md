@@ -1,11 +1,13 @@
 # run_nanoclaw_workplace_suite.sh
 
-这个脚本用于用 nanoclaw 自身框架运行并评估：
+这个脚本用于用 nanoclaw 自身框架运行并评估 200 条子集：
 
-- `round_01_aligned_mix_800`
-- `persona_aligned_mix_200`
+- `round_01_aligned_mix_subset_100`
+- `persona_aligned_mix_subset_100`
 
 默认不使用 Docker 镜像，只用内置 nanoclaw runner。评估只跑 workplace，并在结束后生成柱状图。
+
+这两个子集合计 200 条。每个子集 100 条，四类各 25 条。
 
 ## 配置环境变量
 
@@ -24,6 +26,16 @@ export MOCK_MODEL_NAME="qwen3.5-flash"
 ## 运行
 
 ```bash
+MODELS_OVERRIDE='qwen3.5-flash qwen3.5-plus deepseek-v3.2' \
+WORKERS=8 \
+EVAL_WORKERS=16 \
+bash run_nanoclaw_workplace_suite.sh
+```
+
+如果要跑全量 1000 条，再显式指定：
+
+```bash
+DATASETS_OVERRIDE='round_01_aligned_mix_800 persona_aligned_mix_200' \
 MODELS_OVERRIDE='qwen3.5-flash qwen3.5-plus deepseek-v3.2' \
 WORKERS=8 \
 EVAL_WORKERS=16 \
