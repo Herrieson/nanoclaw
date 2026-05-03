@@ -1,4 +1,6 @@
-ARG OPENCLAW_IMAGE=ghcr.io/openclaw/openclaw:latest
+# Keep this pinned. ghcr.io/openclaw/openclaw:latest has changed CLI flags
+# across releases, which can break the dependency prewarm step.
+ARG OPENCLAW_IMAGE=ghcr.io/openclaw/openclaw@sha256:2c56a23cb2fe826a0d521bf6d61c8e4bb4e4201274f358eccddf5876393155ae
 FROM ${OPENCLAW_IMAGE}
 
 ARG NPM_CONFIG_REGISTRY=

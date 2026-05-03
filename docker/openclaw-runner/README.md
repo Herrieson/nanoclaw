@@ -8,6 +8,17 @@ Build:
 docker build -t nanoclaw-runner-openclaw:latest docker/openclaw-runner
 ```
 
+The Dockerfile pins the upstream OpenClaw base image by digest because the
+`latest` tag has changed CLI flags across releases. To test a newer upstream
+image explicitly:
+
+```bash
+docker build \
+  --build-arg OPENCLAW_IMAGE=ghcr.io/openclaw/openclaw:latest \
+  -t nanoclaw-runner-openclaw:latest \
+  docker/openclaw-runner
+```
+
 Use it through:
 
 ```bash
