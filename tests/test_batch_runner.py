@@ -205,8 +205,17 @@ class BatchRunnerTests(unittest.TestCase):
         def write_summary(run_id: str, status: str) -> Path:
             run_dir = task_results_dir / run_id
             run_dir.mkdir(parents=True, exist_ok=True)
+            if status == "completed":
+                (run_dir / "final_answer.md").write_text("done\n", encoding="utf-8")
             (run_dir / "summary.json").write_text(
-                json.dumps({"task_id": "data_03", "run_id": run_id, "status": status}),
+                json.dumps(
+                    {
+                        "task_id": "data_03",
+                        "run_id": run_id,
+                        "status": status,
+                        "final_answer_file": "final_answer.md",
+                    }
+                ),
                 encoding="utf-8",
             )
             return run_dir
@@ -225,9 +234,17 @@ class BatchRunnerTests(unittest.TestCase):
         task_a_results = self.repo_root / "results" / "data_10" / "20260101T000000Z"
         task_a_results.mkdir(parents=True, exist_ok=True)
         (task_a_results / "summary.json").write_text(
-            json.dumps({"task_id": "data_10", "run_id": "20260101T000000Z", "status": "completed"}),
+            json.dumps(
+                {
+                    "task_id": "data_10",
+                    "run_id": "20260101T000000Z",
+                    "status": "completed",
+                    "final_answer_file": "final_answer.md",
+                }
+            ),
             encoding="utf-8",
         )
+        (task_a_results / "final_answer.md").write_text("done\n", encoding="utf-8")
         task_b_results = self.repo_root / "results" / "data_11" / "20260101T000000Z"
         task_b_results.mkdir(parents=True, exist_ok=True)
         (task_b_results / "summary.json").write_text(
@@ -263,6 +280,29 @@ class BatchRunnerTests(unittest.TestCase):
 
         self.assertEqual([spec.task_id for spec in pending_specs], ["data_11", "data_12"])
         self.assertEqual(reused_run_dirs, {"data_10": task_a_results.resolve()})
+
+    def test_resume_does_not_skip_empty_completed_final_answer(self) -> None:
+        task_results = self.repo_root / "results" / "data_empty" / "20260101T000000Z"
+        task_results.mkdir(parents=True, exist_ok=True)
+        (task_results / "final_answer.md").write_text("\n", encoding="utf-8")
+        (task_results / "summary.json").write_text(
+            json.dumps(
+                {
+                    "task_id": "data_empty",
+                    "run_id": "20260101T000000Z",
+                    "status": "completed",
+                    "final_answer_file": "final_answer.md",
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        resolved = find_latest_completed_run_dir(
+            "data_empty",
+            results_dir=self.repo_root / "results",
+        )
+
+        self.assertIsNone(resolved)
 
 
 if __name__ == "__main__":

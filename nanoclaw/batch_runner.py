@@ -163,6 +163,8 @@ def find_latest_completed_run_dir(task_id: str, *, results_dir: Path) -> Path | 
             continue
         if str(summary.get("status") or "") != "completed":
             continue
+        if _final_answer_is_blank(run_dir, summary):
+            continue
         completed_run_dirs.append(run_dir.resolve())
 
     if not completed_run_dirs:
@@ -412,6 +414,18 @@ def _load_run_summary(run_dir: Path) -> dict[str, object] | None:
     if not isinstance(payload, dict):
         return None
     return payload
+
+
+def _final_answer_is_blank(run_dir: Path, summary: dict[str, object]) -> bool:
+    raw_name = summary.get("final_answer_file") or "final_answer.md"
+    if not isinstance(raw_name, str):
+        return True
+    path = run_dir / raw_name
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return True
+    return not text.strip()
 
 
 def _run_multi_turn_task(

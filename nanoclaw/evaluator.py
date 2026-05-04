@@ -254,6 +254,34 @@ def evaluate_run(
     run_result_type = summary.get("result_type")
     verify_script_path = (repo_root / "tasks" / task_id / "verify_rules.py").resolve()
     verify_prompt_path = (repo_root / "tasks" / task_id / "verify_prompt.md").resolve()
+    if run_status == "completed" and _final_answer_is_blank(resolved_run_dir, summary):
+        return EvaluationResult(
+            task_id=task_id,
+            run_id=resolved_run_dir.name,
+            run_dir=resolved_run_dir,
+            summary_path=summary_path,
+            run_status="failed_empty_final_answer",
+            run_result_type=str(run_result_type) if isinstance(run_result_type, str) else None,
+            verify_script_path=verify_script_path if verify_script_path.exists() else None,
+            verify_prompt_path=verify_prompt_path if verify_prompt_path.exists() else None,
+            verify_output_path=None,
+            verify_data=None,
+            verify_exit_code=None,
+            verify_stdout="",
+            verify_stderr="",
+            probe_score=None,
+            probe_score_source=None,
+            judge_score=None,
+            judge_model=resolved_judge_config.model,
+            judge_attempts=0,
+            judge_stdout="",
+            judge_error=None,
+            judge_reasoning=None,
+            objective_score=None,
+            objective_score_source=None,
+            evaluation_status="skipped_run_not_completed",
+            error="Run status is completed but final_answer.md is empty; skipped objective evaluation.",
+        )
     if isinstance(run_status, str) and run_status != "completed":
         return EvaluationResult(
             task_id=task_id,
@@ -592,6 +620,17 @@ def _find_verify_output(*, temp_dir: Path, task_id: str) -> Path | None:
 
     fallback = sorted(temp_dir.rglob("verify_result.json")) + sorted(temp_dir.rglob("state.json"))
     return fallback[0] if fallback else None
+
+
+def _final_answer_is_blank(run_dir: Path, summary: dict[str, Any]) -> bool:
+    raw_name = summary.get("final_answer_file") or "final_answer.md"
+    if not isinstance(raw_name, str):
+        return True
+    try:
+        text = (run_dir / raw_name).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return True
+    return not text.strip()
 
 
 def _execute_verify_callable_fallback(

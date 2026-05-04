@@ -32,13 +32,17 @@ DEFAULT_MODELS=(
 )
 
 if [ -n "${DATASETS_OVERRIDE:-}" ]; then
-    read -r -a DATASETS <<< "${DATASETS_OVERRIDE}"
+    DATASETS_OVERRIDE_CLEAN="${DATASETS_OVERRIDE//$'\n'/ }"
+    DATASETS_OVERRIDE_CLEAN="${DATASETS_OVERRIDE_CLEAN//$'\t'/ }"
+    read -r -a DATASETS <<< "${DATASETS_OVERRIDE_CLEAN}"
 else
     DATASETS=("${DEFAULT_DATASETS[@]}")
 fi
 
 if [ -n "${MODELS_OVERRIDE:-}" ]; then
-    read -r -a MODELS <<< "${MODELS_OVERRIDE}"
+    MODELS_OVERRIDE_CLEAN="${MODELS_OVERRIDE//$'\n'/ }"
+    MODELS_OVERRIDE_CLEAN="${MODELS_OVERRIDE_CLEAN//$'\t'/ }"
+    read -r -a MODELS <<< "${MODELS_OVERRIDE_CLEAN}"
 else
     MODELS=("${DEFAULT_MODELS[@]}")
 fi
@@ -167,15 +171,16 @@ build_group_manifests() {
     local IMPORT_MANIFEST
     local GROUP_MANIFEST_ROOT
     local GROUPS_RAW
+    local DATASET_GROUPS
 
     STAGING_ROOT="$(dataset_staging_root "${DATASET}")" || return 1
     SELECTION_MANIFEST="${STAGING_ROOT}/selection_manifest.jsonl"
     IMPORT_MANIFEST="${STAGING_ROOT}/import_manifest.jsonl"
     GROUP_MANIFEST_ROOT="${STAGING_ROOT}/eval_manifests"
     GROUPS_RAW="$(dataset_groups "${DATASET}")" || return 1
-    read -r -a GROUPS <<< "${GROUPS_RAW}"
+    read -r -a DATASET_GROUPS <<< "${GROUPS_RAW}"
 
-    uv run python - "${SELECTION_MANIFEST}" "${IMPORT_MANIFEST}" "${GROUP_MANIFEST_ROOT}" "${GROUPS[@]}" <<'PY'
+    uv run python - "${SELECTION_MANIFEST}" "${IMPORT_MANIFEST}" "${GROUP_MANIFEST_ROOT}" "${DATASET_GROUPS[@]}" <<'PY'
 from __future__ import annotations
 
 from collections import defaultdict
@@ -551,6 +556,7 @@ evaluate_dataset() {
     local INTERMEDIATE_ROOT
     local MERGED_ROOT
     local GROUPS_RAW
+    local DATASET_GROUPS
     local DATASET_EXIT_CODE=0
 
     STAGING_ROOT="$(dataset_staging_root "${DATASET}")" || return 1
@@ -560,7 +566,7 @@ evaluate_dataset() {
     INTERMEDIATE_ROOT="${DATASET_EVAL_ROOT}/_group_reports"
     MERGED_ROOT="${DATASET_EVAL_ROOT}/merged"
     GROUPS_RAW="$(dataset_groups "${DATASET}")" || return 1
-    read -r -a GROUPS <<< "${GROUPS_RAW}"
+    read -r -a DATASET_GROUPS <<< "${GROUPS_RAW}"
 
     if [ ! -d "${DATASET_RESULTS_ROOT}" ]; then
         echo "[ERROR] ${DATASET}: results root does not exist: ${DATASET_RESULTS_ROOT}"
@@ -600,7 +606,7 @@ evaluate_dataset() {
             continue
         fi
 
-        for GROUP_NAME in "${GROUPS[@]}"; do
+        for GROUP_NAME in "${DATASET_GROUPS[@]}"; do
             TASK_ID_FILE="${GROUP_MANIFEST_ROOT}/${GROUP_NAME}.task_ids"
             GROUP_MANIFEST="${GROUP_MANIFEST_ROOT}/${GROUP_NAME}.jsonl"
             if [ ! -f "${TASK_ID_FILE}" ] || [ ! -f "${GROUP_MANIFEST}" ]; then
@@ -671,7 +677,7 @@ evaluate_dataset() {
     echo "=================================================="
     echo "[INFO] Merging per-group reports for ${DATASET}"
     echo "=================================================="
-    merge_model_reports "${INTERMEDIATE_ROOT}" "${MERGED_ROOT}" "${GROUPS[@]}" || return 1
+    merge_model_reports "${INTERMEDIATE_ROOT}" "${MERGED_ROOT}" "${DATASET_GROUPS[@]}" || return 1
 
     return ${DATASET_EXIT_CODE}
 }
@@ -683,7 +689,7 @@ render_dataset_charts() {
     local CHART_ROOT="${DATASET_EVAL_ROOT}/charts"
     local TITLE
     local GROUPS_RAW
-    local GROUPS
+    local DATASET_GROUPS
     local SUMMARY_PATHS
     local GROUP_NAME
     local STATUS
@@ -691,7 +697,7 @@ render_dataset_charts() {
 
     TITLE="$(dataset_title "${DATASET}")"
     GROUPS_RAW="$(dataset_groups "${DATASET}")" || return 1
-    read -r -a GROUPS <<< "${GROUPS_RAW}"
+    read -r -a DATASET_GROUPS <<< "${GROUPS_RAW}"
     mkdir -p "${CHART_ROOT}"
 
     shopt -s nullglob
@@ -716,7 +722,7 @@ render_dataset_charts() {
         fi
     fi
 
-    for GROUP_NAME in "${GROUPS[@]}"; do
+    for GROUP_NAME in "${DATASET_GROUPS[@]}"; do
         shopt -s nullglob
         SUMMARY_PATHS=( "${DATASET_EVAL_ROOT}/_group_reports/${GROUP_NAME}"/*/evaluation_summary.json )
         shopt -u nullglob

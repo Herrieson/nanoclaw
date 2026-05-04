@@ -324,6 +324,19 @@ def evaluate_workplace_trace_run(
     run_result_type = summary.get("result_type")
     model = summary.get("model")
     summary_error = _summary_error(summary)
+    if run_status == "completed" and _final_answer_is_blank(resolved_run_dir, summary):
+        return _result_template(
+            task_id=task_id,
+            run_id=run_id,
+            run_dir=resolved_run_dir,
+            summary_path=summary_path,
+            run_status="failed_empty_final_answer",
+            run_result_type=str(run_result_type) if isinstance(run_result_type, str) else None,
+            model=str(model) if isinstance(model, str) else None,
+            evaluation_status="skipped_run_not_completed",
+            error="Run status is completed but final_answer.md is empty; skipped workplace/trace evaluation.",
+            judge_config=judge_config,
+        )
     if isinstance(run_status, str) and run_status != "completed" and is_infra_failure_error(summary_error):
         return _result_template(
             task_id=task_id,
@@ -1379,3 +1392,14 @@ def _result_template(
 def _join_errors(*errors: str | None) -> str | None:
     parts = [error for error in errors if error]
     return "; ".join(parts) if parts else None
+
+
+def _final_answer_is_blank(run_dir: Path, summary: dict[str, Any]) -> bool:
+    raw_name = summary.get("final_answer_file") or "final_answer.md"
+    if not isinstance(raw_name, str):
+        return True
+    try:
+        text = (run_dir / raw_name).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return True
+    return not text.strip()

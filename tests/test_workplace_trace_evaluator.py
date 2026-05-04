@@ -341,6 +341,26 @@ id: data_1
         self.assertEqual(result.evaluation_status, "skipped_infra_failure")
         self.assertIsNone(result.objective_score)
 
+    def test_workplace_skips_completed_run_with_empty_final_answer(self) -> None:
+        manifest_path = self._write_manifest()
+        jsonl_path = self._write_jsonl(
+            workplace_script="raise RuntimeError('should not run')"
+        )
+        bundle = load_verifier_bundle([jsonl_path], manifest_path=manifest_path)
+        run_dir = self._create_run()
+        (run_dir / "final_answer.md").write_text("\n", encoding="utf-8")
+
+        result = evaluate_workplace_trace_run(
+            run_dir,
+            verifiers=bundle.verifiers,
+            components="workplace",
+            judge_config=EvaluationJudgeConfig.disabled(),
+        )
+
+        self.assertEqual(result.run_status, "failed_empty_final_answer")
+        self.assertEqual(result.evaluation_status, "skipped_run_not_completed")
+        self.assertIsNone(result.objective_score)
+
     @mock.patch("nanoclaw.workplace_trace_evaluator.OpenAI")
     def test_full_evaluation_averages_workplace_and_trace_scores(self, openai_cls: mock.Mock) -> None:
         manifest_path = self._write_manifest()

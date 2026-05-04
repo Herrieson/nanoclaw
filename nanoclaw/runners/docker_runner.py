@@ -67,10 +67,13 @@ class DockerRunner(AgentRunner):
             error = error or f"Docker runner timed out after {self.profile.timeout_seconds:g}s"
         elif execution.exit_code != 0:
             status = "failed"
-            error = error or f"Docker runner exited with code {execution.exit_code}"
+            error = error or _docker_failure_message(execution)
         elif final_answer is None:
             status = "failed"
             error = "Docker runner did not write /output/final_answer.md"
+        elif not final_answer.strip():
+            status = "failed"
+            error = "Docker runner wrote an empty /output/final_answer.md"
 
         return RunnerResult(
             status=status,
@@ -444,6 +447,23 @@ def _parse_exit_code(stdout: str) -> int | None:
         return int(lines[-1])
     except ValueError:
         return None
+
+
+def _docker_failure_message(execution: _DockerExecution) -> str:
+    tail = _read_nonempty_tail(execution.stderr_path) or _read_nonempty_tail(execution.stdout_path)
+    if tail:
+        return f"Docker runner exited with code {execution.exit_code}: {tail}"
+    return f"Docker runner exited with code {execution.exit_code}"
+
+
+def _read_nonempty_tail(path: Path, *, max_chars: int = 500) -> str | None:
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace").strip()
+    except OSError:
+        return None
+    if not text:
+        return None
+    return text[-max_chars:]
 
 
 def _append_jsonl(path: Path, payload: dict[str, Any]) -> None:

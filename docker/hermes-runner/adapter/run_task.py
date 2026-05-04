@@ -71,6 +71,17 @@ def main(argv: list[str] | None = None) -> int:
     final_answer = ensure_trailing_newline(extraction["content"])
     (options.output / "final_answer.md").write_text(final_answer, encoding="utf-8")
     state_cleanup = cleanup_hermes_state(env, options.state)
+    hermes_error = find_hermes_error(options.state)
+    adapter_error = None
+    if result.returncode == 0 and not final_answer.strip():
+        if hermes_error:
+            adapter_error = (
+                "Hermes completed without a final answer after provider/API error: "
+                f"{hermes_error['message']}"
+            )
+        else:
+            adapter_error = "Hermes completed without a final answer."
+        print(adapter_error, file=sys.stderr)
 
     metadata = {
         "adapter": ADAPTER_NAME,
@@ -85,6 +96,8 @@ def main(argv: list[str] | None = None) -> int:
         "stdout_file": stdout_path.name,
         "stderr_file": stderr_path.name,
         "state_cleanup": state_cleanup,
+        "hermes_error": hermes_error,
+        "error": adapter_error,
         "duration_ms": int((time.monotonic() - started_at) * 1000),
     }
     (options.output / "runner_metadata.json").write_text(
@@ -98,10 +111,11 @@ def main(argv: list[str] | None = None) -> int:
             "exit_code": result.returncode,
             "final_answer_strategy": extraction["strategy"],
             "state_cleanup": state_cleanup,
+            "error": adapter_error,
             "duration_ms": metadata["duration_ms"],
         },
     )
-    return result.returncode
+    return 1 if adapter_error else result.returncode
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
@@ -304,6 +318,46 @@ def extract_final_answer(stdout: str, stderr: str) -> dict[str, str]:
     if stderr_clean:
         return {"content": stderr_clean, "strategy": "stderr_fallback"}
     return {"content": "", "strategy": "empty"}
+
+
+def find_hermes_error(state_dir: Path) -> dict[str, str] | None:
+    sessions_dir = state_dir / "sessions"
+    if not sessions_dir.exists():
+        return None
+
+    def sort_key(path: Path) -> float:
+        try:
+            return path.stat().st_mtime
+        except OSError:
+            return 0.0
+
+    for path in sorted(sessions_dir.glob("request_dump*.json"), key=sort_key, reverse=True):
+        payload = read_json(path, {})
+        if not isinstance(payload, dict):
+            continue
+        message = format_hermes_error(payload.get("error"))
+        if message:
+            return {"file": str(path), "message": message}
+    return None
+
+
+def format_hermes_error(error: Any) -> str | None:
+    if isinstance(error, str):
+        return error.strip() or None
+    if not isinstance(error, dict):
+        return None
+
+    code = error.get("code") or error.get("type")
+    status_code = error.get("status_code") or error.get("response_status")
+    message = error.get("message") or error.get("response_text")
+    parts = []
+    if code:
+        parts.append(str(code))
+    if status_code:
+        parts.append(f"status={status_code}")
+    if message:
+        parts.append(str(message))
+    return ": ".join(parts) if parts else None
 
 
 def strip_ansi(value: str) -> str:

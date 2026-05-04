@@ -443,7 +443,20 @@ def _run_status(run_dir: Path) -> str | None:
     except Exception:
         return None
     status = payload.get("status")
+    if status == "completed" and _final_answer_is_blank(run_dir, payload):
+        return "failed_empty_final_answer"
     return status if isinstance(status, str) else None
+
+
+def _final_answer_is_blank(run_dir: Path, summary: dict[str, object]) -> bool:
+    raw_name = summary.get("final_answer_file") or "final_answer.md"
+    if not isinstance(raw_name, str):
+        return True
+    try:
+        text = (run_dir / raw_name).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return True
+    return not text.strip()
 
 
 def _resolve_path(path_value: str | Path) -> Path:

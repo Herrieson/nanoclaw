@@ -177,6 +177,60 @@ class DockerRunnerTest(unittest.TestCase):
         self.assertIn("nanoclaw-runner-openclaw:test", create_command)
         self.assertIn("/adapter/run_task", create_command)
 
+    def test_docker_runner_rejects_empty_final_answer(self) -> None:
+        profile = RunnerProfile(
+            profile_id="fake-hermes",
+            runner_type="docker",
+            image="nanoclaw-runner-hermes:test",
+            command=("/adapter/run_task",),
+            network="bridge",
+            timeout_seconds=30,
+        )
+        output_dir = self.run_dir / "runner_output"
+
+        def fake_docker(
+            command: list[str],
+            timeout: float | None,
+        ) -> subprocess.CompletedProcess[str]:
+            action = command[1]
+            if action == "create":
+                return subprocess.CompletedProcess(command, 0, "container-123\n", "")
+            if action == "start":
+                return subprocess.CompletedProcess(command, 0, "container-123\n", "")
+            if action == "wait":
+                output_dir.mkdir(parents=True, exist_ok=True)
+                (output_dir / "final_answer.md").write_text("\n", encoding="utf-8")
+                return subprocess.CompletedProcess(command, 0, "0\n", "")
+            if action == "logs":
+                return subprocess.CompletedProcess(command, 0, "", "")
+            if action == "inspect":
+                return subprocess.CompletedProcess(command, 0, '[{"Id": "container-123"}]\n', "")
+            if action == "rm":
+                return subprocess.CompletedProcess(command, 0, "", "")
+            raise AssertionError(f"unexpected docker command: {command}")
+
+        request = RunnerRequest(
+            task_id="data_empty",
+            run_id="20260101T000000Z",
+            prompt="Write the answer.",
+            resolved_task={"id": "data_empty"},
+            settings=self.settings,
+            workspace_dir=self.workspace,
+            run_dir=self.run_dir,
+            input_dir=self.run_dir / "runner_input",
+            output_dir=output_dir,
+            state_dir=self.run_dir / "runner_state",
+            trace_path=self.run_dir / "trace.jsonl",
+            approval_log_path=self.run_dir / "approval_log.jsonl",
+        )
+
+        result = DockerRunner(profile, command_runner=fake_docker).run(request)
+
+        self.assertEqual(result.status, "failed")
+        self.assertEqual(result.result_type, "failure")
+        self.assertEqual(result.final_answer, "\n")
+        self.assertIn("empty /output/final_answer.md", result.error or "")
+
 
 if __name__ == "__main__":
     unittest.main()

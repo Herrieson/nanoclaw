@@ -208,6 +208,29 @@ class HermesAdapterTest(unittest.TestCase):
         self.assertEqual(metadata["exit_code"], 9)
         self.assertEqual(metadata["final_answer_strategy"], "stderr_fallback")
 
+    def test_empty_success_with_request_dump_error_exits_failed(self) -> None:
+        self._write_fake_hermes(
+            """
+            mkdir -p "$HERMES_HOME/sessions"
+            printf '%s\\n' '{"error":{"code":"Arrearage","status_code":400,"message":"Access denied"}}' > "$HERMES_HOME/sessions/request_dump.json"
+            exit 0
+            """
+        )
+
+        result = self._run_adapter()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("provider/API error", result.stderr)
+        self.assertEqual(
+            (self.output / "final_answer.md").read_text(encoding="utf-8"),
+            "\n",
+        )
+        metadata = json.loads((self.output / "runner_metadata.json").read_text(encoding="utf-8"))
+        self.assertEqual(metadata["exit_code"], 0)
+        self.assertEqual(metadata["final_answer_strategy"], "empty")
+        self.assertIn("Arrearage", metadata["error"])
+        self.assertIn("Access denied", metadata["hermes_error"]["message"])
+
     def _run_adapter(
         self,
         extra_env: dict[str, str] | None = None,

@@ -31,6 +31,7 @@ class EvaluatorTests(unittest.TestCase):
             "result_type": "final_answer" if status == "completed" else "failure",
         }
         (run_dir / "summary.json").write_text(json.dumps(summary), encoding="utf-8")
+        (run_dir / "final_answer.md").write_text("complete\n", encoding="utf-8")
         return run_dir
 
     def _judge_config(self, *, max_attempts: int = 2) -> EvaluationJudgeConfig:
@@ -131,6 +132,21 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(result.evaluation_status, "evaluated")
         self.assertEqual(result.objective_score, 80.0)
         self.assertEqual(result.objective_score_source, "verify_score")
+
+    def test_evaluate_run_skips_completed_run_with_empty_final_answer(self) -> None:
+        run_dir = self._create_run("data_empty_answer")
+        (run_dir / "final_answer.md").write_text("\n", encoding="utf-8")
+        verify_script = self.repo_root / "tasks" / "data_empty_answer" / "verify_rules.py"
+        verify_script.write_text(
+            "raise RuntimeError('should not run')\n",
+            encoding="utf-8",
+        )
+
+        result = evaluate_run(run_dir, repo_root=self.repo_root)
+
+        self.assertEqual(result.run_status, "failed_empty_final_answer")
+        self.assertEqual(result.evaluation_status, "skipped_run_not_completed")
+        self.assertIsNone(result.objective_score)
 
     def test_evaluate_run_normalizes_fractional_verify_scores_to_percent(self) -> None:
         run_dir = self._create_run("data_401")
