@@ -203,6 +203,43 @@ print("ok")
         self.assertEqual(bundle.mapped_record_count, 1)
         self.assertEqual(bundle.verifiers["data_round_01_0001"].workplace_script, 'print("ok")\n')
 
+    def test_load_bundle_prefers_dual_verified_raw_output_over_enhanced(self) -> None:
+        manifest_path = self._write_manifest()
+        enhanced_output = """```yaml tasks/data_1.yaml
+id: data_1
+```
+"""
+        dual_verified_output = """```yaml tasks/data_1.yaml
+id: data_1
+```
+
+```python scripts/data_1/verify_workplace.py
+print("ok")
+```
+
+```markdown scripts/data_1/verify_trace.md
+Judge trace.
+```
+"""
+        jsonl_path = self.root / "persona_skills_new_verifier.jsonl"
+        jsonl_path.write_text(
+            json.dumps(
+                {
+                    "enhanced_raw_output": enhanced_output,
+                    "dual_verified_raw_output": dual_verified_output,
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        bundle = load_verifier_bundle([jsonl_path], manifest_path=manifest_path)
+        verifier = bundle.verifiers["data_round_01_0001"]
+
+        self.assertEqual(bundle.mapped_record_count, 1)
+        self.assertEqual(verifier.workplace_script, 'print("ok")\n')
+        self.assertEqual(verifier.trace_prompt, "Judge trace.\n")
+
     def test_workplace_only_evaluation_reads_workplace_score_json(self) -> None:
         manifest_path = self._write_manifest()
         jsonl_path = self._write_jsonl(

@@ -5,7 +5,7 @@
 - `round_01_aligned_mix_subset_100`
 - `persona_aligned_mix_subset_100`
 
-默认不使用 Docker 镜像，只用内置 nanoclaw runner。评估只跑 workplace，并在结束后生成柱状图。
+默认不使用 Docker 镜像，只用内置 nanoclaw runner。评估只跑 workplace，并在结束后生成柱状图和 `chart_data.xlsx`。
 
 这两个子集合计 200 条。每个子集 100 条，四类各 25 条。
 
@@ -48,6 +48,7 @@ bash run_nanoclaw_workplace_suite.sh
 RUN_TASKS=0 \
 RUN_EVALS=1 \
 RENDER_CHARTS=1 \
+EXPORT_EXCEL=1 \
 MODELS_OVERRIDE='qwen3.5-flash qwen3.5-plus deepseek-v3.2' \
 EVAL_WORKERS=16 \
 bash run_nanoclaw_workplace_suite.sh
@@ -73,4 +74,7 @@ results/nanoclaw_workplace_suite/
 
 ```text
 results/nanoclaw_workplace_suite_eval/
+results/nanoclaw_workplace_suite_eval/chart_data.xlsx
 ```
+
+`chart_data.xlsx` 会把 suite 总图、各 dataset 图、各类型 group 图的数据放到不同 sheet；如果设置 `EXCLUDE_INFRA_FAILURES=1`，也会包含对应的 `*_noinfra` sheet。

@@ -17,10 +17,12 @@ SKIP_PREFLIGHT="${SKIP_PREFLIGHT:-1}"
 RUN_TASKS="${RUN_TASKS:-1}"
 RUN_EVALS="${RUN_EVALS:-1}"
 RENDER_CHARTS="${RENDER_CHARTS:-1}"
+EXPORT_EXCEL="${EXPORT_EXCEL:-${RENDER_CHARTS}}"
 ALLOW_ISSUES="${ALLOW_ISSUES:-1}"
 ENABLE_JUDGE="${ENABLE_JUDGE:-0}"
 COMPONENTS="${COMPONENTS:-workplace}"
 SELECT_RUN_PER_TASK="${SELECT_RUN_PER_TASK:-latest-completed}"
+EXCLUDE_INFRA_FAILURES="${EXCLUDE_INFRA_FAILURES:-0}"
 
 DEFAULT_DATASETS=(
     "round_01_aligned_mix_subset_100"
@@ -720,6 +722,22 @@ render_dataset_charts() {
             echo "[ERROR] Chart rendering failed for ${DATASET} with exit code ${STATUS}."
             CHART_EXIT_CODE=1
         fi
+
+        if [ "${EXCLUDE_INFRA_FAILURES}" != "0" ]; then
+            uv run python scripts/visualize_evaluation_summary.py \
+                "${SUMMARY_PATHS[@]}" \
+                --output "${CHART_ROOT}/model_comparison_exclude_infra.svg" \
+                --title "${TITLE} Workplace Evaluation (Exclude Infra Failures)" \
+                --sort-by average_objective_score \
+                --exclude-infra-failures
+            STATUS=$?
+            if [ ${STATUS} -eq 0 ]; then
+                echo "[OK] Chart written to ${CHART_ROOT}/model_comparison_exclude_infra.svg"
+            else
+                echo "[ERROR] Exclude-infra chart rendering failed for ${DATASET} with exit code ${STATUS}."
+                CHART_EXIT_CODE=1
+            fi
+        fi
     fi
 
     for GROUP_NAME in "${DATASET_GROUPS[@]}"; do
@@ -745,6 +763,22 @@ render_dataset_charts() {
             echo "[ERROR] Group chart rendering failed for ${DATASET}/${GROUP_NAME} with exit code ${STATUS}."
             CHART_EXIT_CODE=1
         fi
+
+        if [ "${EXCLUDE_INFRA_FAILURES}" != "0" ]; then
+            uv run python scripts/visualize_evaluation_summary.py \
+                "${SUMMARY_PATHS[@]}" \
+                --output "${CHART_ROOT}/${GROUP_NAME}_model_comparison_exclude_infra.svg" \
+                --title "${TITLE} ${GROUP_NAME} Workplace Evaluation (Exclude Infra Failures)" \
+                --sort-by average_objective_score \
+                --exclude-infra-failures
+            STATUS=$?
+            if [ ${STATUS} -eq 0 ]; then
+                echo "[OK] Chart written to ${CHART_ROOT}/${GROUP_NAME}_model_comparison_exclude_infra.svg"
+            else
+                echo "[ERROR] Exclude-infra group chart rendering failed for ${DATASET}/${GROUP_NAME} with exit code ${STATUS}."
+                CHART_EXIT_CODE=1
+            fi
+        fi
     done
 
     return ${CHART_EXIT_CODE}
@@ -757,8 +791,10 @@ render_suite_chart() {
     local MODEL
     local MODEL_SLUG
     local SOURCE_SUMMARY
+    local SOURCE_EVALUATION
     local DEST_DIR
     local STATUS
+    local CHART_EXIT_CODE=0
 
     rm -rf "${SUMMARY_COPY_ROOT:?}"
     mkdir -p "${SUMMARY_COPY_ROOT}"
@@ -770,9 +806,13 @@ render_suite_chart() {
             if [ ! -f "${SOURCE_SUMMARY}" ]; then
                 continue
             fi
+            SOURCE_EVALUATION="${EVAL_ROOT}/${DATASET}/merged/${MODEL_SLUG}/evaluation.json"
             DEST_DIR="${SUMMARY_COPY_ROOT}/${DATASET}__${MODEL_SLUG}"
             mkdir -p "${DEST_DIR}"
             cp "${SOURCE_SUMMARY}" "${DEST_DIR}/evaluation_summary.json"
+            if [ -f "${SOURCE_EVALUATION}" ]; then
+                cp "${SOURCE_EVALUATION}" "${DEST_DIR}/evaluation.json"
+            fi
             SUMMARY_PATHS+=( "${DEST_DIR}/evaluation_summary.json" )
         done
     done
@@ -790,11 +830,52 @@ render_suite_chart() {
     STATUS=$?
     if [ ${STATUS} -eq 0 ]; then
         echo "[OK] Suite chart written to ${EVAL_ROOT}/suite_model_dataset_comparison.svg"
-        return 0
+    else
+        echo "[ERROR] Suite chart rendering failed with exit code ${STATUS}."
+        CHART_EXIT_CODE=1
     fi
 
-    echo "[ERROR] Suite chart rendering failed with exit code ${STATUS}."
-    return 1
+    if [ "${EXCLUDE_INFRA_FAILURES}" != "0" ]; then
+        uv run python scripts/visualize_evaluation_summary.py \
+            "${SUMMARY_PATHS[@]}" \
+            --output "${EVAL_ROOT}/suite_model_dataset_comparison_exclude_infra.svg" \
+            --title "Nanoclaw Workplace Evaluation: Dataset x Model (Exclude Infra Failures)" \
+            --sort-by average_objective_score \
+            --exclude-infra-failures
+        STATUS=$?
+        if [ ${STATUS} -eq 0 ]; then
+            echo "[OK] Suite chart written to ${EVAL_ROOT}/suite_model_dataset_comparison_exclude_infra.svg"
+        else
+            echo "[ERROR] Exclude-infra suite chart rendering failed with exit code ${STATUS}."
+            CHART_EXIT_CODE=1
+        fi
+    fi
+
+    return ${CHART_EXIT_CODE}
+}
+
+export_chart_data_workbook() {
+    local EXPORT_ARGS
+    local STATUS
+
+    EXPORT_ARGS=(
+        scripts/export_workplace_chart_data.py
+        --mode nanoclaw
+        --eval-root "${EVAL_ROOT}"
+        --output "${EVAL_ROOT}/chart_data.xlsx"
+    )
+    if [ "${EXCLUDE_INFRA_FAILURES}" != "0" ]; then
+        EXPORT_ARGS+=(--exclude-infra-failures)
+    fi
+
+    uv run python "${EXPORT_ARGS[@]}"
+    STATUS=$?
+    if [ ${STATUS} -eq 0 ]; then
+        echo "[OK] Chart data workbook written to ${EVAL_ROOT}/chart_data.xlsx"
+    else
+        echo "[ERROR] Chart data workbook export failed with exit code ${STATUS}."
+        return 1
+    fi
 }
 
 if [ ${#DATASETS[@]} -eq 0 ]; then
@@ -820,9 +901,11 @@ echo "[INFO] Models: ${MODELS[*]}"
 echo "[INFO] Results root: ${RESULTS_ROOT}"
 echo "[INFO] Eval root: ${EVAL_ROOT}"
 echo "[INFO] Components: ${COMPONENTS}"
+echo "[INFO] Exclude infra charts: ${EXCLUDE_INFRA_FAILURES}"
 echo "[INFO] Run tasks: ${RUN_TASKS}"
 echo "[INFO] Run evals: ${RUN_EVALS}"
 echo "[INFO] Render charts: ${RENDER_CHARTS}"
+echo "[INFO] Export Excel: ${EXPORT_EXCEL}"
 echo "=================================================="
 
 EXIT_CODE=0
@@ -852,6 +935,10 @@ done
 
 if [ "${RENDER_CHARTS}" != "0" ] && [ "${RUN_EVALS}" != "0" ]; then
     render_suite_chart || EXIT_CODE=1
+fi
+
+if [ "${EXPORT_EXCEL}" != "0" ] && [ "${RUN_EVALS}" != "0" ]; then
+    export_chart_data_workbook || EXIT_CODE=1
 fi
 
 if [ ${EXIT_CODE} -eq 0 ]; then

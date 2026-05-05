@@ -14,6 +14,7 @@ INFRA_FAILURE_HINTS = (
     "content management policy",
     "content_filter",
     "content_filter_result",
+    "docker wait failed",
     "flagged as potentially violating",
     "function.arguments",
     "internalerror.algo.invalidparameter",

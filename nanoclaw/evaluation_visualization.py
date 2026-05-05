@@ -396,6 +396,8 @@ def _sample_task_ids(task_ids: list[str], *, percent: float, salt: str) -> list[
 
 
 def _row_is_infra_failure(item: dict[str, object]) -> bool:
+    if item.get("evaluation_status") == "skipped_infra_failure":
+        return True
     summary_path_value = item.get("summary_path")
     if not isinstance(summary_path_value, str) or not summary_path_value.strip():
         return False

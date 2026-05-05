@@ -13,7 +13,7 @@
 - `hermes` -> `runner_profiles/hermes.yaml`
 - `codex` -> `runner_profiles/codex.yaml`
 
-评估只跑 workplace，并在结束后生成柱状图。
+评估只跑 workplace，并在结束后生成柱状图和 `chart_data.xlsx`。
 
 ## 先构建镜像
 
@@ -74,6 +74,7 @@ bash run_docker_workplace_suite.sh
 RUN_TASKS=0 \
 RUN_EVALS=1 \
 RENDER_CHARTS=1 \
+EXPORT_EXCEL=1 \
 RUNNERS_OVERRIDE='openclaw hermes codex' \
 MODELS_OVERRIDE='qwen3.5-flash qwen3.5-plus deepseek-v3.2' \
 EVAL_WORKERS=16 \
@@ -93,7 +94,10 @@ results/docker_workplace_suite/<runner>/<dataset>/<model>/
 ```text
 results/docker_workplace_suite_eval/<runner>/<dataset>/
 results/docker_workplace_suite_eval/docker_runner_dataset_model_comparison.svg
+results/docker_workplace_suite_eval/chart_data.xlsx
 ```
+
+每个 runner 子目录里也会有一个单独的 `chart_data.xlsx`；顶层 `chart_data.xlsx` 会汇总 Docker 总图、各 runner 总图、各 dataset 图、各类型 group 图。设置 `EXCLUDE_INFRA_FAILURES=1` 时，会额外包含对应的 `*_noinfra` sheet。
 
 例如：
 
