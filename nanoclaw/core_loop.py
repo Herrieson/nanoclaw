@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from openai import OpenAI
+from openai import BadRequestError, OpenAI
 
 from .command_policy import CommandPolicy
 from .config import Settings
@@ -29,6 +29,23 @@ HEARTBEAT_PROMPT_FILE = "HEARTBEAT.md"
 BOOTSTRAP_PROMPT_FILE = "BOOTSTRAP.md"
 SILENT_REPLY = "SILENT_REPLY"
 EventHandler = Callable[[dict[str, Any]], None]
+
+
+def _is_unsupported_temperature_error(exc: BadRequestError) -> bool:
+    message = str(exc).lower()
+    body = getattr(exc, "body", None)
+    if isinstance(body, dict):
+        param = str(body.get("param") or "").lower()
+        code = str(body.get("code") or "").lower()
+        nested = body.get("error")
+        if isinstance(nested, dict):
+            param = param or str(nested.get("param") or "").lower()
+            code = code or str(nested.get("code") or "").lower()
+        if param == "temperature" and code in {"unsupported_value", "invalid_request_error"}:
+            return True
+    return "temperature" in message and (
+        "unsupported" in message or "only the default" in message
+    )
 
 
 def _strip_front_matter(content: str) -> str:
@@ -1046,19 +1063,40 @@ class MinimalClaw:
                 return final_text
 
             client = self._get_client()
+            send_temperature = True
             for step in range(1, self.settings.max_steps + 1):
                 steps_used = step
                 if echo:
                     print(f"\n--- API Call {step} ---")
 
                 self._emit_event("api_call_started", step=step)
-                response = client.chat.completions.create(
-                    model=self.settings.model,
-                    messages=messages,
-                    tools=TOOLS,
-                    tool_choice="auto",
-                    temperature=self.settings.temperature,
-                )
+                request: dict[str, Any] = {
+                    "model": self.settings.model,
+                    "messages": messages,
+                    "tools": TOOLS,
+                    "tool_choice": "auto",
+                }
+                if send_temperature:
+                    request["temperature"] = self.settings.temperature
+                try:
+                    response = client.chat.completions.create(**request)
+                except BadRequestError as exc:
+                    if not send_temperature or not _is_unsupported_temperature_error(exc):
+                        raise
+                    send_temperature = False
+                    request.pop("temperature", None)
+                    self._emit_event(
+                        "api_call_retry_without_temperature",
+                        step=step,
+                        model=self.settings.model,
+                        temperature=self.settings.temperature,
+                    )
+                    if echo:
+                        print(
+                            "Model rejected custom temperature; retrying with "
+                            "provider default temperature."
+                        )
+                    response = client.chat.completions.create(**request)
 
                 message = response.choices[0].message
                 dumped_message = message.model_dump(exclude_none=True)

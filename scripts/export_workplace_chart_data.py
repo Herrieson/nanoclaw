@@ -149,6 +149,7 @@ def _resolve_path(path_value: str) -> Path:
 def _build_nanoclaw_specs(eval_root: Path) -> list[SheetSpec]:
     specs: list[SheetSpec] = []
     suite_entries: list[ChartEntry] = []
+    group_breakdown_entries: list[ChartEntry] = []
 
     for dataset_dir in _discover_dataset_dirs(eval_root):
         dataset = dataset_dir.name
@@ -188,6 +189,12 @@ def _build_nanoclaw_specs(eval_root: Path) -> list[SheetSpec]:
                 label_prefix="",
             )
             if group_entries:
+                group_breakdown_entries.extend(
+                    _with_labels(
+                        group_entries,
+                        label_prefix=f"{dataset}__{group}__",
+                    )
+                )
                 specs.append(
                     SheetSpec(
                         name=f"{dataset}_{group}",
@@ -197,6 +204,16 @@ def _build_nanoclaw_specs(eval_root: Path) -> list[SheetSpec]:
                     )
                 )
 
+    if group_breakdown_entries:
+        specs.insert(
+            0,
+            SheetSpec(
+                name="group_breakdown",
+                chart_title="Nanoclaw workplace evaluation: dataset x group x model",
+                chart_kind="group_breakdown",
+                entries=tuple(group_breakdown_entries),
+            ),
+        )
     if suite_entries:
         specs.insert(
             0,
@@ -213,10 +230,12 @@ def _build_nanoclaw_specs(eval_root: Path) -> list[SheetSpec]:
 def _build_docker_specs(eval_root: Path) -> list[SheetSpec]:
     specs: list[SheetSpec] = []
     combined_entries: list[ChartEntry] = []
+    combined_group_breakdown_entries: list[ChartEntry] = []
 
     for runner_dir in _discover_runner_dirs(eval_root):
         runner = runner_dir.name
         runner_suite_entries: list[ChartEntry] = []
+        runner_group_breakdown_entries: list[ChartEntry] = []
         runner_specs: list[SheetSpec] = []
 
         for dataset_dir in _discover_dataset_dirs(runner_dir):
@@ -257,6 +276,18 @@ def _build_docker_specs(eval_root: Path) -> list[SheetSpec]:
                     label_prefix="",
                 )
                 if group_entries:
+                    runner_group_breakdown_entries.extend(
+                        _with_labels(
+                            group_entries,
+                            label_prefix=f"{dataset}__{group}__",
+                        )
+                    )
+                    combined_group_breakdown_entries.extend(
+                        _with_labels(
+                            group_entries,
+                            label_prefix=f"{runner}__{dataset}__{group}__",
+                        )
+                    )
                     runner_specs.append(
                         SheetSpec(
                             name=f"{runner}_{dataset}_{group}",
@@ -275,6 +306,15 @@ def _build_docker_specs(eval_root: Path) -> list[SheetSpec]:
                     entries=tuple(runner_suite_entries),
                 )
             )
+        if runner_group_breakdown_entries:
+            specs.append(
+                SheetSpec(
+                    name=f"{runner}_group_breakdown",
+                    chart_title=f"{runner} workplace evaluation: dataset x group x model",
+                    chart_kind="runner_group_breakdown",
+                    entries=tuple(runner_group_breakdown_entries),
+                )
+            )
         specs.extend(runner_specs)
 
     if combined_entries:
@@ -285,6 +325,17 @@ def _build_docker_specs(eval_root: Path) -> list[SheetSpec]:
                 chart_title="Docker workplace evaluation: runner x dataset x model",
                 chart_kind="docker_combined",
                 entries=tuple(combined_entries),
+            ),
+        )
+    if combined_group_breakdown_entries:
+        insert_index = 1 if combined_entries else 0
+        specs.insert(
+            insert_index,
+            SheetSpec(
+                name="docker_group_breakdown",
+                chart_title="Docker workplace evaluation: runner x dataset x group x model",
+                chart_kind="docker_group_breakdown",
+                entries=tuple(combined_group_breakdown_entries),
             ),
         )
     return specs
@@ -516,8 +567,10 @@ def _dedupe_sheet_names(sheets: list[Sheet]) -> list[Sheet]:
 def _safe_sheet_name(value: str) -> str:
     replacements = {
         "round_01_aligned_mix_subset_100": "r01_subset100",
+        "round_01_aligned_mix_subset_20": "r01_subset20",
         "round_01_aligned_mix_800": "r01_mix800",
         "persona_aligned_mix_subset_100": "persona_subset100",
+        "persona_aligned_mix_subset_20": "persona_subset20",
         "persona_aligned_mix_200": "persona_mix200",
         "multi_turn_aligned": "multi_turn",
         "skills_aligned": "skills",

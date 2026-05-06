@@ -61,10 +61,16 @@ dataset_task_glob() {
         round_01_aligned_mix_subset_100)
             echo "tasks/data_round_01_aligned_mix_800_*.yaml"
             ;;
+        round_01_aligned_mix_subset_20)
+            echo "tasks/data_round_01_aligned_mix_800_*.yaml"
+            ;;
         persona_aligned_mix_200)
             echo "tasks/data_persona_aligned_*_50_*.yaml"
             ;;
         persona_aligned_mix_subset_100)
+            echo "tasks/data_persona_aligned_*_50_*.yaml"
+            ;;
+        persona_aligned_mix_subset_20)
             echo "tasks/data_persona_aligned_*_50_*.yaml"
             ;;
         *)
@@ -82,11 +88,17 @@ dataset_staging_root() {
         round_01_aligned_mix_subset_100)
             echo ".staging/round_01_aligned_mix_subset_100"
             ;;
+        round_01_aligned_mix_subset_20)
+            echo ".staging/round_01_aligned_mix_subset_20"
+            ;;
         persona_aligned_mix_200)
             echo ".staging/persona_aligned_mix_200"
             ;;
         persona_aligned_mix_subset_100)
             echo ".staging/persona_aligned_mix_subset_100"
+            ;;
+        persona_aligned_mix_subset_20)
+            echo ".staging/persona_aligned_mix_subset_20"
             ;;
         *)
             echo "[ERROR] Unknown dataset: $1" >&2
@@ -97,10 +109,10 @@ dataset_staging_root() {
 
 dataset_groups() {
     case "$1" in
-        round_01_aligned_mix_800|round_01_aligned_mix_subset_100)
+        round_01_aligned_mix_800|round_01_aligned_mix_subset_100|round_01_aligned_mix_subset_20)
             echo "multi_turn_aligned skills_aligned hard_aligned base"
             ;;
-        persona_aligned_mix_200|persona_aligned_mix_subset_100)
+        persona_aligned_mix_200|persona_aligned_mix_subset_100|persona_aligned_mix_subset_20)
             echo "base multi_turn hard skills"
             ;;
         *)
@@ -118,11 +130,17 @@ dataset_title() {
         round_01_aligned_mix_subset_100)
             echo "Round 01 Aligned Mix Subset 100"
             ;;
+        round_01_aligned_mix_subset_20)
+            echo "Round 01 Aligned Mix Subset 20"
+            ;;
         persona_aligned_mix_200)
             echo "Persona Aligned Mix 200"
             ;;
         persona_aligned_mix_subset_100)
             echo "Persona Aligned Mix Subset 100"
+            ;;
+        persona_aligned_mix_subset_20)
+            echo "Persona Aligned Mix Subset 20"
             ;;
         *)
             echo "$1"
@@ -135,28 +153,28 @@ dataset_group_verifiers() {
     local GROUP_NAME="$2"
 
     case "${DATASET}:${GROUP_NAME}" in
-        round_01_aligned_mix_800:multi_turn_aligned|round_01_aligned_mix_subset_100:multi_turn_aligned)
+        round_01_aligned_mix_800:multi_turn_aligned|round_01_aligned_mix_subset_100:multi_turn_aligned|round_01_aligned_mix_subset_20:multi_turn_aligned)
             echo "doc/todo/gemini3_2000_score_new_verifier_multi_turn_1.jsonl doc/todo/gemini3_2000_score_new_verifier_multi_turn_2.jsonl doc/todo/gemini3_2000_score_new_verifier_multi_turn_3.jsonl doc/todo/gemini3_2000_score_new_verifier_multi_turn_4.jsonl doc/todo/gemini3_2000_score_new_verifier_multi_turn_5.jsonl"
             ;;
-        round_01_aligned_mix_800:skills_aligned|round_01_aligned_mix_subset_100:skills_aligned)
+        round_01_aligned_mix_800:skills_aligned|round_01_aligned_mix_subset_100:skills_aligned|round_01_aligned_mix_subset_20:skills_aligned)
             echo "doc/todo/gemini3_2000_skills_score_new_verifier_1.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_2.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_3.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_4.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_5.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_6.jsonl doc/todo/gemini3_2000_skills_score_new_verifier_7.jsonl"
             ;;
-        round_01_aligned_mix_800:hard_aligned|round_01_aligned_mix_subset_100:hard_aligned)
+        round_01_aligned_mix_800:hard_aligned|round_01_aligned_mix_subset_100:hard_aligned|round_01_aligned_mix_subset_20:hard_aligned)
             echo "doc/todo/gemini3_2000_score_new_verifier_hard_1.jsonl doc/todo/gemini3_2000_score_new_verifier_hard_2.jsonl doc/todo/gemini3_2000_score_new_verifier_hard_3.jsonl doc/todo/gemini3_2000_score_new_verifier_hard_4.jsonl"
             ;;
-        round_01_aligned_mix_800:base|round_01_aligned_mix_subset_100:base)
+        round_01_aligned_mix_800:base|round_01_aligned_mix_subset_100:base|round_01_aligned_mix_subset_20:base)
             echo "doc/todo/gemini3_2000_score_new_verifier_1.jsonl doc/todo/gemini3_2000_score_new_verifier_2.jsonl doc/todo/gemini3_2000_score_new_verifier_3.jsonl"
             ;;
-        persona_aligned_mix_200:base|persona_aligned_mix_subset_100:base)
+        persona_aligned_mix_200:base|persona_aligned_mix_subset_100:base|persona_aligned_mix_subset_20:base)
             echo "doc/todo/persona/base.jsonl"
             ;;
-        persona_aligned_mix_200:multi_turn|persona_aligned_mix_subset_100:multi_turn)
+        persona_aligned_mix_200:multi_turn|persona_aligned_mix_subset_100:multi_turn|persona_aligned_mix_subset_20:multi_turn)
             echo "doc/todo/persona/multi_turn.jsonl"
             ;;
-        persona_aligned_mix_200:hard|persona_aligned_mix_subset_100:hard)
+        persona_aligned_mix_200:hard|persona_aligned_mix_subset_100:hard|persona_aligned_mix_subset_20:hard)
             echo "doc/todo/persona/hard.jsonl"
             ;;
-        persona_aligned_mix_200:skills|persona_aligned_mix_subset_100:skills)
+        persona_aligned_mix_200:skills|persona_aligned_mix_subset_100:skills|persona_aligned_mix_subset_20:skills)
             echo "doc/todo/persona/skills.jsonl"
             ;;
         *)
@@ -435,38 +453,7 @@ def csv_row(row: dict[str, Any]) -> dict[str, str]:
     return output
 
 
-model_rows: dict[str, list[dict[str, Any]]] = defaultdict(list)
-for group in group_names:
-    group_root = intermediate_root / group
-    if not group_root.exists():
-        continue
-    for model_dir in sorted(path for path in group_root.iterdir() if path.is_dir()):
-        evaluation_path = model_dir / "evaluation.json"
-        if not evaluation_path.exists():
-            continue
-        payload = json.loads(evaluation_path.read_text(encoding="utf-8"))
-        if not isinstance(payload, list):
-            raise SystemExit(f"{evaluation_path} is not a JSON array")
-        for item in payload:
-            if not isinstance(item, dict):
-                continue
-            item = dict(item)
-            item["evaluation_group"] = group
-            model_rows[model_dir.name].append(item)
-
-if not model_rows:
-    raise SystemExit("No group evaluation reports were found to merge.")
-
-output_root.mkdir(parents=True, exist_ok=True)
-for model_name in sorted(model_rows):
-    rows = sorted(
-        model_rows[model_name],
-        key=lambda item: (
-            str(item.get("task_id") or ""),
-            str(item.get("run_id") or ""),
-            str(item.get("evaluation_group") or ""),
-        ),
-    )
+def summarize_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
     total_runs = len(rows)
     completed_runs = sum(1 for row in rows if row.get("run_status") == "completed")
     skipped_incomplete_runs = sum(
@@ -504,7 +491,7 @@ for model_name in sorted(model_rows):
     run_success_rate = round((completed_runs / total_runs) * 100, 2) if total_runs else 0.0
     perfect_score_rate = round((perfect_score_runs / total_runs) * 100, 2) if total_runs else 0.0
     average_objective_score = average(objective_scores)
-    summary = {
+    return {
         "total_runs": total_runs,
         "completed_runs": completed_runs,
         "skipped_incomplete_runs": skipped_incomplete_runs,
@@ -527,6 +514,50 @@ for model_name in sorted(model_rows):
         ),
     }
 
+
+model_rows: dict[str, list[dict[str, Any]]] = defaultdict(list)
+for group in group_names:
+    group_root = intermediate_root / group
+    if not group_root.exists():
+        continue
+    for model_dir in sorted(path for path in group_root.iterdir() if path.is_dir()):
+        evaluation_path = model_dir / "evaluation.json"
+        if not evaluation_path.exists():
+            continue
+        payload = json.loads(evaluation_path.read_text(encoding="utf-8"))
+        if not isinstance(payload, list):
+            raise SystemExit(f"{evaluation_path} is not a JSON array")
+        for item in payload:
+            if not isinstance(item, dict):
+                continue
+            item = dict(item)
+            item["evaluation_group"] = group
+            model_rows[model_dir.name].append(item)
+
+if not model_rows:
+    raise SystemExit("No group evaluation reports were found to merge.")
+
+output_root.mkdir(parents=True, exist_ok=True)
+for model_name in sorted(model_rows):
+    rows = sorted(
+        model_rows[model_name],
+        key=lambda item: (
+            str(item.get("task_id") or ""),
+            str(item.get("run_id") or ""),
+            str(item.get("evaluation_group") or ""),
+        ),
+    )
+    summary = summarize_rows(rows)
+    group_scores: dict[str, dict[str, Any]] = {}
+    for group in group_names:
+        group_rows = [row for row in rows if row.get("evaluation_group") == group]
+        if not group_rows:
+            continue
+        group_summary = summarize_rows(group_rows)
+        group_summary["group"] = group
+        group_scores[group] = group_summary
+    summary["group_scores"] = group_scores
+
     model_output_root = output_root / model_name
     model_output_root.mkdir(parents=True, exist_ok=True)
     (model_output_root / "evaluation.json").write_text(
@@ -543,8 +574,8 @@ for model_name in sorted(model_rows):
         encoding="utf-8",
     )
     print(
-        f"{model_name}: merged {total_runs} run(s), "
-        f"perfect={perfect_score_rate:.2f}%, avg={summary['average_objective_score']:.2f}"
+        f"{model_name}: merged {summary['total_runs']} run(s), "
+        f"perfect={summary['perfect_score_rate']:.2f}%, avg={summary['average_objective_score']:.2f}"
     )
 PY
 }
