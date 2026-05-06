@@ -247,3 +247,12 @@ skills/
 # Datasets
 published_datasets/
 ClawBenchPro/
+
+# raw/generated dataset sources kept outside the source repo
+doc/todo/
+doc/new_verify.jsonl
+doc/persona_500.jsonl
+
+# local nanoclaw workspace state
+workspace/MEMORY.md
+workspace/active_task.md
