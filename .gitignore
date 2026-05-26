@@ -256,3 +256,8 @@ doc/persona_500.jsonl
 # local nanoclaw workspace state
 workspace/MEMORY.md
 workspace/active_task.md
+
+# datasets
+dataset_for_benchmark/
+ClawBenchPro/
+

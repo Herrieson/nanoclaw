@@ -203,6 +203,55 @@ print("ok")
         self.assertEqual(bundle.mapped_record_count, 1)
         self.assertEqual(bundle.verifiers["data_round_01_0001"].workplace_script, 'print("ok")\n')
 
+    def test_load_bundle_prefers_payload_imported_task_id_for_repeated_sources(self) -> None:
+        manifest_path = self.root / "import_manifest.jsonl"
+        manifest_path.write_text(
+            "\n".join(
+                [
+                    json.dumps(
+                        {
+                            "group": "base",
+                            "source_task_id": "data_1",
+                            "imported_task_id": "data_round_01_0001",
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "group": "hard",
+                            "source_task_id": "data_1",
+                            "imported_task_id": "data_round_01_0002",
+                        }
+                    ),
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        raw_output = """```python
+# scripts/data_1/verify_workplace.py
+print("ok")
+```
+"""
+        jsonl_path = self.root / "group_verifier.jsonl"
+        jsonl_path.write_text(
+            json.dumps(
+                {
+                    "source_task_id": "data_1",
+                    "imported_task_id": "data_round_01_0001",
+                    "raw_output": raw_output,
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        bundle = load_verifier_bundle([jsonl_path], manifest_path=manifest_path)
+
+        self.assertEqual(bundle.manifest_task_count, 2)
+        self.assertEqual(bundle.mapped_record_count, 1)
+        self.assertIn("data_round_01_0001", bundle.verifiers)
+        self.assertNotIn("data_round_01_0002", bundle.verifiers)
+
     def test_load_bundle_prefers_dual_verified_raw_output_over_enhanced(self) -> None:
         manifest_path = self._write_manifest()
         enhanced_output = """```yaml tasks/data_1.yaml

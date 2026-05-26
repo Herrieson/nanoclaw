@@ -62,6 +62,13 @@ class VerifierBundle:
 
 
 @dataclass(frozen=True, slots=True)
+class _ImportManifest:
+    source_to_imported: dict[str, str]
+    imported_task_ids: set[str]
+    task_count: int
+
+
+@dataclass(frozen=True, slots=True)
 class WorkplaceTraceEvaluationResult:
     task_id: str
     source_task_id: str | None
@@ -212,7 +219,7 @@ def load_verifier_bundle(
     *,
     manifest_path: Path,
 ) -> VerifierBundle:
-    source_to_imported = _load_source_to_imported_manifest(manifest_path)
+    manifest = _load_import_manifest(manifest_path)
     verifiers: dict[str, WorkplaceTraceVerifier] = {}
     jsonl_record_count = 0
     mapped_record_count = 0
@@ -233,7 +240,13 @@ def load_verifier_bundle(
                 source_task_id = _find_source_task_id(blocks) or _extract_payload_task_id(payload)
                 if source_task_id is None:
                     continue
-                imported_task_id = source_to_imported.get(source_task_id)
+                imported_task_id = _extract_payload_imported_task_id(
+                    payload,
+                    source_task_id=source_task_id,
+                    manifest_imported_task_ids=manifest.imported_task_ids,
+                )
+                if imported_task_id is None:
+                    imported_task_id = manifest.source_to_imported.get(source_task_id)
                 if imported_task_id is None:
                     continue
                 mapped_record_count += 1
@@ -263,8 +276,8 @@ def load_verifier_bundle(
 
     return VerifierBundle(
         verifiers=verifiers,
-        manifest_imported_task_ids=set(source_to_imported.values()),
-        manifest_task_count=len(source_to_imported),
+        manifest_imported_task_ids=manifest.imported_task_ids,
+        manifest_task_count=manifest.task_count,
         jsonl_record_count=jsonl_record_count,
         mapped_record_count=mapped_record_count,
     )
@@ -649,8 +662,10 @@ def write_workplace_trace_summary_json(
     )
 
 
-def _load_source_to_imported_manifest(manifest_path: Path) -> dict[str, str]:
+def _load_import_manifest(manifest_path: Path) -> _ImportManifest:
     mapping: dict[str, str] = {}
+    imported_task_ids: set[str] = set()
+    task_count = 0
     with manifest_path.expanduser().resolve().open("r", encoding="utf-8") as handle:
         for line_number, raw_line in enumerate(handle, start=1):
             line = raw_line.strip()
@@ -662,7 +677,13 @@ def _load_source_to_imported_manifest(manifest_path: Path) -> dict[str, str]:
             if not isinstance(source_task_id, str) or not isinstance(imported_task_id, str):
                 raise ValueError(f"{manifest_path}:{line_number} is missing source/imported task ids")
             mapping[source_task_id] = imported_task_id
-    return mapping
+            imported_task_ids.add(imported_task_id)
+            task_count += 1
+    return _ImportManifest(
+        source_to_imported=mapping,
+        imported_task_ids=imported_task_ids,
+        task_count=task_count,
+    )
 
 
 def _extract_raw_output(payload: dict[str, Any]) -> str | None:
@@ -730,6 +751,29 @@ def _extract_payload_task_id(payload: dict[str, Any]) -> str | None:
     task_id = payload.get("task_id")
     if isinstance(task_id, str) and re.fullmatch(r"data_\d+", task_id.strip()):
         return task_id.strip()
+    return None
+
+
+def _extract_payload_imported_task_id(
+    payload: dict[str, Any],
+    *,
+    source_task_id: str,
+    manifest_imported_task_ids: set[str],
+) -> str | None:
+    payload_source_task_id = payload.get("source_task_id")
+    if (
+        isinstance(payload_source_task_id, str)
+        and payload_source_task_id.strip()
+        and payload_source_task_id.strip() != source_task_id
+    ):
+        return None
+
+    imported_task_id = payload.get("imported_task_id")
+    if not isinstance(imported_task_id, str):
+        return None
+    imported_task_id = imported_task_id.strip()
+    if imported_task_id in manifest_imported_task_ids:
+        return imported_task_id
     return None
 
 
