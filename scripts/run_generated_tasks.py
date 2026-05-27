@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import glob
 from pathlib import Path
 import sys
 
@@ -188,9 +189,15 @@ def expand_paths(patterns: list[str]) -> list[Path]:
     resolved: list[Path] = []
     seen: set[Path] = set()
     for pattern in patterns:
-        matches = sorted(REPO_ROOT.glob(pattern))
+        pattern_path = Path(pattern).expanduser()
+        if pattern_path.is_absolute():
+            matches = [Path(match) for match in sorted(glob.glob(str(pattern_path)))]
+            if not matches and pattern_path.exists():
+                matches = [pattern_path]
+        else:
+            matches = sorted(REPO_ROOT.glob(pattern))
         if not matches:
-            candidate = (REPO_ROOT / pattern).resolve()
+            candidate = (REPO_ROOT / pattern_path).resolve()
             if candidate.exists():
                 matches = [candidate]
         for path in matches:
@@ -319,7 +326,7 @@ def main() -> int:
         return 1
 
     specs = resolve_task_specs(
-        [str(path.relative_to(REPO_ROOT)) for path in valid_task_paths],
+        [str(path) for path in valid_task_paths],
         repo_root=REPO_ROOT,
     )
     if not specs:

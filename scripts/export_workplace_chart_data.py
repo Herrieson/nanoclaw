@@ -74,7 +74,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--eval-root",
         required=True,
-        help="Evaluation root written by run_nanoclaw_workplace_suite.sh or run_docker_workplace_suite.sh.",
+        help="Evaluation root containing workplace evaluation summaries.",
     )
     parser.add_argument(
         "--mode",

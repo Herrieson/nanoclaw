@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, replace
+import glob
 import json
 import os
 from pathlib import Path
@@ -10,7 +11,7 @@ import shutil
 import subprocess
 import sys
 import threading
-from typing import Sequence
+from typing import Mapping, Sequence
 
 from .config import Settings
 from .core_loop import MinimalClaw
@@ -43,6 +44,7 @@ class BatchTaskSpec:
     task_id: str
     asset_name: str
     builder_path: Path | None
+    skill_dirs: tuple[Path, ...] = ()
     sessions: tuple[TaskSession, ...] = ()
 
     @property
@@ -117,9 +119,15 @@ def resolve_task_specs(
     specs: list[BatchTaskSpec] = []
 
     for pattern in patterns:
-        matches = sorted(repo_root.glob(pattern))
+        pattern_path = Path(pattern).expanduser()
+        if pattern_path.is_absolute():
+            matches = [Path(match) for match in sorted(glob.glob(str(pattern_path)))]
+            if not matches and pattern_path.exists():
+                matches = [pattern_path]
+        else:
+            matches = sorted(repo_root.glob(pattern))
         if not matches:
-            candidate = (repo_root / pattern).resolve()
+            candidate = (repo_root / pattern_path).resolve()
             if candidate.exists():
                 matches = [candidate]
         for path in matches:
@@ -128,13 +136,16 @@ def resolve_task_specs(
                 continue
             seen.add(resolved)
             task = load_task_definition(resolved, settings)
-            builder_path = repo_root / "tasks" / task.task_id / "env_builder.py"
+            local_builder_path = resolved.parent / task.task_id / "env_builder.py"
+            repo_builder_path = repo_root / "tasks" / task.task_id / "env_builder.py"
+            builder_path = local_builder_path if local_builder_path.exists() else repo_builder_path
             specs.append(
                 BatchTaskSpec(
                     task_path=resolved,
                     task_id=task.task_id,
                     asset_name=task.asset,
                     builder_path=builder_path if builder_path.exists() else None,
+                    skill_dirs=task_local_skill_dirs(resolved),
                     sessions=task.sessions,
                 )
             )
@@ -337,6 +348,7 @@ def run_single_task(
             cwd=repo_root,
             text=True,
             capture_output=True,
+            env=_env_with_skill_dirs(os.environ, spec.skill_dirs),
         )
         stdout = process.stdout
         stderr = process.stderr
@@ -439,6 +451,7 @@ def _run_multi_turn_task(
     runner_profile_path: Path | None,
 ) -> Path:
     settings = Settings.from_env()
+    settings = _settings_with_skill_dirs(settings, spec.skill_dirs)
     runner_profile = load_runner_profile(runner_profile_path)
     runner = build_runner(runner_profile)
     task = load_task_definition(spec.task_path, settings)
@@ -706,6 +719,64 @@ def _select_task_skills(
             selected.append(skill)
             selected_slugs.add(skill.slug)
     return catalog, available_skills, tuple(selected)
+
+
+def task_local_skill_dirs(task_path: Path) -> tuple[Path, ...]:
+    """Return dataset-local skill roots for externally packaged task YAML files."""
+    tasks_dir = task_path.expanduser().resolve().parent
+    candidates = (tasks_dir.parent / "skills", tasks_dir / "skills")
+    resolved: list[Path] = []
+    seen: set[Path] = set()
+    for candidate in candidates:
+        if not candidate.is_dir():
+            continue
+        path = candidate.resolve()
+        if path in seen:
+            continue
+        seen.add(path)
+        resolved.append(path)
+    return tuple(resolved)
+
+
+def _settings_with_skill_dirs(settings: Settings, skill_dirs: tuple[Path, ...]) -> Settings:
+    if not skill_dirs:
+        return settings
+    return replace(
+        settings,
+        extra_skill_dirs=_append_skill_dirs(settings.extra_skill_dirs, skill_dirs),
+    )
+
+
+def _env_with_skill_dirs(
+    base_env: Mapping[str, str],
+    skill_dirs: tuple[Path, ...],
+) -> dict[str, str]:
+    env = dict(base_env)
+    if not skill_dirs:
+        return env
+    existing = tuple(
+        Path(item.strip()).expanduser()
+        for item in env.get("NANOCLAW_SKILL_DIRS", "").split(",")
+        if item.strip()
+    )
+    combined = _append_skill_dirs(existing, skill_dirs)
+    env["NANOCLAW_SKILL_DIRS"] = ",".join(str(path) for path in combined)
+    return env
+
+
+def _append_skill_dirs(
+    existing: tuple[Path, ...],
+    additional: tuple[Path, ...],
+) -> tuple[Path, ...]:
+    paths: list[Path] = []
+    seen: set[Path] = set()
+    for raw_path in (*existing, *additional):
+        path = raw_path.expanduser().resolve()
+        if path in seen:
+            continue
+        seen.add(path)
+        paths.append(path)
+    return tuple(paths)
 
 
 def _materialize_skill_pool(workspace_dir: Path, available_skills) -> None:

@@ -172,6 +172,19 @@ def build_parser() -> argparse.ArgumentParser:
         help="Combined summary output path when --no-group-by-model is used.",
     )
     parser.add_argument(
+        "--records-out",
+        default=None,
+        help=(
+            "Self-contained JSONL output path when --no-group-by-model is used. "
+            "Defaults to <json-out stem>_records.jsonl."
+        ),
+    )
+    parser.add_argument(
+        "--no-records-out",
+        action="store_true",
+        help="Do not write self-contained per-run records JSONL.",
+    )
+    parser.add_argument(
         "--max-runs",
         type=int,
         default=None,
@@ -222,6 +235,8 @@ def main() -> int:
     print(f"Matched {len(run_dirs)} run directory/directories.")
 
     if args.no_group_by_model:
+        json_out = _resolve_path(args.json_out)
+        records_out = None if args.no_records_out else _combined_records_out(args, json_out=json_out)
         results = _evaluate_group(
             run_dirs,
             label="combined",
@@ -232,9 +247,11 @@ def main() -> int:
         )
         _write_group_outputs(
             results,
-            json_out=_resolve_path(args.json_out),
+            json_out=json_out,
             csv_out=_resolve_path(args.csv_out),
             summary_out=_resolve_path(args.summary_out),
+            records_out=records_out,
+            bundle=bundle,
         )
         group_exit_code = _print_group_summary("combined", results)
         return 0 if args.allow_issues else group_exit_code
@@ -260,6 +277,8 @@ def main() -> int:
             json_out=model_dir / "evaluation.json",
             csv_out=model_dir / "evaluation.csv",
             summary_out=model_dir / "evaluation_summary.json",
+            records_out=None if args.no_records_out else model_dir / "records.jsonl",
+            bundle=bundle,
         )
         exit_code = max(exit_code, _print_group_summary(model_name, results))
     return 0 if args.allow_issues else exit_code
@@ -312,14 +331,203 @@ def _write_group_outputs(
     json_out: Path,
     csv_out: Path,
     summary_out: Path,
+    records_out: Path | None,
+    bundle: Any,
 ) -> None:
     summary = summarize_workplace_trace_evaluations(results)
     write_workplace_trace_json(results, output_path=json_out)
     write_workplace_trace_csv(results, output_path=csv_out)
     write_workplace_trace_summary_json(summary, output_path=summary_out)
+    if records_out is not None:
+        _write_self_contained_records(results, bundle=bundle, output_path=records_out)
     print(f"JSON report: {json_out}")
     print(f"CSV report: {csv_out}")
     print(f"Summary report: {summary_out}")
+    if records_out is not None:
+        print(f"Records JSONL: {records_out}")
+
+
+def _combined_records_out(args: argparse.Namespace, *, json_out: Path) -> Path:
+    if args.records_out:
+        return _resolve_path(args.records_out)
+    return json_out.with_name(f"{json_out.stem}_records.jsonl")
+
+
+def _write_self_contained_records(results, *, bundle: Any, output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as handle:
+        for result in sorted(results, key=lambda item: (item.task_id, item.run_id)):
+            record = _build_self_contained_record(result, bundle=bundle)
+            handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+
+def _build_self_contained_record(result, *, bundle: Any) -> dict[str, Any]:
+    run_dir = result.run_dir
+    summary = _read_json_file(result.summary_path)
+    resolved_task = _read_json_file(run_dir / "resolved_task.json")
+    trace_path = _run_file_from_summary(
+        run_dir,
+        summary,
+        field="trace_file",
+        default="trace.jsonl",
+    )
+    final_answer_path = _run_file_from_summary(
+        run_dir,
+        summary,
+        field="final_answer_file",
+        default="final_answer.md",
+    )
+    verifier = bundle.verifiers.get(result.task_id)
+
+    return {
+        "task_id": result.task_id,
+        "source_task_id": result.source_task_id,
+        "run_id": result.run_id,
+        "run_dir": str(run_dir),
+        "summary_path": str(result.summary_path),
+        "input": {
+            "task_yaml": _read_text_file(run_dir / "task.yaml"),
+            "resolved_task": resolved_task,
+            "prompts": (resolved_task or {}).get("prompts") if isinstance(resolved_task, dict) else None,
+            "sessions": (resolved_task or {}).get("sessions") if isinstance(resolved_task, dict) else None,
+        },
+        "model_trajectory": {
+            "trace_file": str(trace_path),
+            "trace_events": _read_jsonl_file(trace_path),
+            "final_answer_file": str(final_answer_path),
+            "final_answer": _read_text_file(final_answer_path),
+            "turn_final_answers": _read_turn_final_answers(run_dir, summary),
+            "workspace_before": _summary_path_value(run_dir, summary, "before_state_dir"),
+            "workspace_after": _summary_path_value(run_dir, summary, "after_state_dir"),
+            "turn_workspaces_after": _read_turn_workspace_paths(run_dir, summary),
+        },
+        "verifier": {
+            "source_path": str(result.verifier_source_path) if result.verifier_source_path else None,
+            "source_line": result.verifier_source_line,
+            "source_task_id": verifier.source_task_id if verifier is not None else result.source_task_id,
+            "imported_task_id": verifier.imported_task_id if verifier is not None else result.task_id,
+            "workplace_code": verifier.workplace_script if verifier is not None else None,
+        },
+        "verification_result": {
+            "status": result.workplace_status,
+            "score": result.workplace_score,
+            "score_source": result.workplace_score_source,
+            "data": result.workplace_data,
+            "exit_code": result.workplace_exit_code,
+            "stdout": result.workplace_stdout,
+            "stderr": result.workplace_stderr,
+            "error": result.workplace_error,
+            "objective_score": result.objective_score,
+            "objective_score_source": result.objective_score_source,
+            "evaluation_status": result.evaluation_status,
+        },
+        "evaluation": result.to_dict(),
+    }
+
+
+def _read_json_file(path: Path) -> dict[str, Any] | None:
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _read_jsonl_file(path: Path) -> list[Any]:
+    if not path.is_file():
+        return []
+    rows = []
+    with path.open("r", encoding="utf-8", errors="replace") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            stripped = line.strip()
+            if not stripped:
+                continue
+            try:
+                rows.append(json.loads(stripped))
+            except json.JSONDecodeError:
+                rows.append({"line_number": line_number, "raw": stripped})
+    return rows
+
+
+def _read_text_file(path: Path) -> str | None:
+    if not path.is_file():
+        return None
+    return path.read_text(encoding="utf-8", errors="replace")
+
+
+def _run_file_from_summary(
+    run_dir: Path,
+    summary: dict[str, Any] | None,
+    *,
+    field: str,
+    default: str,
+) -> Path:
+    value = summary.get(field) if isinstance(summary, dict) else None
+    if not isinstance(value, str) or not value.strip():
+        value = default
+    relative = Path(value)
+    if relative.is_absolute() or ".." in relative.parts:
+        return run_dir / default
+    return run_dir / relative
+
+
+def _summary_path_value(run_dir: Path, summary: dict[str, Any] | None, field: str) -> str | None:
+    value = summary.get(field) if isinstance(summary, dict) else None
+    if not isinstance(value, str) or not value.strip():
+        return None
+    relative = Path(value)
+    if relative.is_absolute() or ".." in relative.parts:
+        return None
+    return str(run_dir / relative)
+
+
+def _read_turn_final_answers(run_dir: Path, summary: dict[str, Any] | None) -> list[dict[str, Any]]:
+    turns = summary.get("turns") if isinstance(summary, dict) else None
+    if not isinstance(turns, list):
+        return []
+    records = []
+    for item in turns:
+        if not isinstance(item, dict):
+            continue
+        file_path = _run_file_from_turn_summary(run_dir, item, field="final_answer_file")
+        records.append(
+            {
+                "turn": item.get("turn"),
+                "file": str(file_path) if file_path is not None else None,
+                "content": _read_text_file(file_path) if file_path is not None else None,
+            }
+        )
+    return records
+
+
+def _read_turn_workspace_paths(run_dir: Path, summary: dict[str, Any] | None) -> list[dict[str, Any]]:
+    turns = summary.get("turns") if isinstance(summary, dict) else None
+    if not isinstance(turns, list):
+        return []
+    records = []
+    for item in turns:
+        if not isinstance(item, dict):
+            continue
+        after_path = _run_file_from_turn_summary(run_dir, item, field="after_state_dir")
+        records.append(
+            {
+                "turn": item.get("turn"),
+                "workspace_after": str(after_path) if after_path is not None else None,
+            }
+        )
+    return records
+
+
+def _run_file_from_turn_summary(run_dir: Path, item: dict[str, Any], *, field: str) -> Path | None:
+    value = item.get(field)
+    if not isinstance(value, str) or not value.strip():
+        return None
+    relative = Path(value)
+    if relative.is_absolute() or ".." in relative.parts:
+        return None
+    return run_dir / relative
 
 
 def _print_group_summary(model_name: str, results) -> int:

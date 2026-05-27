@@ -43,9 +43,6 @@ Use the Hugging Face dataset package when you want to run the benchmark tasks.
 - `skills/`: small repo-local example skills used by tests and task fixtures
 - `workspace/prompts/official/`: synced OpenClaw prompt template snapshots
 - `tests/`: unit tests
-- `run_tasks.sh`: generic batch task runner
-- `run_nanoclaw_workplace_suite.sh`: built-in Nanoclaw benchmark suite
-- `run_docker_workplace_suite.sh`: OpenClaw, Hermes, and Codex Docker suite
 - `run_evals.sh`: evaluation helper
 
 ## Install
@@ -148,6 +145,38 @@ uv run python ClawBenchPro/materialize_assets.py \
   --workers 8
 ```
 
+## ClawBenchPro Subset Workflow
+
+Run and evaluate a local subset package such as
+`../nanoclaw_datasets/ClawBenchPro_subsets/smoke_40`:
+
+```bash
+uv run python scripts/run_clawbenchpro_subset.py \
+  ../nanoclaw_datasets/ClawBenchPro_subsets/smoke_40 \
+  --runners nanoclaw openclaw hermes codex \
+  --models qwen3.5-flash \
+  --workers 2 \
+  --eval-workers 8
+```
+
+Create or rebuild deterministic subsets:
+
+```bash
+uv run python scripts/build_clawbenchpro_subsets.py --write --overwrite
+
+uv run python scripts/build_clawbenchpro_subsets.py \
+  --custom-name smoke_80 \
+  --round-per-group 10 \
+  --persona-per-group 10 \
+  --write
+```
+
+View result summaries:
+
+```bash
+uv run python scripts/summarize_clawbenchpro_results.py results/clawbenchpro_eval
+```
+
 ## Smoke Test
 
 Run one task with the built-in Nanoclaw runner:
@@ -168,45 +197,20 @@ uv run python scripts/run_generated_tasks.py \
 Run one task with a Docker runner:
 
 ```bash
-RUNNER_PROFILE=runner_profiles/codex.yaml \
-RESULTS_ROOT=results/smoke_codex \
-TASK_GLOB='tasks/data_round_01_aligned_mix_800_0001.yaml' \
-MODELS_OVERRIDE='qwen3.5-flash' \
-WORKERS=1 \
-bash run_tasks.sh
+uv run python scripts/run_generated_tasks.py \
+  tasks/data_round_01_aligned_mix_800_0001.yaml \
+  --model qwen3.5-flash \
+  --approval-mode reject \
+  --workers 1 \
+  --results-dir results/smoke_codex/qwen35flash \
+  --runner-profile runner_profiles/codex.yaml \
+  --resume \
+  --skip-validation \
+  --skip-normalize \
+  --skip-auto-fix
 ```
 
-## Built-In Nanoclaw Suite
-
-Run both public ClawBenchPro datasets with the built-in Nanoclaw runner:
-
-```bash
-DATASETS_OVERRIDE='round_01_aligned_mix_800 persona_aligned_mix_200' \
-MODELS_OVERRIDE='qwen3.5-flash' \
-WORKERS=4 \
-EVAL_WORKERS=16 \
-RUN_EVALS=1 \
-RENDER_CHARTS=1 \
-EXPORT_EXCEL=1 \
-bash run_nanoclaw_workplace_suite.sh
-```
-
-Useful switches:
-
-- `RUN_TASKS=0`: skip task execution and evaluate existing results
-- `RUN_EVALS=0`: skip evaluation
-- `RENDER_CHARTS=0`: skip SVG charts
-- `EXPORT_EXCEL=0`: skip Excel export
-- `EXCLUDE_INFRA_FAILURES=1`: exclude infrastructure failures from supported charts
-- `RESULTS_ROOT=...`: override run output root
-- `EVAL_ROOT=...`: override evaluation output root
-
-Default outputs:
-
-- `results/nanoclaw_workplace_suite/`
-- `results/nanoclaw_workplace_suite_eval/`
-
-## Docker Runner Suite
+## Docker Runners
 
 Nanoclaw can orchestrate external agent frameworks in Docker. The source repo
 currently includes three adapters:
@@ -225,65 +229,46 @@ docker build -t nanoclaw-runner-hermes:latest docker/hermes-runner
 docker build -t nanoclaw-runner-codex:latest docker/codex-runner
 ```
 
-Run all Docker runners on the public datasets:
+Run benchmark tasks directly with `scripts/run_generated_tasks.py`. Omit
+`--runner-profile` for the built-in Nanoclaw runner, or pass one of the Docker
+profiles:
 
 ```bash
-RUNNERS_OVERRIDE='openclaw hermes codex' \
-DATASETS_OVERRIDE='round_01_aligned_mix_800 persona_aligned_mix_200' \
-MODELS_OVERRIDE='qwen3.5-flash' \
-WORKERS=4 \
-EVAL_WORKERS=16 \
-RUN_EVALS=1 \
-RENDER_CHARTS=1 \
-EXPORT_EXCEL=1 \
-bash run_docker_workplace_suite.sh
+uv run python scripts/run_generated_tasks.py <task-yaml-globs...> \
+  --model qwen3.5-flash \
+  --approval-mode reject \
+  --workers 2 \
+  --results-dir results/clawbenchpro_smoke_40/openclaw/qwen35flash \
+  --runner-profile runner_profiles/openclaw.yaml \
+  --resume \
+  --skip-validation \
+  --skip-normalize \
+  --skip-auto-fix
 ```
-
-Run only evaluation and chart export for existing Docker results:
-
-```bash
-RUN_TASKS=0 \
-RUN_EVALS=1 \
-RENDER_CHARTS=1 \
-EXPORT_EXCEL=1 \
-RUNNERS_OVERRIDE='openclaw hermes codex' \
-DATASETS_OVERRIDE='round_01_aligned_mix_800 persona_aligned_mix_200' \
-MODELS_OVERRIDE='qwen3.5-flash' \
-bash run_docker_workplace_suite.sh
-```
-
-Default outputs:
-
-- `results/docker_workplace_suite/<runner>/`
-- `results/docker_workplace_suite_eval/<runner>/`
-- `results/docker_workplace_suite_eval/chart_data.xlsx`
-- `results/docker_workplace_suite_eval/docker_runner_dataset_model_comparison.svg`
 
 ## Evaluation Outputs
 
-Per model and dataset, merged evaluation files are written under:
+Evaluate completed workplace runs with `scripts/evaluate_workplace_trace_tasks.py`.
+The evaluator writes detailed JSON, CSV, an aggregate summary, and a
+self-contained `*_records.jsonl` file with prompts, trace events, verifier code,
+and verifier result for each run.
+
+Per model and dataset, write evaluation files under a chosen eval root such as:
 
 ```text
-<eval-root>/<dataset>/merged/<model-slug>/
-```
-
-or for Docker:
-
-```text
-<eval-root>/<runner>/<dataset>/merged/<model-slug>/
+<eval-root>/<runner>/<model-slug>/
 ```
 
 Important files:
 
 - `evaluation.json`: per-task evaluation rows
+- `*_records.jsonl`: self-contained per-run records
 - `evaluation_summary.json`: aggregate metrics for one model and dataset
 - `charts/*.svg`: dataset and category charts
-- `chart_data.xlsx`: workbook containing chart source data when `EXPORT_EXCEL=1`
 
 For final benchmark reporting, use `average_objective_score` as the main score.
 `perfect_score_rate` is the share of evaluated tasks that reached a perfect
-objective score. If `EXCLUDE_INFRA_FAILURES=1` is used, generated charts may also
-include an alternate denominator that excludes infrastructure failures.
+objective score.
 
 ## Runner Adapter Contract
 

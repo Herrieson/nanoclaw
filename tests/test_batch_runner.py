@@ -7,6 +7,7 @@ import unittest
 
 from nanoclaw.batch_runner import (
     BatchTaskSpec,
+    _env_with_skill_dirs,
     batch_assets_root,
     cleanup_environment,
     find_latest_completed_run_dir,
@@ -65,6 +66,100 @@ class BatchRunnerTests(unittest.TestCase):
         self.assertEqual(spec.task_id, "data_01")
         self.assertEqual(spec.asset_name, "data_01")
         self.assertIsNone(spec.builder_path)
+
+    def test_resolve_task_specs_prefers_builder_next_to_external_task(self) -> None:
+        external_root = self.repo_root / "external_dataset"
+        task_id = "data_external_01"
+        task_path = external_root / "tasks" / f"{task_id}.yaml"
+        prompt_path = external_root / "tasks" / "prompts" / f"{task_id}.md"
+        builder_path = external_root / "tasks" / task_id / "env_builder.py"
+        prompt_path.parent.mkdir(parents=True, exist_ok=True)
+        builder_path.parent.mkdir(parents=True, exist_ok=True)
+        prompt_path.write_text("Write a report.\n", encoding="utf-8")
+        builder_path.write_text("print('build')\n", encoding="utf-8")
+        task_path.write_text(
+            "\n".join(
+                [
+                    f"id: {task_id}",
+                    "name: External Example",
+                    "prompts:",
+                    f"  - prompts/{task_id}.md",
+                    "environment:",
+                    f"  asset: {task_id}",
+                    "skills:",
+                    "  available:",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "  mode: interactive",
+                    "  memory_policy: default",
+                    "  approval_mode: reject",
+                    "  max_steps: 30",
+                    "  temperature: 0.2",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        spec = resolve_task_specs(["external_dataset/tasks/data_external_01.yaml"], repo_root=self.repo_root)[0]
+
+        self.assertEqual(spec.task_id, task_id)
+        self.assertEqual(spec.builder_path, builder_path)
+        self.assertEqual(spec.skill_dirs, ())
+
+        absolute_spec = resolve_task_specs([str(task_path)], repo_root=self.repo_root)[0]
+        self.assertEqual(absolute_spec.builder_path, builder_path)
+
+    def test_resolve_task_specs_adds_external_dataset_skill_root(self) -> None:
+        external_root = self.repo_root / "external_dataset"
+        task_id = "data_external_02"
+        task_path = external_root / "tasks" / f"{task_id}.yaml"
+        prompt_path = external_root / "tasks" / "prompts" / f"{task_id}.md"
+        skill_root = external_root / "skills"
+        prompt_path.parent.mkdir(parents=True, exist_ok=True)
+        skill_root.mkdir(parents=True, exist_ok=True)
+        prompt_path.write_text("Use a helper skill.\n", encoding="utf-8")
+        task_path.write_text(
+            "\n".join(
+                [
+                    f"id: {task_id}",
+                    "name: External Skill Example",
+                    "prompts:",
+                    f"  - prompts/{task_id}.md",
+                    "environment:",
+                    f"  asset: {task_id}",
+                    "skills:",
+                    "  available:",
+                    "    - external-helper",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "  mode: interactive",
+                    "  memory_policy: default",
+                    "  approval_mode: reject",
+                    "  max_steps: 30",
+                    "  temperature: 0.2",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        spec = resolve_task_specs([str(task_path)], repo_root=self.repo_root)[0]
+
+        self.assertEqual(spec.skill_dirs, (skill_root.resolve(),))
+
+    def test_env_with_skill_dirs_appends_without_duplicates(self) -> None:
+        existing = self.repo_root / "existing_skills"
+        extra = self.repo_root / "external_dataset" / "skills"
+        env = _env_with_skill_dirs(
+            {"NANOCLAW_SKILL_DIRS": str(existing)},
+            (extra, existing),
+        )
+
+        self.assertEqual(
+            env["NANOCLAW_SKILL_DIRS"],
+            f"{existing.resolve()},{extra.resolve()}",
+        )
 
     def test_prepare_and_cleanup_environment_from_builder(self) -> None:
         task_id = "data_02"
