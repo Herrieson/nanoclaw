@@ -242,7 +242,7 @@ TOOLS: list[dict[str, Any]] = [
         "type": "function",
         "function": {
             "name": "exec",
-            "description": "Run a shell command in the workspace. Safe read-only commands run directly; other commands require prior human approval.",
+            "description": "Run a shell command in the workspace. Safe read-only commands run directly; other commands follow the configured approval mode.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -525,9 +525,28 @@ class MinimalClaw:
                 "Runtime: "
                 f"model={metadata['model']} | "
                 f"run_mode={metadata['run_mode']} | "
-                f"memory_policy={metadata['memory_policy']}"
+                f"memory_policy={metadata['memory_policy']} | "
+                f"max_steps={self.settings.max_steps}"
             ),
+            *self._approval_mode_prompt_lines(),
             "",
+        ]
+
+    def _approval_mode_prompt_lines(self) -> list[str]:
+        if self.settings.approval_mode == "auto-approve":
+            return [
+                "Command approval: non-read-only exec commands are auto-approved and run on first execution. Do not call ask_human_for_confirmation for command approval in this mode.",
+            ]
+        if self.settings.approval_mode == "approve-all":
+            return [
+                "Command approval: ask_human_for_confirmation is answered with automatic approval, then the exact approved command can be run once.",
+            ]
+        if self.settings.approval_mode == "reject":
+            return [
+                "Command approval: non-read-only exec commands are rejected.",
+            ]
+        return [
+            "Command approval: ask_human_for_confirmation is required before running non-read-only exec commands.",
         ]
 
     def _tool_call_style_prompt_lines(self) -> list[str]:
@@ -858,6 +877,19 @@ class MinimalClaw:
             return self._run_workspace_command(decision.argv)
 
         if decision.requires_approval:
+            if self.settings.approval_mode == "auto-approve":
+                self._emit_event(
+                    "command_execution",
+                    command=decision.normalized_command,
+                    safe_readonly=False,
+                    human_approved=True,
+                    auto_approved=True,
+                )
+                print(
+                    f"\n[ALERT] Executing auto-approved command: {decision.normalized_command}"
+                )
+                return self._run_workspace_command(decision.argv)
+
             self._emit_event("command_blocked", command=decision.normalized_command)
             print(
                 f"\n[ALERT] Non-safe command blocked (needs approval): {decision.normalized_command}"
@@ -965,7 +997,7 @@ class MinimalClaw:
                 )
                 print(f"\n[Agent asks human] {reason}")
                 print(f"Command for one-time approval: {normalized_command}")
-                if self.settings.approval_mode == "approve-all":
+                if self.settings.approval_mode in {"approve-all", "auto-approve"}:
                     human_response = "Approve (auto)"
                 elif self.settings.approval_mode == "reject":
                     human_response = "Reject (auto)"

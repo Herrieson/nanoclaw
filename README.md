@@ -341,8 +341,8 @@ runtime:
   model: gpt-4o
   mode: interactive
   memory_policy: default
-  approval_mode: reject
-  max_steps: 12
+  approval_mode: auto-approve
+  max_steps: 50
   temperature: 0.1
 ```
 

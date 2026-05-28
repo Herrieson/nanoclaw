@@ -73,7 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--approval-mode",
-        choices=("reject", "approve-all"),
+        choices=("reject", "approve-all", "auto-approve"),
         default=None,
         help="Override runtime.approval_mode for this batch. If omitted, use the task YAML value.",
     )

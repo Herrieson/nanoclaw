@@ -111,9 +111,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--eval-workers", type=int, default=8, help="Evaluation workers.")
     parser.add_argument(
         "--approval-mode",
-        choices=("reject", "approve-all"),
-        default="reject",
-        help="Approval mode passed to task runs. Default: reject.",
+        choices=("reject", "approve-all", "auto-approve"),
+        default=None,
+        help=(
+            "Override approval mode passed to task runs. "
+            "Default: use each task YAML runtime.approval_mode."
+        ),
     )
     parser.add_argument(
         "--components",
@@ -159,7 +162,7 @@ def run_tasks(
     model: str,
     results_dir: Path,
     workers: int,
-    approval_mode: str,
+    approval_mode: str | None,
     resume: bool,
     keep_assets: bool,
 ) -> int:
@@ -174,8 +177,6 @@ def run_tasks(
         *(str(path) for path in task_paths),
         "--model",
         model,
-        "--approval-mode",
-        approval_mode,
         "--workers",
         str(max(1, workers)),
         "--results-dir",
@@ -184,6 +185,8 @@ def run_tasks(
         "--skip-normalize",
         "--skip-auto-fix",
     ]
+    if approval_mode:
+        command.extend(["--approval-mode", approval_mode])
     if resume:
         command.append("--resume")
     if keep_assets:

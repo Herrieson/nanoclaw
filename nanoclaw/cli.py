@@ -259,7 +259,7 @@ def build_parser() -> argparse.ArgumentParser:
     run_task_parser.add_argument(
         "--approval-mode",
         default=None,
-        choices=("interactive", "reject", "approve-all"),
+        choices=("interactive", "reject", "approve-all", "auto-approve"),
         help="Override command approval behavior for this task run",
     )
     run_task_parser.add_argument(

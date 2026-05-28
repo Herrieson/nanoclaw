@@ -55,7 +55,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--approval-mode",
-        default="approve-all",
+        default="auto-approve",
         help="Approval mode passed to run_generated_tasks.py.",
     )
     parser.add_argument(

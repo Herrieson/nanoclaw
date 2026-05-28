@@ -53,7 +53,8 @@ runtime:
   model: gpt-4o
   mode: interactive
   memory_policy: default
-  max_steps: 12
+  approval_mode: auto-approve
+  max_steps: 50
   temperature: 0.1
 ```
 
@@ -83,6 +84,8 @@ runtime:
   运行模式，常见是 `interactive`。
 - `runtime.memory_policy`
   memory 使用策略。`default` 是普通模式，`strict` 会更强地要求先查 memory，`off` 则不注入 memory policy 指令。
+- `runtime.approval_mode`
+  命令审批策略。benchmark 任务通常使用 `auto-approve`，非只读命令会在首次 `exec` 时自动批准并执行；`approve-all` 只会自动批准 `ask_human_for_confirmation` 请求；`reject` 会拒绝非只读命令。
 - `runtime.session`
   可选。需要连续多轮任务共用本地 session 时再写。
 - `runtime.workspace_context_files`
@@ -215,7 +218,8 @@ runtime:
   model: gpt-4o
   mode: interactive
   memory_policy: default
-  max_steps: 12
+  approval_mode: auto-approve
+  max_steps: 50
   temperature: 0.1
 ```
 

@@ -22,7 +22,7 @@ from scripts.materialize_clawbenchpro_workplace_verifiers import (  # noqa: E402
 
 DEFAULT_CLAWBENCHPRO_ROOT = REPO_ROOT.parent / "nanoclaw_datasets" / "ClawBenchPro"
 DATASETS = ("round_01_aligned_mix_800", "persona_aligned_mix_200")
-OUTPUT_MARKERS = ("workplace_score", "verify_result", "state.json")
+OUTPUT_MARKERS = ("workplace_score", "verify_result", "state.json", "total_score")
 
 
 @dataclass(frozen=True, slots=True)
@@ -47,8 +47,12 @@ def main() -> int:
     datasets = tuple(args.datasets or DATASETS)
 
     tasks = load_task_verifiers(root, datasets)
-    valid_by_source = index_valid_donors(tasks)
-    repairs = plan_repairs(tasks, valid_by_source)
+    valid_by_source = index_valid_donors(tasks, allow_cross_group_copy=args.allow_cross_group_copy)
+    repairs = plan_repairs(
+        tasks,
+        valid_by_source,
+        allow_cross_group_copy=args.allow_cross_group_copy,
+    )
 
     print_summary(tasks, repairs)
     if not repairs:
@@ -91,6 +95,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Datasets to repair. Defaults to all ClawBenchPro datasets.",
     )
     parser.add_argument("--write", action="store_true", help="Write repaired files.")
+    parser.add_argument(
+        "--allow-cross-group-copy",
+        action="store_true",
+        help=(
+            "Allow copying a verifier from the same source_task_id in another group. "
+            "This is disabled by default because group variants can have different "
+            "prompts, environments, and scoring semantics."
+        ),
+    )
     parser.add_argument(
         "--no-refresh-metadata",
         dest="refresh_metadata",
@@ -137,29 +150,46 @@ def validate_verifier(text: str, path: Path) -> tuple[str, ...]:
     return tuple(reasons)
 
 
-def index_valid_donors(tasks: list[TaskVerifier]) -> dict[tuple[str, str], list[TaskVerifier]]:
-    donors: dict[tuple[str, str], list[TaskVerifier]] = {}
+def index_valid_donors(
+    tasks: list[TaskVerifier],
+    *,
+    allow_cross_group_copy: bool,
+) -> dict[tuple[str, ...], list[TaskVerifier]]:
+    donors: dict[tuple[str, ...], list[TaskVerifier]] = {}
     for task in tasks:
         if task.is_valid:
-            donors.setdefault((task.dataset, task.source_task_id), []).append(task)
+            key = donor_key(task, allow_cross_group_copy=allow_cross_group_copy)
+            donors.setdefault(key, []).append(task)
     for donor_list in donors.values():
         donor_list.sort(key=lambda item: (item.group, item.imported_task_id))
     return donors
 
 
+def donor_key(task: TaskVerifier, *, allow_cross_group_copy: bool) -> tuple[str, ...]:
+    if allow_cross_group_copy:
+        return (task.dataset, task.source_task_id)
+    return (task.dataset, task.group, task.source_task_id)
+
+
 def plan_repairs(
     tasks: list[TaskVerifier],
-    valid_by_source: dict[tuple[str, str], list[TaskVerifier]],
+    valid_by_source: dict[tuple[str, ...], list[TaskVerifier]],
+    *,
+    allow_cross_group_copy: bool,
 ) -> list[dict[str, Any]]:
     repairs: list[dict[str, Any]] = []
     for task in tasks:
         if task.is_valid:
             continue
-        donors = valid_by_source.get((task.dataset, task.source_task_id), [])
+        donors = valid_by_source.get(donor_key(task, allow_cross_group_copy=allow_cross_group_copy), [])
         donor = donors[0] if donors else None
         if donor is not None:
             text = donor.text.replace(donor.imported_task_id, task.imported_task_id)
-            action = "copy_same_source_valid_verifier"
+            action = (
+                "copy_same_source_cross_group_valid_verifier"
+                if donor.group != task.group
+                else "copy_same_group_valid_verifier"
+            )
             donor_id = donor.imported_task_id
         else:
             text = fallback_verifier(task)

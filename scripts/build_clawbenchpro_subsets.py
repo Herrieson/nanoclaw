@@ -4,16 +4,25 @@ import argparse
 import csv
 import hashlib
 import json
+import re
 import shutil
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from nanoclaw.workplace_trace_evaluator import extract_file_blocks
+
+
 DEFAULT_SOURCE_ROOT = REPO_ROOT.parent / "nanoclaw_datasets" / "ClawBenchPro"
 DEFAULT_OUTPUT_ROOT = REPO_ROOT.parent / "nanoclaw_datasets" / "ClawBenchPro_subsets"
 DEFAULT_SEED = "clawbenchpro-subsets-v1"
+OUTPUT_MARKERS = ("workplace_score", "verify_result", "state.json", "total_score")
 
 DATASET_GROUPS = {
     "round_01_aligned_mix_800": (
@@ -210,8 +219,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--allow-invalid-verifiers",
         action="store_true",
         help=(
-            "Allow tasks whose task-local verify_workplace.py does not compile. "
-            "By default such tasks are skipped before sampling."
+            "Allow tasks whose verifier JSONL records do not contain an executable "
+            "same-group verifier. By default such tasks are skipped before sampling."
         ),
     )
     return parser
@@ -312,27 +321,82 @@ def select_subset(
 
 def valid_verifier_task_ids(dataset_root: Path) -> set[str]:
     valid: set[str] = set()
+    verifier_root = dataset_root / "verifiers"
+    if verifier_root.is_dir():
+        for verifier_jsonl in sorted(verifier_root.glob("*.jsonl")):
+            for row in read_jsonl(verifier_jsonl):
+                task_id = row.get("imported_task_id")
+                if not isinstance(task_id, str) or not task_id:
+                    continue
+                if verifier_row_is_fallback(row):
+                    continue
+                if verifier_row_is_executable(row):
+                    valid.add(task_id)
+    if valid:
+        return valid
+
+    # Backward-compatible fallback for older packages that only have task-local
+    # verify_workplace.py files and no verifier JSONL metadata.
     for row in read_jsonl(dataset_root / "import_manifest.jsonl"):
         task_id = str(row["imported_task_id"])
         task_dir = str(row["task_dir"])
         verifier_path = dataset_root / task_dir / "verify_workplace.py"
-        if not verifier_path.is_file():
-            continue
-        text = verifier_path.read_text(encoding="utf-8")
-        if not text.strip():
-            continue
-        if (
-            "workplace_score" not in text
-            and "verify_result" not in text
-            and "state.json" not in text
-        ):
-            continue
-        try:
-            compile(text, str(verifier_path), "exec")
-        except SyntaxError:
-            continue
-        valid.add(task_id)
+        if verifier_path_is_executable(verifier_path):
+            valid.add(task_id)
     return valid
+
+
+def verifier_row_is_fallback(row: dict[str, Any]) -> bool:
+    materialization = row.get("verifier_materialization")
+    if isinstance(materialization, dict):
+        action = materialization.get("action")
+        if isinstance(action, str) and action.startswith("conservative_fallback"):
+            return True
+    repair = row.get("verifier_repair")
+    if isinstance(repair, dict):
+        action = repair.get("action")
+        if isinstance(action, str) and action.startswith("write_conservative_zero_score_fallback"):
+            return True
+    return False
+
+
+def verifier_row_is_executable(row: dict[str, Any]) -> bool:
+    raw_output = row.get("raw_output")
+    if not isinstance(raw_output, str) or not raw_output.strip():
+        return False
+    blocks = extract_file_blocks(raw_output)
+    workplace_scripts = [
+        text
+        for path, text in blocks.items()
+        if path.endswith("/verify_workplace.py") or path.endswith("/verify_rules.py")
+    ]
+    if workplace_scripts:
+        return any(python_verifier_is_executable(text) for text in workplace_scripts)
+
+    turn_scripts = [
+        text
+        for path, text in blocks.items()
+        if re.fullmatch(r"scripts/data_\d+/verify_turn_\d+\.py", path)
+    ]
+    return bool(turn_scripts) and all(python_verifier_is_executable(text) for text in turn_scripts)
+
+
+def verifier_path_is_executable(path: Path) -> bool:
+    if not path.is_file():
+        return False
+    return python_verifier_is_executable(path.read_text(encoding="utf-8"), label=str(path))
+
+
+def python_verifier_is_executable(text: str, label: str = "<verifier>") -> bool:
+    if not text.strip():
+        return False
+    if not any(marker in text for marker in OUTPUT_MARKERS):
+        return False
+    try:
+        compile(text, label, "exec")
+    except SyntaxError:
+        return False
+    return True
 
 
 def stable_sample_key(
@@ -412,6 +476,7 @@ def build_dataset_subset(
     write_jsonl(selected_dataset.rows, target_dataset_root / "import_manifest.jsonl")
     write_filtered_selection_manifest(source_dataset_root, target_dataset_root, selected_dataset)
     write_filtered_repair_manifest(source_dataset_root, target_dataset_root, selected_dataset)
+    write_filtered_materialization_manifest(source_dataset_root, target_dataset_root, selected_dataset)
     write_eval_manifests(source_dataset_root, target_dataset_root, selected_dataset)
     write_verifier_jsonls(source_dataset_root, target_dataset_root, selected_dataset)
     write_dataset_index_files(source_root, subset_root, selected_dataset)
@@ -491,6 +556,24 @@ def write_filtered_repair_manifest(
     ]
     if rows:
         write_jsonl(rows, target_dataset_root / "provenance" / "verifier_repair_manifest.jsonl")
+
+
+def write_filtered_materialization_manifest(
+    source_dataset_root: Path,
+    target_dataset_root: Path,
+    selected_dataset: SelectedDataset,
+) -> None:
+    source_path = source_dataset_root / "provenance" / "verifier_materialization_manifest.jsonl"
+    if not source_path.is_file():
+        return
+    selected_task_ids = selected_dataset.task_ids
+    rows = [
+        row
+        for row in read_jsonl(source_path)
+        if str(row.get("imported_task_id")) in selected_task_ids
+    ]
+    if rows:
+        write_jsonl(rows, target_dataset_root / "provenance" / "verifier_materialization_manifest.jsonl")
 
 
 def write_eval_manifests(
@@ -606,8 +689,8 @@ def write_dataset_manifest(
         "seed": seed,
         "strategy": (
             "stable sha256 sample per dataset/group after excluding tasks whose "
-            "task-local verify_workplace.py does not compile; smaller subsets are "
-            "prefixes of larger quotas"
+            "verifier JSONL record does not contain an executable same-group "
+            "verifier; smaller subsets are prefixes of larger quotas"
         ),
     }
     manifest["verifiers"] = {
@@ -640,8 +723,8 @@ def write_root_manifest(
         "seed": seed,
         "strategy": (
             "stable sha256 sample per dataset/group after excluding tasks whose "
-            "task-local verify_workplace.py does not compile; smaller subsets are "
-            "prefixes of larger quotas"
+            "verifier JSONL record does not contain an executable same-group "
+            "verifier; smaller subsets are prefixes of larger quotas"
         ),
         "task_count": sum(dataset.task_count for dataset in built_datasets),
     }

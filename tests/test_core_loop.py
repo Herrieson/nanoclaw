@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import shlex
+import sys
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 from nanoclaw.config import Settings
@@ -82,6 +85,36 @@ class CoreLoopTest(unittest.TestCase):
         self.assertEqual(agent._classify_final_response("HEARTBEAT_OK"), "heartbeat_ack")
         self.assertEqual(agent._classify_final_response(" SILENT_REPLY\n"), "silent_reply")
         self.assertEqual(agent._classify_final_response("hello"), "final_answer")
+
+    def test_non_readonly_exec_blocks_without_approval(self) -> None:
+        agent = MinimalClaw(self.settings)
+
+        output = agent._execute_workspace_command(_python_write_command("blocked.txt"))
+
+        self.assertIn("Permission denied", output)
+        self.assertFalse((self.workspace / "blocked.txt").exists())
+
+    def test_auto_approve_exec_runs_non_readonly_without_prior_ask(self) -> None:
+        agent = MinimalClaw(replace(self.settings, approval_mode="auto-approve"))
+
+        output = agent._execute_workspace_command(_python_write_command("created.txt"))
+
+        self.assertEqual(output, "(no output)")
+        self.assertEqual((self.workspace / "created.txt").read_text(encoding="utf-8"), "ok")
+
+    def test_runtime_prompt_only_includes_current_approval_policy(self) -> None:
+        agent = MinimalClaw(replace(self.settings, approval_mode="auto-approve"))
+        agent.bootstrap_workspace()
+
+        prompt = agent.build_system_prompt()
+
+        self.assertNotIn("approval_mode=auto-approve", prompt)
+        self.assertIn("non-read-only exec commands are auto-approved", prompt)
+        self.assertNotIn("non-read-only exec commands are rejected", prompt)
+        self.assertNotIn(
+            "ask_human_for_confirmation is answered with automatic approval",
+            prompt,
+        )
 
     def test_mock_noop_model_returns_without_api_call(self) -> None:
         mock_settings = Settings(
@@ -226,6 +259,12 @@ class CoreLoopTest(unittest.TestCase):
 
         self.assertIn("## Heartbeat", prompt)
         self.assertIn("Reply with HEARTBEAT_OK when idle.", prompt)
+
+
+def _python_write_command(path: str) -> str:
+    executable = shlex.quote(sys.executable)
+    script = f"from pathlib import Path; Path({path!r}).write_text('ok')"
+    return f"{executable} -c {shlex.quote(script)}"
 
 
 if __name__ == "__main__":
