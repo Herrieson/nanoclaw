@@ -289,6 +289,62 @@ class BatchRunnerTests(unittest.TestCase):
         self.assertTrue((asset_dir / "docs" / "input.txt").exists())
         self.assertFalse((self.repo_root / "assets" / task_id).exists())
 
+    def test_prepare_environment_builder_failure_includes_stderr(self) -> None:
+        task_id = "data_bad_builder"
+        task_path = self.repo_root / "tasks" / f"{task_id}.yaml"
+        prompt_path = self.repo_root / "tasks" / "prompts" / f"{task_id}.md"
+        builder_path = self.repo_root / "tasks" / task_id / "env_builder.py"
+        prompt_path.write_text("Read docs/input.txt.\n", encoding="utf-8")
+        builder_path.parent.mkdir(parents=True, exist_ok=True)
+        builder_path.write_text(
+            "\n".join(
+                [
+                    "import sys",
+                    "print('builder stderr detail', file=sys.stderr)",
+                    "raise SystemExit(7)",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        task_path.write_text(
+            "\n".join(
+                [
+                    f"id: {task_id}",
+                    "name: Bad Builder",
+                    "prompts:",
+                    f"  - prompts/{task_id}.md",
+                    "environment:",
+                    f"  asset: {task_id}",
+                    "skills:",
+                    "  available:",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "  mode: interactive",
+                    "  memory_policy: default",
+                    "  approval_mode: reject",
+                    "  max_steps: 30",
+                    "  temperature: 0.2",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        spec = resolve_task_specs([str(task_path)], repo_root=self.repo_root)[0]
+        isolated_assets_root = self.repo_root / "results" / "demo_model" / ".batch_env" / "assets"
+
+        with self.assertRaises(RuntimeError) as context:
+            prepare_environment(
+                spec,
+                repo_root=self.repo_root,
+                assets_root=isolated_assets_root,
+            )
+
+        message = str(context.exception)
+        self.assertIn("env_builder.py exited with 7", message)
+        self.assertIn("builder stderr detail", message)
+
     def test_parse_run_dir(self) -> None:
         stdout = "Trace: foo\nRun dir: /tmp/example-run\nSummary: summary.json\n"
         self.assertEqual(parse_run_dir(stdout), Path("/tmp/example-run").resolve())

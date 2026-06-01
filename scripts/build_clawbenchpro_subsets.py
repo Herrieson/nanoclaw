@@ -23,6 +23,15 @@ DEFAULT_SOURCE_ROOT = REPO_ROOT.parent / "nanoclaw_datasets" / "ClawBenchPro"
 DEFAULT_OUTPUT_ROOT = REPO_ROOT.parent / "nanoclaw_datasets" / "ClawBenchPro_subsets"
 DEFAULT_SEED = "clawbenchpro-subsets-v1"
 OUTPUT_MARKERS = ("workplace_score", "verify_result", "state.json", "total_score")
+EXCLUDED_IMPORTED_TASK_IDS = frozenset(
+    {
+        # This hard task asks agents to inspect a multi-megabyte scene JSON. Some
+        # runners reasonably try to read it directly, which can exceed provider
+        # input limits before the task reaches verification. Keep smoke/pilot
+        # subsets focused on benchmark behavior rather than context-limit traps.
+        "data_persona_aligned_hard_50_0022",
+    }
+)
 
 DATASET_GROUPS = {
     "round_01_aligned_mix_800": (
@@ -85,6 +94,7 @@ class SelectedDataset:
     name: str
     rows: list[dict[str, Any]]
     rows_by_group: dict[str, list[dict[str, Any]]]
+    excluded_imported_task_ids: list[str]
 
     @property
     def task_ids(self) -> set[str]:
@@ -107,6 +117,7 @@ class BuiltDataset:
     group_counts: dict[str, int]
     files: int
     bytes: int
+    excluded_imported_task_ids: list[str]
 
 
 def main() -> int:
@@ -278,6 +289,12 @@ def select_subset(
     selected: dict[str, SelectedDataset] = {}
     for dataset_name, group_quotas in spec.items():
         rows = read_jsonl(source_root / dataset_name / "import_manifest.jsonl")
+        source_task_ids = {
+            str(row.get("imported_task_id"))
+            for row in rows
+            if row.get("imported_task_id") is not None
+        }
+        excluded_imported_task_ids = sorted(source_task_ids & EXCLUDED_IMPORTED_TASK_IDS)
         valid_task_ids = (
             valid_verifier_task_ids(source_root / dataset_name)
             if require_valid_verifiers
@@ -290,6 +307,7 @@ def select_subset(
                 (index, row)
                 for index, row in indexed_rows
                 if str(row.get("group")) == group_name
+                and str(row.get("imported_task_id")) not in EXCLUDED_IMPORTED_TASK_IDS
                 and (
                     valid_task_ids is None
                     or str(row.get("imported_task_id")) in valid_task_ids
@@ -315,6 +333,7 @@ def select_subset(
             name=dataset_name,
             rows=[row for group_name in DATASET_GROUPS[dataset_name] for row in rows_by_group[group_name]],
             rows_by_group=rows_by_group,
+            excluded_imported_task_ids=excluded_imported_task_ids,
         )
     return selected
 
@@ -505,6 +524,7 @@ def build_dataset_subset(
         group_counts=selected_dataset.group_counts,
         files=files,
         bytes=bytes_total,
+        excluded_imported_task_ids=selected_dataset.excluded_imported_task_ids,
     )
 
 
@@ -690,8 +710,10 @@ def write_dataset_manifest(
         "strategy": (
             "stable sha256 sample per dataset/group after excluding tasks whose "
             "verifier JSONL record does not contain an executable same-group "
-            "verifier; smaller subsets are prefixes of larger quotas"
+            "verifier and known context-limit outliers; smaller subsets are "
+            "prefixes of larger quotas"
         ),
+        "excluded_imported_task_ids": selected_dataset.excluded_imported_task_ids,
     }
     manifest["verifiers"] = {
         group_name: f"verifiers/{group_name}.jsonl"
@@ -724,7 +746,15 @@ def write_root_manifest(
         "strategy": (
             "stable sha256 sample per dataset/group after excluding tasks whose "
             "verifier JSONL record does not contain an executable same-group "
-            "verifier; smaller subsets are prefixes of larger quotas"
+            "verifier and known context-limit outliers; smaller subsets are "
+            "prefixes of larger quotas"
+        ),
+        "excluded_imported_task_ids": sorted(
+            {
+                task_id
+                for dataset in built_datasets
+                for task_id in dataset.excluded_imported_task_ids
+            }
         ),
         "task_count": sum(dataset.task_count for dataset in built_datasets),
     }

@@ -256,13 +256,7 @@ def prepare_environment(
         asset_dir.mkdir(parents=True, exist_ok=True)
         cwd = asset_dir
 
-    subprocess.run(
-        command,
-        cwd=cwd,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    _run_builder_subprocess(command, cwd=cwd)
     if not asset_dir.exists():
         raise FileNotFoundError(
             f"env_builder.py completed but asset directory was not created: {asset_dir}"
@@ -677,14 +671,59 @@ def _run_builder_for_workspace(
         raise FileNotFoundError(f"Missing env_builder.py for {spec.task_id}")
     script_path = _builder_execution_path(spec.builder_path)
     workspace_dir.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
+    _run_builder_subprocess(
         [sys.executable, str(script_path), "--turn", str(turn)],
         cwd=workspace_dir,
-        check=True,
-        capture_output=True,
-        text=True,
         env=env,
     )
+
+
+def _run_builder_subprocess(
+    command: Sequence[str],
+    *,
+    cwd: Path,
+    env: Mapping[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
+    try:
+        return subprocess.run(
+            command,
+            cwd=cwd,
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError(_format_builder_failure(command, cwd=cwd, error=exc)) from exc
+
+
+def _format_builder_failure(
+    command: Sequence[str],
+    *,
+    cwd: Path,
+    error: subprocess.CalledProcessError,
+) -> str:
+    parts = [
+        f"env_builder.py exited with {error.returncode}",
+        f"command={' '.join(command)}",
+        f"cwd={cwd}",
+    ]
+    stdout = _tail_text(error.stdout)
+    stderr = _tail_text(error.stderr)
+    if stdout:
+        parts.append(f"stdout:\n{stdout}")
+    if stderr:
+        parts.append(f"stderr:\n{stderr}")
+    return "\n".join(parts)
+
+
+def _tail_text(value: object, *, limit: int = 4000) -> str:
+    if not isinstance(value, str):
+        return ""
+    text = value.strip()
+    if len(text) <= limit:
+        return text
+    return "..." + text[-limit:]
 
 
 def _builder_execution_path(builder_path: Path) -> Path:

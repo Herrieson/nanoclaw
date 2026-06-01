@@ -9,6 +9,7 @@ from nanoclaw.task_curation import (
     build_dataset_manifest,
     curate_tasks,
     discover_evaluation_paths,
+    is_infra_failure_error,
     load_task_attempts,
 )
 
@@ -23,6 +24,20 @@ class TaskCurationTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
+
+    def test_missing_docker_is_treated_as_infra_failure(self) -> None:
+        self.assertTrue(
+            is_infra_failure_error(
+                "The command 'docker' could not be found in this WSL 2 distro."
+            )
+        )
+
+    def test_missing_model_endpoint_env_is_treated_as_infra_failure(self) -> None:
+        self.assertTrue(
+            is_infra_failure_error(
+                "ValueError: OPENAI_API_KEY is required when NANOCLAW_BASE_URL is not set"
+            )
+        )
 
     def _write_model_eval(
         self,

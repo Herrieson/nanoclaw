@@ -427,6 +427,27 @@ id: data_1
         self.assertEqual(result.evaluation_status, "skipped_infra_failure")
         self.assertIsNone(result.objective_score)
 
+    def test_workplace_skips_failed_missing_docker_runs(self) -> None:
+        manifest_path = self._write_manifest()
+        jsonl_path = self._write_jsonl(
+            workplace_script="raise RuntimeError('should not run')"
+        )
+        bundle = load_verifier_bundle([jsonl_path], manifest_path=manifest_path)
+        run_dir = self._create_run(
+            status="failed",
+            error="The command 'docker' could not be found in this WSL 2 distro.",
+        )
+
+        result = evaluate_workplace_trace_run(
+            run_dir,
+            verifiers=bundle.verifiers,
+            components="workplace",
+            judge_config=EvaluationJudgeConfig.disabled(),
+        )
+
+        self.assertEqual(result.evaluation_status, "skipped_infra_failure")
+        self.assertIsNone(result.objective_score)
+
     def test_workplace_skips_completed_run_with_empty_final_answer(self) -> None:
         manifest_path = self._write_manifest()
         jsonl_path = self._write_jsonl(

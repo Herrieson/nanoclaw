@@ -313,7 +313,7 @@ def candidate_from_raw_output(
         workplace_script=(
             ensure_trailing_newline(
                 apply_known_workplace_repairs(
-                    workplace_script,
+                    apply_common_verifier_repairs(workplace_script),
                     source_task_id=source_task_id,
                     block_path=workplace_block_path,
                 )
@@ -322,10 +322,29 @@ def candidate_from_raw_output(
             else None
         ),
         trace_prompt=ensure_trailing_newline(trace_prompt) if trace_prompt is not None else None,
-        turn_scripts={turn: ensure_trailing_newline(text) for turn, text in turn_scripts.items()},
+        turn_scripts={
+            turn: ensure_trailing_newline(
+                apply_known_turn_repairs(
+                    apply_common_verifier_repairs(text),
+                    source_task_id=source_task_id,
+                    turn=turn,
+                )
+            )
+            for turn, text in turn_scripts.items()
+        },
         turn_trace_prompts={turn: ensure_trailing_newline(text) for turn, text in turn_trace_prompts.items()},
         workplace_reasons=workplace_reasons,
         turn_reasons=turn_reasons,
+    )
+
+
+def apply_common_verifier_repairs(script_text: str) -> str:
+    # Raw LLM-judge verifiers frequently construct an httpx client without a
+    # timeout. A stalled judge endpoint should result in partial/zero score, not
+    # a verifier process timeout that removes the task from scoring.
+    return script_text.replace(
+        "http_client = httpx.Client(verify=False)",
+        "http_client = httpx.Client(verify=False, timeout=20.0)",
     )
 
 
@@ -352,6 +371,112 @@ def apply_known_workplace_repairs(
             "        reason = \"文件 fix_list/target.json 不存在\" if not os.path.exists(target_file) else \"fix_list/target.json 是目录或非普通文件\"\n"
             "        details.append({\"item\": \"检查目标文件是否存在\", \"score\": 0, \"max_score\": 15, \"passed\": False, \"reason\": reason})",
         )
+    if source_task_id == "data_1177" and block_path and block_path.endswith("verify_workplace.py"):
+        # The prompt only requires a board_summary.json with rostered category
+        # totals and an unregistered_intruders list. Valid agent outputs may use
+        # nested totals or dict intruder records; the raw verifier crashed on the
+        # latter and ignored the former.
+        script_text = script_text.replace(
+            "        expected_keys = {\"recycling\", \"compost\", \"landfill\", \"unregistered_intruders\"}\n"
+            "        actual_keys = set(data.keys())\n"
+            "        if actual_keys.issubset(expected_keys) or actual_keys == expected_keys:",
+            "        expected_keys = {\"recycling\", \"compost\", \"landfill\", \"unregistered_intruders\"}\n"
+            "        allowed_keys = expected_keys | {\"rostered_students_total_weight\", \"official_roster\", \"totals\", \"total_weight\", \"weights\", \"rostered_totals\"}\n"
+            "        actual_keys = set(data.keys())\n"
+            "        if actual_keys.issubset(allowed_keys):",
+        )
+        script_text = script_text.replace(
+            "            details.append({\"item\": \"无多余的捏造字段检查\", \"score\": 0, \"max_score\": 10, \"passed\": False, \"reason\": f\"发现多余字段: {actual_keys - expected_keys}\"})",
+            "            details.append({\"item\": \"无多余的捏造字段检查\", \"score\": 0, \"max_score\": 10, \"passed\": False, \"reason\": f\"发现多余字段: {actual_keys - allowed_keys}\"})",
+        )
+        script_text = script_text.replace(
+            "            intruders_lower = [i.lower() for i in intruders]",
+            "            def _intruder_name(value):\n"
+            "                if isinstance(value, str):\n"
+            "                    return value.lower()\n"
+            "                if isinstance(value, dict):\n"
+            "                    for key in (\"name\", \"student\", \"student_name\", \"full_name\"):\n"
+            "                        item = value.get(key)\n"
+            "                        if isinstance(item, str):\n"
+            "                            return item.lower()\n"
+            "                    return json.dumps(value, ensure_ascii=False).lower()\n"
+            "                return str(value).lower()\n"
+            "            intruders_lower = [_intruder_name(i) for i in intruders]",
+        )
+        script_text = script_text.replace(
+            "        val_r = data.get(\"recycling\", 0)\n"
+            "        val_c = data.get(\"compost\", 0)\n"
+            "        val_l = data.get(\"landfill\", 0)",
+            "        totals_data = data\n"
+            "        for key in (\"rostered_students_total_weight\", \"totals\", \"total_weight\", \"weights\", \"rostered_totals\"):\n"
+            "            candidate = data.get(key)\n"
+            "            if isinstance(candidate, dict):\n"
+            "                totals_data = candidate\n"
+            "                break\n"
+            "        val_r = totals_data.get(\"recycling\", 0)\n"
+            "        val_c = totals_data.get(\"compost\", 0)\n"
+            "        val_l = totals_data.get(\"landfill\", 0)",
+        )
+    return script_text
+
+
+def apply_known_turn_repairs(script_text: str, *, source_task_id: str, turn: int) -> str:
+    if source_task_id == "data_1878" and turn == 1:
+        # The raw verifier treats any filename containing "memo" as a file, but
+        # the workspace also contains a `memory/` directory. Guard the open
+        # call so a directory does not trigger an IsADirectoryError during eval.
+        script_text = script_text.replace(
+            "    memo_files = [f for f in os.listdir(workspace) if \"memo\" in f.lower() or \"archive\" in f.lower() or \"logic\" in f.lower() or \"report\" in f.lower()]\n",
+            "    memo_files = [\n"
+            "        f\n"
+            "        for f in os.listdir(workspace)\n"
+            "        if os.path.isfile(os.path.join(workspace, f))\n"
+            "        and (\n"
+            "            \"memo\" in f.lower()\n"
+            "            or \"archive\" in f.lower()\n"
+            "            or \"logic\" in f.lower()\n"
+            "            or \"report\" in f.lower()\n"
+            "        )\n"
+            "    ]\n",
+        )
+    if source_task_id == "data_1878" and turn == 3:
+        if "from openai import OpenAI" not in script_text and "OpenAI(" in script_text:
+            script_text = script_text.replace(
+                "import pandas as pd # 允许使用常用库\n",
+                "import pandas as pd # 允许使用常用库\nfrom openai import OpenAI\n",
+            )
+    if source_task_id == "data_1274" and turn == 2:
+        script_text = script_text.replace(
+            "    for f in os.listdir(workspace):\n"
+            "        if \"紧急更新\" in f or \"update\" in f.lower():\n"
+            "            update_plan_path = os.path.join(workspace, f)\n"
+            "            break",
+            "    for f in os.listdir(workspace):\n"
+            "        if \"紧急更新\" in f or \"update\" in f.lower():\n"
+            "            candidate_path = os.path.join(workspace, f)\n"
+            "            if os.path.isfile(candidate_path):\n"
+            "                update_plan_path = candidate_path\n"
+            "                break",
+        )
+    if source_task_id == "data_1274" and turn == 3:
+        if "def llm_judge_content" not in script_text and "llm_judge_content(" in script_text:
+            script_text = script_text.replace(
+                "\ndef verify():\n",
+                "\ndef llm_judge_content(prompt_text, file_content):\n"
+                "    try:\n"
+                "        response = client.chat.completions.create(\n"
+                "            model=MOCK_MODEL_NAME,\n"
+                "            messages=[\n"
+                "                {\"role\": \"system\", \"content\": \"You are a strict data validation assistant. Answer ONLY with 'YES' or 'NO'.\"},\n"
+                "                {\"role\": \"user\", \"content\": f\"{prompt_text}\\n\\n[File Content]:\\n{file_content}\"}\n"
+                "            ],\n"
+                "            temperature=0\n"
+                "        )\n"
+                "        return \"yes\" in response.choices[0].message.content.strip().lower()\n"
+                "    except Exception:\n"
+                "        return False\n"
+                "\ndef verify():\n",
+            )
     return script_text
 
 
