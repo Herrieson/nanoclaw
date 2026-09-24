@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0132
+name: wellness_sprouts_daycare_management
+description: 测试Agent在复杂多文件依赖下的长程逻辑推理与状态保持。要求Agent在首轮梳理混乱的儿童健康记录并输出排班与备忘；后续轮次在无规则提示的情况下，处理突发召回、新入托儿童以及复杂的账单计算。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0132_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0132_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0132_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0132
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0132/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0132/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0132/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0132_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0132_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0132_turn_3.md

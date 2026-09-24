@@ -1,0 +1,9 @@
+Oh goodness, I'm so glad someone is finally here to help me. My hands are literally shaking right now, I've just been fidgeting with my ring all morning. I'm supposed to be on leave from the store, but I volunteered to supervise the checkout and scheduling for our church's Oklahoma Pioneer Heritage Fair, and it's a complete disaster. 
+
+Lord knows I try to keep things orderly—just like I tell my cashiers at the store—but these volunteers just do whatever they want. I have a strict roster of approved church members who are allowed to handle the cash boxes and run the booths, but I'm pretty sure some random people from town just walked in, signed the shift sheets, and started working. With the audit coming up, my nerves are just completely shot. 
+
+I dumped all the daily shift logs into that `shifts` folder, and the official member list is in `roster.txt`. Then there are the sales receipts in the `sales` folder... half of them are for our special "Heritage" historical items, and the rest are just general snacks and soda. I really, really don't want to dig through all that mess myself. 
+
+The board president, Mr. Higgins, is extremely traditional and strict. He told me he needs a final summary report handed to him today. He specifically asked for it to be in one of those fancy computer formats—I think he called it a "jay-sawn" file? He wants it placed in a brand new folder called `results`. 
+
+Could you please just look through the files, figure out the names of those unauthorized people who sneaked onto the shift logs, and also calculate the total money we made *strictly* from the "Heritage" items? I don't care what you name the file, as long as it's in that `results` folder and clearly shows him the unapproved names and the exact heritage sales total. Please, please hurry, I really need to get back to my garden to calm down.

@@ -1,0 +1,23 @@
+id: data_round_01_aligned_mix_800_0333
+name: data_round_01_aligned_mix_800_0333
+prompts:
+- prompts/data_round_01_aligned_mix_800_0333.md
+environment:
+  asset: data_round_01_aligned_mix_800_0333
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0333-edutext-analyzer
+  - data-round-01-aligned-mix-800-0333-safepoet-decrypter
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema_version: '1.0'
+type: evaluation
+prompt: prompts/data_round_01_aligned_mix_800_0333.md
+dependencies:
+- openai
+- httpx

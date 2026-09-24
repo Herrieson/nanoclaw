@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0177
+name: justice_program_allocation_strategy
+description: 评估 Agent 在处理复杂的联邦司法援助项目（联邦雇员背景）中的多轮状态流转能力。涉及跨文件逻辑比对、历史红线记忆、新政冲突处理以及复杂的配额计算。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0177_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0177_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0177_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0177
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0177/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0177/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0177/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0177_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0177_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0177_turn_3.md

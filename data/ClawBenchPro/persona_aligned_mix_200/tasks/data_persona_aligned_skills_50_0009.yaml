@@ -1,0 +1,20 @@
+id: data_persona_aligned_skills_50_0009
+name: data_persona_aligned_skills_50_0009
+prompts:
+- prompts/data_persona_aligned_skills_50_0009.md
+environment:
+  asset: data_persona_aligned_skills_50_0009
+skills:
+  available:
+  - data-persona-aligned-skills-50-0009-deep-space-network-archival-skill
+  - data-persona-aligned-skills-50-0009-intranet-wiki-search-skill
+  - data-persona-aligned-skills-50-0009-x9-sensor-toolkit-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+prompt: prompts/data_persona_aligned_skills_50_0009.md

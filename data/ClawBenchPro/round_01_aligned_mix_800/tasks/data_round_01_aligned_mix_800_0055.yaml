@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0055
+name: sustainable_clinic_uniform_overhaul
+description: 测试 Agent 在多轮会话中管理可持续供应链的能力。第一轮需要根据复杂的环保标准和预算筛选供应商并制定初始采购计划并记录决策逻辑；第二轮引入由于原材料变动导致的供应链冲突，要求 Agent 在不违背第一轮设定原则的前提下重组方案。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0055_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0055_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0055
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0055/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0055/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0055_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0055_turn_2.md

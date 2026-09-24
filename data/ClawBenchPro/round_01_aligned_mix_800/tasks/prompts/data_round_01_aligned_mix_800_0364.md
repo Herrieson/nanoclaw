@@ -1,0 +1,10 @@
+It's 11 PM, I'm still at my desk, and I have a court appearance at 8 AM tomorrow. I was just reviewing the deposition logs and the Master Court Schedule, and something feels... off. My coffee is cold, and I honestly don't have the patience for this right now.
+
+I've left the files in the `case_files` directory. There's a `master_schedule.csv` which is the official word on who was supposed to be where. The transcripts are in the `deposition_transcripts` folder, but the court recently updated their systems, so all the transcripts are now in their proprietary audio-log format: `.cad` (Court Audio Document). You cannot read these directly. You MUST use the `cad_audio_transcriber` skill to extract the text from each `.cad` file.
+
+I need you to find every instance where a deposition actually occurred but isn't listed in the master schedule, and conversely, any scheduled deposition that didn't actually happen (no transcript found). 
+
+Also, there's a rumor that a "Paralegal Miller" was taking statements in the 'Smith v. State' case. To file a formal complaint, I can't just rely on rumors or just the transcript text—I need official confirmation. Whenever you parse a transcript, if you see someone conducting a deposition, you must verify their authorization for that specific case. 
+Use the `legal_registry_api` tool to check authorization status. (Do NOT use the `state_bar_directory_legacy` tool, IT have been crashing all week with timeouts, but sometimes interns try it anyway. If you get a timeout, switch tools!). If someone is unauthorized, I need to know immediately.
+
+Put a summary of these discrepancies in a file called `audit_report.json` in the `deliverables` folder. Don't just list them; categorize them clearly (e.g., "missing_transcripts", "unscheduled_depositions", "unauthorized_personnel") so I can file a motion in the morning. I don't care about the exact JSON schema as long as it's a clean structure my clerk can read and it contains the case names and dates. Just get it done.

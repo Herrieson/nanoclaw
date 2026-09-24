@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0166
+name: artisanal_food_distribution_pivot
+description: 评估 Agent 在处理复杂精品零售库存逻辑、动态供应链变更以及跨会话规则记忆方面的能力。Agent 需要在一个充满矛盾数据和复杂文件结构的沙盒中，管理高端食材的采购红线与供应商冲突。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0166_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0166_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0166_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0166
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0166/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0166/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0166/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0166_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0166_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0166_turn_3.md

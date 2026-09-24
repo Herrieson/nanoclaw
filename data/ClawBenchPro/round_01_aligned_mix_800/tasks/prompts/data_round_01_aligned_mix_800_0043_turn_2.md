@@ -1,0 +1,5 @@
+I am literally pulling my hair out right now! The school board just slashed our parts budget! They dumped another batch of devices in `donations/batch_2`, but told me we only have a strict total budget of $500 for parts across EVERYTHING. BOTH batches combined! Oh my god, I am so stressed...
+
+Please, take a deep breath for me and use the exact same sorting rules you documented last time to filter this new batch (they are in XML format now, just to make my life harder). Then, combine the new viable devices with the ones we kept from the first batch. If the total repair cost for all of them combined is over $500, you have to kick out the devices that cost the most to fix, one by one, until we are at or under the $500 budget limit. If there's a tie in cost, just pick one to drop, I don't care.
+
+Keep a permanent record of the final kept list, the total cost, and the specific devices we had to drop because of the budget. I need this done perfectly or the board will shut the whole program down.

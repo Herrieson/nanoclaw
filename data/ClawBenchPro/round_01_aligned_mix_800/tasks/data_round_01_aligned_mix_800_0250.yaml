@@ -1,0 +1,21 @@
+id: data_round_01_aligned_mix_800_0250
+name: data_round_01_aligned_mix_800_0250
+prompts:
+- prompts/data_round_01_aligned_mix_800_0250.md
+environment:
+  asset: data_round_01_aligned_mix_800_0250
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0250-local-weld-shop-api
+  - data-round-01-aligned-mix-800-0250-national-industrial-supply-api
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema_version: '1.0'
+type: evaluation
+task_id: data_round_01_aligned_mix_800_0250
+prompt_file: prompts/data_round_01_aligned_mix_800_0250.md

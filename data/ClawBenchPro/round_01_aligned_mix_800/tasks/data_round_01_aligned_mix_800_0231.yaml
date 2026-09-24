@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0231
+name: chemical_plant_efficiency_audit_enhanced
+description: A production worker needs help reconciling chaotic chemical logs. This version includes legacy binary data formats and specialized eco-validation tools.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0231.md
+environment:
+  asset: data_round_01_aligned_mix_800_0231
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0231-chemical-data-extractor-skill
+  - data-round-01-aligned-mix-800-0231-eco-impact-validator-skill
+  - data-round-01-aligned-mix-800-0231-legacy-database-query-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_analysis
+task_definition: tasks/prompts/data_round_01_aligned_mix_800_0231.md
+dependencies:
+- openai
+- httpx
+- PyPDF2
+assets:
+  data_round_01_aligned_mix_800_0231: tasks/data_round_01_aligned_mix_800_0231/

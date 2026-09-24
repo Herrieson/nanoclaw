@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0143
+name: clinical_trial_anomaly_mathematical_audit
+description: 该任务模拟一名失业但在医疗非营利组织拥有深厚数学背景的博士，对临床试验数据进行多轮审计。Agent 需要处理跨文件的复杂逻辑关联，建立并维护一套“审计准则”，并在后续轮次面对数据冲突和新红线规则时，基于历史记录进行决策。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0143_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0143_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0143_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0143
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0143/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0143/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0143/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0143_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0143_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0143_turn_3.md

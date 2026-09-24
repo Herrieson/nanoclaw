@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0010
+name: embedded_firmware_debug
+description: 模拟嵌入式物联网固件工程师在多轮交互中解析逻辑分析仪导出的无结构日志，跨文件关联I2C/SPI通信错误，最终结合Flash地址映射表调整系统任务调度器。测试Agent的物理状态流转、时序日志解析与配置冲突消解能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0010_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0010_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0010_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0010
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0010/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0010/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0010/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0010_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0010_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0010_turn_3.md

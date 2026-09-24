@@ -1,0 +1,21 @@
+id: data_round_01_aligned_mix_800_0647
+name: data_round_01_aligned_mix_800_0647
+description: 一个日本裔美国失业男士（拥有哲学情结且极其缺乏条理性）需要处理一份混乱的社区志愿者数据库，以向教会报告活动成果。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0647.md
+environment:
+  asset: data_round_01_aligned_mix_800_0647
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: Data processing
+tags:
+- python
+- data-cleaning
+- report-generation

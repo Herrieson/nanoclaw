@@ -1,0 +1,23 @@
+id: data_round_01_aligned_mix_800_0242
+name: data_round_01_aligned_mix_800_0242
+description: A financial private investigator requires the agent to covertly audit encrypted banking logs against a masked suspect list using specialized forensics tools.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0242.md
+environment:
+  asset: data_round_01_aligned_mix_800_0242
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0242-interpol-red-notice-api
+  - data-round-01-aligned-mix-800-0242-offshore-entity-resolver
+  - data-round-01-aligned-mix-800-0242-reuters-financial-lookup
+  - data-round-01-aligned-mix-800-0242-swift-ledger-parser
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: v1
+type: agent_eval

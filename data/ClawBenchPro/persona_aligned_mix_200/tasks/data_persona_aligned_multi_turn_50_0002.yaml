@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0002
+name: kraken_pipeline_dependency_hell
+description: 测试 Agent 在庞大工程下解析复杂 CI 日志、梳理 C++/Python 深层依赖冲突，并在漏洞拦截与镜像体积超标等多重约束下进行长期状态流转与配置重构的能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0002_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0002_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0002_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0002
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0002/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0002/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0002/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0002_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0002_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0002_turn_3.md

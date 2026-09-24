@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0158
+name: construction_safety_art_integration
+description: 评估 Agent 在多轮施工安全审计中的状态流转能力。第一轮涉及复杂的合规性审查与工时计算，Agent 需自行记录审查准则；第二轮引入突发工伤事故与由于物料变更导致的冲突，需基于首轮建立的“非正式记忆”进行逻辑判断与追责。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0158_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0158_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0158_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0158
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0158/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0158/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0158/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0158_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0158_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0158_turn_3.md

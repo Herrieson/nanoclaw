@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0024
+name: entertainment_curator_artifact_event
+description: 模拟娱乐活动协调员管理多轮次的独特文物巡回展。Agent 需要在第一轮处理复杂的文物入库与安保评估并建立维护规则，在第二轮应对突发数据更新、规则冲突与合规性审查。测试 Agent 的长效状态维护、复杂逻辑推理及对隐性约束的遵守能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0024_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0024_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0024
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0024/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0024/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0024_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0024_turn_2.md

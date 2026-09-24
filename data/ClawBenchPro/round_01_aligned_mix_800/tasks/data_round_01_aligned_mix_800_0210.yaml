@@ -1,0 +1,24 @@
+id: data_round_01_aligned_mix_800_0210
+name: data_round_01_aligned_mix_800_0210
+prompts:
+- prompts/data_round_01_aligned_mix_800_0210.md
+environment:
+  asset: data_round_01_aligned_mix_800_0210
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0210-eco-gadget-hub-skill
+  - data-round-01-aligned-mix-800-0210-eco-impact-calculator-skill
+  - data-round-01-aligned-mix-800-0210-solx-decoder-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+task_id: data_round_01_aligned_mix_800_0210
+prompt: prompts/data_round_01_aligned_mix_800_0210.md
+dependencies:
+- httpx
+- openai

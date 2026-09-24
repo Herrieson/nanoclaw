@@ -1,0 +1,22 @@
+id: data_round_01_aligned_mix_800_0255
+name: data_round_01_aligned_mix_800_0255
+prompts:
+- prompts/data_round_01_aligned_mix_800_0255.md
+environment:
+  asset: data_round_01_aligned_mix_800_0255
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0255-frame-material-analyzer-skill
+  - data-round-01-aligned-mix-800-0255-legacy-ocr-service
+  - data-round-01-aligned-mix-800-0255-smart-ocr-vision-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: '2024-11-13'
+task_id: data_round_01_aligned_mix_800_0255
+prompt: prompts/data_round_01_aligned_mix_800_0255.md

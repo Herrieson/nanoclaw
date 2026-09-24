@@ -1,0 +1,7 @@
+Damn it, the whole datacenter just had a hard power trip! The primary NVMe drive went down dirty, and now the Ext4 journal is completely unplayable. I'm staring at a kernel panic right in the middle of `ext4_orphan_cleanup`, the volume won't mount, and the business side is losing their minds over the downtime.
+
+I’ve dumped the raw, crashed `dmesg` output into `logs/kernel_crash.log`. I need you to comb through that stack trace and pull the exact instruction pointer (RIP) hex address where the kernel died, so I can cross-reference it with `addr2line` on my local vmlinux build later. Just grab the raw hex address from the register dump.
+
+Also, I used `dd` and `hexdump -C` to pull the raw superblock into `disk_dumps/sb_raw.hex`. You know the Ext4 structure: hunt down the filesystem magic signature `53 EF`. Right after those two bytes, I had a custom kernel patch that forcibly flushed the first 5 orphan inode numbers consecutively as an emergency debugging measure before the crash happened. They are stored as standard 32-bit little-endian integers. 
+
+Extract the RIP address and those 5 orphan inode numbers (convert them back to standard base-10 integers). Put them into a file named `recovery_plan.json` under the keys `rip_address` (as a string) and `orphan_inodes` (as an array of integers). Don't give me a lecture on filesystem theory or write me an essay, just give me that JSON file so my automated recovery scripts can parse it and begin the surgical inode reconstruction!

@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0080
+name: freelance_artist_gallery_curation
+description: 评测 Agent 在艺术策展与版权管理中的多轮状态流转能力。Agent 需要在第一轮基于复杂的矛盾规则筛选艺术家方案并建立准则库，在第二轮处理突发版权冲突和策展逻辑变更，全程依赖物理文件记录维持状态。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0080_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0080_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0080
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0080/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0080/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0080_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0080_turn_2.md

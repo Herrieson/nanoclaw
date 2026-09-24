@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0274
+name: insurance_claim_audit
+description: As an Insurance Claims Clerk, process a batch of messy claims, identify  discrepancies against a master policy list, and generate a structured  summary report while maintaining high conscientiousness. Requires querying external APIs for policy limits.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0274.md
+environment:
+  asset: data_round_01_aligned_mix_800_0274
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0274-legacy-underwriting-db-skill
+  - data-round-01-aligned-mix-800-0274-v2-underwriting-api-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data-processing
+prompt_path: tasks/prompts/data_round_01_aligned_mix_800_0274.md

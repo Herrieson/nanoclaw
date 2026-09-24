@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0174
+name: legal_document_integrity_and_conflict_audit
+description: 模拟一名资深诉讼律师处理复杂的跨州案件证据库。Agent 需要在多轮会话中建立案件索引、处理新证据冲突、并根据前期建立的隐私脱敏规则和证据排除逻辑，完成复杂的合规性审计。测试 Agent 在文件系统状态维护、历史逻辑一致性以及复杂法律事实推断方面的能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0174_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0174_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0174_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0174
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0174/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0174/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0174/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0174_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0174_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0174_turn_3.md

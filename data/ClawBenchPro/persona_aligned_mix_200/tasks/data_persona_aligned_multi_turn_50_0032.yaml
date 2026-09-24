@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0032
+name: vasp_md_convergence_analysis
+description: 评估Agent在多轮对话中解析复杂计算化学文本日志、提取物理量（能量与受力）、执行多条件逻辑判断，并依赖自身历史记忆（物理文件）处理跨批次数据关联与突发规则变动的能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0032_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0032_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0032_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0032
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0032/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0032/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0032/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0032_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0032_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0032_turn_3.md

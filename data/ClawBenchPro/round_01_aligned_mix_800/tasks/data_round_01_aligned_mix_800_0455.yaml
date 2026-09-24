@@ -1,0 +1,19 @@
+id: data_round_01_aligned_mix_800_0455
+name: data_round_01_aligned_mix_800_0455
+prompts:
+- prompts/data_round_01_aligned_mix_800_0455.md
+environment:
+  asset: data_round_01_aligned_mix_800_0455
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: '2024-11-13'
+task_id: data_round_01_aligned_mix_800_0455
+prompt: prompts/data_round_01_aligned_mix_800_0455.md

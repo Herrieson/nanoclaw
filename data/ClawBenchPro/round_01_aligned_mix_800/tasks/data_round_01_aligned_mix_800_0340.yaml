@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0340
+name: data_round_01_aligned_mix_800_0340
+description: Extract stolen property values by querying a precinct database and filter suspect descriptions from encrypted audio logs.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0340.md
+environment:
+  asset: data_round_01_aligned_mix_800_0340
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0340-criminal-registry-search-skill
+  - data-round-01-aligned-mix-800-0340-police-audio-transcriber-skill
+  - data-round-01-aligned-mix-800-0340-precinct-database-query-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0340.md

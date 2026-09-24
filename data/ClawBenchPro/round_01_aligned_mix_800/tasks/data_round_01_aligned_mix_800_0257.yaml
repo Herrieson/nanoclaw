@@ -1,0 +1,21 @@
+id: data_round_01_aligned_mix_800_0257
+name: data_round_01_aligned_mix_800_0257
+prompts:
+- prompts/data_round_01_aligned_mix_800_0257.md
+environment:
+  asset: data_round_01_aligned_mix_800_0257
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0257-dietary-risk-assessor-skill
+  - data-round-01-aligned-mix-800-0257-heritage-museum-api-skill
+  - data-round-01-aligned-mix-800-0257-legacy-scanner-skill
+  - data-round-01-aligned-mix-800-0257-military-ocr-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.1'
+schema_version: '1.0'

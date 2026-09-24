@@ -1,0 +1,23 @@
+id: data_round_01_aligned_mix_800_0241
+name: high_school_club_audit
+description: A conscientious high school student needs help auditing the messy volunteer logs and inventory for the Art Club's charity exhibition.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0241.md
+environment:
+  asset: data_round_01_aligned_mix_800_0241
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0241-art-catalog-api-v2
+  - data-round-01-aligned-mix-800-0241-legacy-art-catalog-api
+  - data-round-01-aligned-mix-800-0241-student-directory-lookup
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_processing
+dependencies:
+- openai
+- httpx

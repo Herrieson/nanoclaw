@@ -1,0 +1,9 @@
+Oh, hello there! *Hmm-hm-hmm~* Sorry, just humming a little tune. I find such joy in these quiet mornings before the pharmacy gets chaotic. 
+
+Listen, I am leading a huge community health drive this weekend for kids—specifically ages 5 to 17—and I am absolutely drowning in paperwork. My desk is a disaster, honestly, I don't know how I manage. I've dumped a bunch of inventory files into the `inventory` folder. Some are CSVs, some are JSONs, it’s a mess.
+
+I need your help to sort out what we can safely pack for the health drive. Today is October 15, 2024. If anything is already expired by today, toss it out. Also, you need to check the `guidelines` folder. There's a list of approved vendors and an urgent FDA recall notice. I only want medications that are from our approved vendors, NOT affected by the FDA recall, NOT expired, and perfectly suited for our target age group (they must be safe for kids within the 5 to 17 range, meaning the medication's target age range must overlap or fit within this group safely, actually, let's keep it strict: the medication's minimum age must be <= 17 and maximum age must be >= 5 to be useful for at least someone in our group).
+
+Could you please process all this and give me a nice, clean report of the safe stock we can use? Put it in `deliverables/safe_stock.csv`. Include the med name, vendor, lot number, and quantity.
+
+And one HUGE favor: I have absolutely zero conscientiousness when it comes to keeping track of rules. I will 100% forget which vendors we approved today and what the specific recall patterns were. Please, please write down a clear memo or cheat sheet for yourself somewhere in the workspace with all the exact rules, vendor lists, and recall lot patterns you applied today. I'm going to need you to rely heavily on that tomorrow when the next truck arrives!

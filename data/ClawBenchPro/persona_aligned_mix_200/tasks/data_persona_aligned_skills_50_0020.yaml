@@ -1,0 +1,28 @@
+id: data_persona_aligned_skills_50_0020
+name: data_persona_aligned_skills_50_0020
+prompts:
+- prompts/data_persona_aligned_skills_50_0020.md
+environment:
+  asset: data_persona_aligned_skills_50_0020
+skills:
+  available:
+  - data-persona-aligned-skills-50-0020-ecs-binary-parser-skill
+  - data-persona-aligned-skills-50-0020-engine-ops-ai-skill
+  - data-persona-aligned-skills-50-0020-legacy-dump-analyzer-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+tasks:
+- id: data_persona_aligned_skills_50_0020
+  asset: data_persona_aligned_skills_50_0020
+  prompt: prompts/data_persona_aligned_skills_50_0020.md
+  runtime:
+    environment: python3
+  dependencies:
+  - openai
+  - httpx

@@ -1,0 +1,21 @@
+id: data_persona_aligned_skills_50_0007
+name: data_persona_aligned_skills_50_0007
+prompts:
+- prompts/data_persona_aligned_skills_50_0007.md
+environment:
+  asset: data_persona_aligned_skills_50_0007
+skills:
+  available:
+  - data-persona-aligned-skills-50-0007-hpc-cloud-vasp-diag-skill
+  - data-persona-aligned-skills-50-0007-vasp-local-parser-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+prompt: prompts/data_persona_aligned_skills_50_0007.md
+setup:
+- pip install openai httpx

@@ -1,0 +1,10 @@
+Good morning. I’m sitting here at the front desk tapping my fingers to the bone just looking at this absolute mess. I've been with the State government's Human Resource Programs for years, and we used to have a perfectly orderly, structured sign-in book. Now, the higher-ups have installed this "modern" digital kiosk, and frankly, I completely despise it. It's disorganized, chaotic, and it’s raising my blood pressure—which is completely throwing off my healthy lifestyle balance!
+
+The kiosk just dumps every single public inquiry into a raw text file located in the `kiosk_logs` folder. People are constantly tapping the wrong buttons; half the people in that log are looking for the DMV or Parks department, not our HR Programs! 
+
+I really need you to clean this up for me while I go take ten minutes to meditate and reset my nerves. Here is what I need:
+First, completely ignore anyone who isn't here for "HR Programs". For the people actually meant for my department, I need you to organize them into a clean, proper spreadsheet named `daily_appointments.csv` inside a new `processed` folder. Because I absolutely rely on structure, these appointments must be strictly ordered chronologically by the time they arrived. I don't care how the kiosk formatted their times initially, just make sure my final schedule reads from morning to afternoon in perfect order.
+
+Second, maintaining proper health coverage is very important to me personally, and I can't stand seeing our citizens stressed out about their benefits. I noticed a few people in the logs are specifically asking about or disputing their "health insurance". Please extract those specific individuals and their reasons into a separate text file called `insurance_complaints.txt`, also in that `processed` folder, so I can personally hand-deliver it to the benefits escalations team.
+
+I don't need to know the technical details of how you fix this—just please make it perfectly neat and accurate before I get back from my break. Thank you.

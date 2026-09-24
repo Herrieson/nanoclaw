@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0074
+name: insurance_claims_state_reconciliation
+description: 测试 Agent 在复杂财产保险理赔业务中跨会话的多文件数据关联、复杂业务逻辑运算（免赔额、年度赔付上限）以及状态记忆流转的能力，并在最终轮进行全局按比例调账计算。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0074_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0074_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0074_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0074
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0074/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0074/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0074/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0074_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0074_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0074_turn_3.md

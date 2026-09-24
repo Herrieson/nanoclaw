@@ -1,0 +1,24 @@
+id: data_persona_aligned_skills_50_0006
+name: data_persona_aligned_skills_50_0006
+description: The agent must process non-standard, noisy EEG raw channel logs, decode a proprietary  marker file, query patient database for specific artifact thresholds, filter out trials with extreme voltage artifacts, and extract the Event-Related  Potential (ERP) peak voltages for specific target stimuli.
+prompts:
+- prompts/data_persona_aligned_skills_50_0006.md
+environment:
+  asset: data_persona_aligned_skills_50_0006
+skills:
+  available:
+  - data-persona-aligned-skills-50-0006-bci-marker-decoder
+  - data-persona-aligned-skills-50-0006-legacy-patient-db-query
+  - data-persona-aligned-skills-50-0006-neuro-cloud-db-query
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema_version: 1.0
+type: task
+title: BCI EEG Signal Artifact Cleaning and ERP Extraction
+persona: Brain-Computer Interface (BCI) Neural Signal Analyst
+prompt_path: tasks/prompts/data_persona_aligned_skills_50_0006.md

@@ -1,0 +1,22 @@
+id: data_persona_aligned_skills_50_0034
+name: data_persona_aligned_skills_50_0034
+prompts:
+- prompts/data_persona_aligned_skills_50_0034.md
+environment:
+  asset: data_persona_aligned_skills_50_0034
+skills:
+  available:
+  - data-persona-aligned-skills-50-0034-turbofan-symbol-server-skill
+  - data-persona-aligned-skills-50-0034-v8-legacy-debugger-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: v1
+dependencies:
+- httpx
+- openai

@@ -1,0 +1,20 @@
+id: data_persona_aligned_skills_50_0035
+name: data_persona_aligned_skills_50_0035
+prompts:
+- prompts/data_persona_aligned_skills_50_0035.md
+environment:
+  asset: data_persona_aligned_skills_50_0035
+skills:
+  available:
+  - data-persona-aligned-skills-50-0035-legacy-gdb-analyzer
+  - data-persona-aligned-skills-50-0035-nexus-telemetry-query
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+task_id: data_persona_aligned_skills_50_0035
+prompt: prompts/data_persona_aligned_skills_50_0035.md

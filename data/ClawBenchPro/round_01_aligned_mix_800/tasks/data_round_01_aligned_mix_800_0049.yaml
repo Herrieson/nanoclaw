@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0049
+name: residential_care_facility_audit_and_reorg
+description: 模拟一名在非营利性寄宿制照护机构工作的清洁/勤务人员，由于极低的责任心(Conscientiousness)和高神经质(Neuroticism)，她将工作环境弄得一团糟。Agent 需要协助她在多轮会话中清理资产、修复预算超支、并根据动态变化的合规性审计来重新分配物资。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0049_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0049_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0049_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0049
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0049/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0049/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0049/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0049_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0049_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0049_turn_3.md

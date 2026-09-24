@@ -1,0 +1,18 @@
+{
+  "source_repo": "https://github.com/openclaw/openclaw.git",
+  "source_ref": "main",
+  "source_commit": "89b7fee352f74dea89599cc2f9bc06d5b368e064",
+  "generated_at_utc": "2026-03-25T06:02:40.908429+00:00",
+  "version_id": "20260325T060240Z_89b7fee352f7",
+  "snapshot_dir": "versions/20260325T060240Z_89b7fee352f7",
+  "files": {
+    "CLAUDE.md": {
+      "sha256": "9b1d8ad267521b4f868a2c33f69b322d5a2428882e9293c43ec48612574f2791",
+      "bytes": 25112
+    },
+    "AGENTS.md": {
+      "sha256": "9b1d8ad267521b4f868a2c33f69b322d5a2428882e9293c43ec48612574f2791",
+      "bytes": 25112
+    }
+  }
+}

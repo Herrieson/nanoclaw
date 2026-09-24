@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0033
+name: space_telemetry_anomaly_recovery
+description: 连续多日航天器遥测受损数据的恢复与交叉子系统联合故障排查，深度测试Agent的状态流转、二进制/Hex复杂协议解析与时序状态机记忆能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0033_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0033_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0033_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0033
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0033/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0033/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0033/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0033_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0033_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0033_turn_3.md

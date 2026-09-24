@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0003
+name: bioinformatics_variant_filtering
+description: 生物信息学变异序列清洗与多重过滤。测试Agent处理FASTQ/FASTA格式、解析质量分数(Phred)、跨文件关联映射以及在多轮中维持过滤阈值和元数据追溯的能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0003_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0003_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0003_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0003
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0003/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0003/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0003/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0003_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0003_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0003_turn_3.md

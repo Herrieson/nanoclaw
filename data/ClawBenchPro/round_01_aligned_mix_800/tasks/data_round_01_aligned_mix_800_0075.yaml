@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0075
+name: factory_shift_logistics_1197
+description: 测试Agent在多约束条件下的长期记忆与物理文件流转。Agent需要交叉排查排班、化学品安全限制和订单耗时，并在多轮突发事件（安检规则变更、紧急订单）中，凭借自己上一轮记录的工作状态和红线规则进行正确的调度和回溯修改。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0075_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0075_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0075
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0075/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0075/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0075_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0075_turn_2.md

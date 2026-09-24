@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0637
+name: social_worker_case_audit
+description: 协助忙乱的社工处理混乱的家庭干预记录，清洗数据并生成一份用于审计的摘要报告。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0637.md
+environment:
+  asset: data_round_01_aligned_mix_800_0637
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_processing
+prompt: prompts/data_round_01_aligned_mix_800_0637.md

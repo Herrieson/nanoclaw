@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0332
+name: data_round_01_aligned_mix_800_0332
+description: Extract and cross-reference messy childcare health records using dialect translation and allergy safety verification skills for an anxious Pennsylvania Dutch nanny.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0332.md
+environment:
+  asset: data_round_01_aligned_mix_800_0332
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0332-dialect-to-standard-english-skill
+  - data-round-01-aligned-mix-800-0332-dietary-safety-validator-skill
+  - data-round-01-aligned-mix-800-0332-legacy-medical-pdf-parser
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+assets: data_round_01_aligned_mix_800_0332

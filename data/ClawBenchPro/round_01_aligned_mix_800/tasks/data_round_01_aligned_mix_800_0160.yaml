@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0160
+name: construction_logistics_and_compliance_management
+description: 模拟一名经营建筑运输业务的个体经营者，在多轮会话中处理复杂的材料运输调度、供应商合规性审查以及由于政策变动导致的成本核算。测试 Agent 在文件系统中持久化业务规则、跨轮次逻辑一致性以及处理非结构化数据冲突的能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0160_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0160_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0160_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0160
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0160/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0160/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0160/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0160_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0160_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0160_turn_3.md

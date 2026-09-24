@@ -1,0 +1,7 @@
+Hey. Turn down the music for a second, I’m trying to focus. I'm Leo. I’m taking a break from scrubbing the linoleum in the west wing to sort out the logistics for the "Harmony & Heritage" community festival this weekend. 
+
+Look, I'm extremely particular about how this building is maintained, and I don't tolerate sloppy work. We have the room specs and current activities mapped out in `building/rooms.json`, and the current instruments we own in `building/pianos.json`. I have a bunch of vendor pitches sitting in `procurement/vendor_quotes.txt`. The board mandated strict environmental rules which you can find in `policies/environmental.md`. 
+
+I need you to figure out exactly which vendor we can actually use to supply our deep-cleaning chemicals and handle the grand piano tuning for the weekend event. Once you figure out the only vendor that actually meets all our scheduling and eco-rules, calculate the total baseline cost to clean the ENTIRE building and tune all our current pianos. 
+
+Listen, I am NOT repeating myself tomorrow. You need to write down our final vendor choice, the exact total baseline cost for the whole building, and the specific eco-certification requirement we settled on. Stash it in a file somewhere in `deliverables/` so you can read it later. I don't care what you name it, just make sure you don't forget the details. Got it? Good. I'm going back to practicing my scales on the lobby upright.

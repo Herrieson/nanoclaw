@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0326
+name: data_round_01_aligned_mix_800_0326
+description: Analyze messy community center health screening logs, decode encrypted medical data, and verify volunteer eligibility via external APIs.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0326.md
+environment:
+  asset: data_round_01_aligned_mix_800_0326
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0326-bp-decrypter
+  - data-round-01-aligned-mix-800-0326-legacy-clinic-auth
+  - data-round-01-aligned-mix-800-0326-national-volunteer-db
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: Data Analysis
+tags:
+- data_cleaning
+- authorization_verification
+- medical_logs
+- tool_use
+- decryption
+prompt: prompts/data_round_01_aligned_mix_800_0326.md

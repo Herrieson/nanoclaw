@@ -1,0 +1,16 @@
+id: data_round_01_aligned_mix_800_0401
+name: data_round_01_aligned_mix_800_0401
+description: Reconstruct a fragmented music camp roster from chaotic, multi-source logs and corrupted instructor manifests, applying complex conditional matching for special needs students in a 'wasteland' data environment.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0401.md
+environment:
+  asset: data_round_01_aligned_mix_800_0401
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0186
+name: construction_equipment_procurement_audit
+description: 模拟一名建筑设备操作员（失业中但义务协助社区）处理设备采购与维护审计。测试 Agent 在面对复杂技术参数、预算限制及规则变动时的多轮状态流转、历史数据对齐及复杂逻辑判断能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0186_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0186_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0186_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0186
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0186/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0186/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0186/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0186_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0186_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0186_turn_3.md

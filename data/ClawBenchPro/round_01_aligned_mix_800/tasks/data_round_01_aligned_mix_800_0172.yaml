@@ -1,0 +1,33 @@
+id: data_round_01_aligned_mix_800_0172
+name: museum_janitor_logistics
+description: '测试Agent在具有物理状态流转和复杂约束下的多轮任务处理能力。
+
+  Persona是一个高度神经质且外向的博物馆清洁工。
+
+  第一轮，Agent需要根据特定物品的材质、重量、清洁剂限制分配展柜，并**自己记录**隐藏的规则。
+
+  第二轮，在展柜损坏、新物品加入及附加安全规则下重新分配，且Prompt绝对不重申第一轮的材质排斥规则与数量限制，测试状态守恒与防RAG能力。'
+prompts:
+- prompts/data_round_01_aligned_mix_800_0172_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0172_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0172
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0172/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0172/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0172_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0172_turn_2.md

@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0445
+name: advertising_campaign_audit
+description: A chaotic advertising agency owner needs help cleaning up messy campaign logs and identifying unauthorized ad spend across multiple experimental social media channels.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0445.md
+environment:
+  asset: data_round_01_aligned_mix_800_0445
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: Data Processing & Business Logic
+prompt: prompts/data_round_01_aligned_mix_800_0445.md

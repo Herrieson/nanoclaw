@@ -1,0 +1,21 @@
+id: data_round_01_aligned_mix_800_0366
+name: data_round_01_aligned_mix_800_0366
+description: A specialty store cashier needs help reconciling a messy sales log (from a POS dump) and checking inventory for a personal recipe using external API skills.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0366.md
+environment:
+  asset: data_round_01_aligned_mix_800_0366
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0366-pos-data-extractor
+  - data-round-01-aligned-mix-800-0366-recipe-search-premium
+  - data-round-01-aligned-mix-800-0366-recipe-search-standard
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+assets: data_round_01_aligned_mix_800_0366
+prompt: prompts/data_round_01_aligned_mix_800_0366.md

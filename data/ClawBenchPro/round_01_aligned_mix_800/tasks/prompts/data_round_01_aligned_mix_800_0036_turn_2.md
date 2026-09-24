@@ -1,0 +1,7 @@
+Uff da, wouldn't you know it? The weatherman says it's gonna pour cats and dogs this weekend. We can't have Joe's vintage vinyl records getting ruined in the rain, don'tcha know! We're moving the whole shebang indoors to the middle school gym. 
+
+Just like when we have indoor recess, things are gonna get mighty cramped. I've mapped out the new gym zones and their electrical limits in `updates/gym_layout.json`. You need to look back at the detailed notes you kept about our approved vendors—their sizes and power requirements—and figure out how to squeeze them into these gym zones. You have to assign each approved vendor to a specific zone so that neither the total square footage nor the total power wattage of that zone is exceeded. If you absolutely can't fit someone in without blowing a fuse or crossing the tape, you'll have to put them on a waitlist.
+
+To make matters worse, a nasty bug is going around the teacher's lounge, and some of our helpers caught it. I've listed the call-outs in `updates/call_outs.txt`. Check your previous volunteer assignments. If any of those sick folks were assigned to a vendor, you need to find a healthy replacement from the original roster who has the right availability and certifications.
+
+Please draft up the revised indoor floor plan and updated volunteer assignments, and put it in the `deliverables` folder. And again, jot down your updated final list of who is actually exhibiting and who is waitlisted in your own notes—we'll need it when the receipts come in!

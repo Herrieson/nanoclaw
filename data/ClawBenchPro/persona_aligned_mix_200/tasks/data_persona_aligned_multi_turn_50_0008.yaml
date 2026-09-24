@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0008
+name: 3a_engine_physics_bottleneck
+description: 评估 Agent 在 3A 游戏引擎场景下的多轮状态流转能力。要求解析内存地址、ECS 耗时系统，结合多文件进行复杂公式计算，并在多轮中依靠自身写入的文件记录进行红线比对。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0008_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0008_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0008_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0008
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0008/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0008/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0008/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0008_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0008_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0008_turn_3.md

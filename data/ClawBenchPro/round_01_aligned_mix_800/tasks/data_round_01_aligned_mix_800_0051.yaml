@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0051
+name: home_care_community_outreach_optimization
+description: 评估 Agent 在高度复杂、动态变化的家庭护理社区服务场景下的长期决策与状态维护能力。涉及复杂的排班逻辑、预算控制、地理围栏限制以及后续政策突变导致的资源重分配。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0051_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0051_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0051_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0051
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0051/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0051/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0051/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0051_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0051_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0051_turn_3.md

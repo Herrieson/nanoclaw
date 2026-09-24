@@ -1,0 +1,23 @@
+id: data_persona_aligned_hard_50_0033
+name: Spacecraft Telemetry Recovery
+description: Parse fragmented, severely corrupted hexadecimal telemetry logs to extract Star Tracker quaternion data based on multi-hop protocol specifications.
+prompts:
+- prompts/data_persona_aligned_hard_50_0033.md
+environment:
+  asset: data_persona_aligned_hard_50_0033
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+agent:
+  type: nanoclaw
+  capabilities:
+  - file_system
+  - python_execution
+prompt: prompts/data_persona_aligned_hard_50_0033.md

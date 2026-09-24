@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0045
+name: k8s_eviction_split_brain_crisis
+description: 模拟K8s集群连续故障处理。测试Agent跨越三轮会话的状态留存能力：从计算OOM驱逐根因（解析海量YAML与监控JSON），到应对脑裂（依赖前序排查记录和新网络日志），再到资源重调度（避开前序故障节点并计算Namespace Quota限额）。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0045_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0045_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0045_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0045
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0045/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0045/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0045/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0045_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0045_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0045_turn_3.md

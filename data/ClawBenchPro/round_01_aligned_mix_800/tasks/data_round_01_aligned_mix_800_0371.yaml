@@ -1,0 +1,23 @@
+id: data_round_01_aligned_mix_800_0371
+name: data_round_01_aligned_mix_800_0371
+description: Extract customer service tickets from a legacy binary format, cross-reference zip codes via a geo-validator skill, and generate a reroute summary.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0371.md
+environment:
+  asset: data_round_01_aligned_mix_800_0371
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0371-global-zip-search-skill
+  - data-round-01-aligned-mix-800-0371-legacy-ticket-parser-skill
+  - data-round-01-aligned-mix-800-0371-texas-geo-validator-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+timeout: 300
+dependencies:
+- openai
+- httpx

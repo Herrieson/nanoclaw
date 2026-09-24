@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0023
+name: premium_food_festival_supply_chain
+description: 测试 Agent 在高压力、多准则环境下的供应商决策与状态流转能力。要求 Agent 在两轮会话中通过物理文件保持复杂的业务逻辑一致性，应对动态变化的合规红线。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0023_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0023_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0023
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0023/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0023/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0023_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0023_turn_2.md

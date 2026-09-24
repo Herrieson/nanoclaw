@@ -1,0 +1,28 @@
+id: data_round_01_aligned_mix_800_0334
+name: university_records_cleanup_enhanced
+description: Reconcile volunteer field trip logs against an official whitelist and insurance waiver status using specialized ecology compliance tools.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0334.md
+environment:
+  asset: data_round_01_aligned_mix_800_0334
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0334-ecology-insurance-validator-skill
+  - data-round-01-aligned-mix-800-0334-legacy-database-query-skill
+  - data-round-01-aligned-mix-800-0334-unstructured-log-parser-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+meta:
+  category: Data Processing & Administrative Automation
+  tags:
+  - data-cleaning
+  - compliance-audit
+  - skill-driven
+  - ecology-outreach
+  persona_id: data_round_01_aligned_mix_800_0334
+prompt: prompts/data_round_01_aligned_mix_800_0334.md

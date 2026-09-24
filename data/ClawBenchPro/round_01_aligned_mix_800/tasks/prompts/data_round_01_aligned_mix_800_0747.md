@@ -1,0 +1,7 @@
+Oh my Lord, I am just... I am at my wit's end today. *hums a nervous, off-key church hymn* I've been trying to get ready for the bake sale at the church, and you know I haven't been working lately, so every penny counts. I tried to type up all my recipes—both the traditional ones and a few of my, well, *creative* new experiments—but my brain is just a scattered mess. The files are all jumbled up in the `recipes` folder.
+
+Some of my new experimental recipes call for things like saffron, caviar, or truffles. I mean, what was I thinking? I live on a strict budget, I can't afford those! And some of the files I typed up don't even have an ingredients list at all because I got distracted while the casserole was burning. *hums anxiously*
+
+I need you to look through all the text files in that `recipes` folder. Please, ignore anything that asks for those crazy expensive ingredients I mentioned, and ignore the ones that are missing their ingredients entirely. For the sensible recipes that are actually left over, I need to make exactly 3 batches of each for the bake sale. 
+
+Could you please total up all the ingredients I need to buy for those 3 batches of everything? I need it perfectly organized. Put the final tally in a file called `list.json` inside a new folder named `grocery`. I need to know exactly how much flour, sugar, and whatever else to buy so I don't panic at the cashier stand. Thank you so much, bless your heart!

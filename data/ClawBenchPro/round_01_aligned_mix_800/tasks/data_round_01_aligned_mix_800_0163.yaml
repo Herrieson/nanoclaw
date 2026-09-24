@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0163
+name: community_health_initiative_audit
+description: 该任务模拟一个基于社区健康倡议的志愿者管理与项目合规性审计。Agent 需要在第一轮处理混乱的志愿者工时与合规数据并建立记录体系；在第二轮面临预算削减和新的红线规则，需基于第一轮的记录进行追溯性清洗和决策，测试其长期状态流转、复杂逻辑判断及在无显式指令下维护物理记忆的能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0163_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0163_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0163
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0163/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0163/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0163_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0163_turn_2.md

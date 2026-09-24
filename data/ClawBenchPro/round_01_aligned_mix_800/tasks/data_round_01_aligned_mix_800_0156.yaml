@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0156
+name: restaurant_supply_chain_pivot
+description: 评估 Agent 在餐厅供应链管理中的多轮决策能力。Agent 需要在第一轮建立库存规则与供应商筛选逻辑，并在第二轮面对突发供应危机时，依据第一轮自行留存的策略和冲突的数据进行调配，测试其长期记忆、逻辑一致性与物理状态流转。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0156_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0156_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0156
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0156/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0156/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0156_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0156_turn_2.md

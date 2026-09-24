@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0406
+name: data_round_01_aligned_mix_800_0406
+description: Parse highly fragmented, noisy, and mixed-format donation logs to extract specific item counts and cross-reference VIP parents, filtering out voided transactions and wrong campaigns.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0406.md
+environment:
+  asset: data_round_01_aligned_mix_800_0406
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0406.md

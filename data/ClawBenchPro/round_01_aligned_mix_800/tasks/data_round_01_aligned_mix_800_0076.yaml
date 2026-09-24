@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0076
+name: compliance_audit_tech_gadgets
+description: 针对高收入合规经理的差旅与研发费用多轮审计任务。测试 Agent 在处理脏数据、动态红线变更、以及跨轮次维护“合规知识库”的能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0076_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0076_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0076_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0076
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0076/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0076/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0076/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0076_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0076_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0076_turn_3.md

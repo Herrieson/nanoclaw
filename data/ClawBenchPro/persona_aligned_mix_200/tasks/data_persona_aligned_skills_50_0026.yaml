@@ -1,0 +1,20 @@
+id: data_persona_aligned_skills_50_0026
+name: data_persona_aligned_skills_50_0026
+prompts:
+- prompts/data_persona_aligned_skills_50_0026.md
+environment:
+  asset: data_persona_aligned_skills_50_0026
+skills:
+  available:
+  - data-persona-aligned-skills-50-0026-query-elastic-apm-skill
+  - data-persona-aligned-skills-50-0026-query-nova-telemetry-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+task_id: data_persona_aligned_skills_50_0026
+prompt: prompts/data_persona_aligned_skills_50_0026.md

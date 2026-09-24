@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0222
+name: data_round_01_aligned_mix_800_0222
+prompts:
+- prompts/data_round_01_aligned_mix_800_0222.md
+environment:
+  asset: data_round_01_aligned_mix_800_0222
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0222-bicsi-cloud-api
+  - data-round-01-aligned-mix-800-0222-legacy-bicsi-cert-lookup
+  - data-round-01-aligned-mix-800-0222-parse-rpd-file
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+task_id: data_round_01_aligned_mix_800_0222
+prompt: prompts/data_round_01_aligned_mix_800_0222.md

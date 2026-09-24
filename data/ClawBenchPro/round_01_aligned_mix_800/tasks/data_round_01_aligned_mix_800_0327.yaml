@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0327
+name: data_round_01_aligned_mix_800_0327
+description: Assist an anxious auto mechanic with compiling diagnostic codes via OBD-II decoders and querying inventory part numbers.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0327.md
+environment:
+  asset: data_round_01_aligned_mix_800_0327
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0327-carparts-direct-query
+  - data-round-01-aligned-mix-800-0327-global-autoparts-search
+  - data-round-01-aligned-mix-800-0327-obd2-decoder-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0327.md

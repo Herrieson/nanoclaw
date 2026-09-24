@@ -1,0 +1,40 @@
+id: data_persona_aligned_multi_turn_50_0007
+name: dft_convergence_crisis
+description: '模拟计算化学中多批次、长周期的密度泛函理论(DFT)任务排错流程。
+
+  测试Agent跨多会话的文件分析、状态持久化与复杂规则推演能力。
+
+  Turn 1: 分析日志得出崩溃判定规则（受力/能量阈值）并存档。
+
+  Turn 2: 结合历史规则，在新增日志中排查处于阈值边缘且伴随新维度（磁矩）异常的特定材料。
+
+  Turn 3: 综合历史所有备忘录与预警，淘汰瑕疵结构，提炼最终存活的候选结构细节。'
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0007_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0007_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0007_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0007
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0007/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0007/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0007/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0007_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0007_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0007_turn_3.md

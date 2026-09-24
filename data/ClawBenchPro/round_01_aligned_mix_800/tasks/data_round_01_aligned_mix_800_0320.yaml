@@ -1,0 +1,19 @@
+id: data_round_01_aligned_mix_800_0320
+name: data_round_01_aligned_mix_800_0320
+prompts:
+- prompts/data_round_01_aligned_mix_800_0320.md
+environment:
+  asset: data_round_01_aligned_mix_800_0320
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0320-fda-ingredient-search-skill
+  - data-round-01-aligned-mix-800-0320-global-food-db-skill
+  - data-round-01-aligned-mix-800-0320-shift-manager-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0320.md

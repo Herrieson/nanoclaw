@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0478
+name: retail_inventory_literary_reconciliation
+description: 在高度碎片化、充满噪音的混乱废土文件系统中，通过多级映射和验证机制，完成高端木材库存与文学代码系统的比对及审计。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0478.md
+environment:
+  asset: data_round_01_aligned_mix_800_0478
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_processing
+prompt_src: tasks/prompts/data_round_01_aligned_mix_800_0478.md

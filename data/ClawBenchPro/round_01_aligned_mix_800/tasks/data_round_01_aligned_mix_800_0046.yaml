@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0046
+name: school_community_festival_coordinator
+description: 模拟一位小学助教协调社区文化节。任务涉及处理多源志愿者工时核对、预算动态超支预判、以及基于历史约束的复杂供应商筛选。测试 Agent 的跨会话规则记忆、多文件逻辑关联计算及应对突发冲突的能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0046_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0046_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0046_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0046
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0046/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0046/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0046/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0046_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0046_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0046_turn_3.md

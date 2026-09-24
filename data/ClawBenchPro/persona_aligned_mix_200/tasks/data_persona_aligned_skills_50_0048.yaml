@@ -1,0 +1,24 @@
+id: data_persona_aligned_skills_50_0048
+name: data_persona_aligned_skills_50_0048
+prompts:
+- prompts/data_persona_aligned_skills_50_0048.md
+environment:
+  asset: data_persona_aligned_skills_50_0048
+skills:
+  available:
+  - data-persona-aligned-skills-50-0048-legacy-moderation-v1
+  - data-persona-aligned-skills-50-0048-nexus-config-fetcher
+  - data-persona-aligned-skills-50-0048-nexus-content-moderation
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+task_id: data_persona_aligned_skills_50_0048
+prompt: prompts/data_persona_aligned_skills_50_0048.md
+dependencies:
+- openai
+- httpx

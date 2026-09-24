@@ -1,0 +1,25 @@
+id: data_round_01_aligned_mix_800_0310
+name: data_round_01_aligned_mix_800_0310
+prompts:
+- prompts/data_round_01_aligned_mix_800_0310.md
+environment:
+  asset: data_round_01_aligned_mix_800_0310
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0310-franchise-compliance-checker-skill
+  - data-round-01-aligned-mix-800-0310-global-fin-database-query-skill
+  - data-round-01-aligned-mix-800-0310-legacy-web-search-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: v1
+type: agent_task
+prompt: prompts/data_round_01_aligned_mix_800_0310.md
+dependencies:
+- openai
+- httpx

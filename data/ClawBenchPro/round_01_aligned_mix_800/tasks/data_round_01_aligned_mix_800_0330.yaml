@@ -1,0 +1,26 @@
+id: data_round_01_aligned_mix_800_0330
+name: nature_conservation_data_audit_pro
+description: 协助一名环保高中生利用专业工具链清理和分析多源（PDF/CSV/API）志愿者原始记录，识别非法工时并汇总报告。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0330.md
+environment:
+  asset: data_round_01_aligned_mix_800_0330
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0330-eco-id-validator-skill
+  - data-round-01-aligned-mix-800-0330-global-eco-policy-resolver
+  - data-round-01-aligned-mix-800-0330-handwritten-log-ocr-skill
+  - data-round-01-aligned-mix-800-0330-legacy-policy-check
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_analysis
+persona_id: data_round_01_aligned_mix_800_0330
+agent_prompt: tasks/prompts/data_round_01_aligned_mix_800_0330.md
+dependencies:
+- openai
+- httpx

@@ -1,0 +1,34 @@
+id: data_round_01_aligned_mix_800_0017
+name: trucker_jake_logistics
+description: '模拟卡车司机规划送货路线并采购模型零件的过程。
+
+  测试Agent在复杂约束下的最优解搜索能力，以及面对突发事件时的长期状态流转与历史约束更新。'
+prompts:
+- prompts/data_round_01_aligned_mix_800_0017_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0017_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0017_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0017
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0017/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0017/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0017/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0017_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0017_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0017_turn_3.md

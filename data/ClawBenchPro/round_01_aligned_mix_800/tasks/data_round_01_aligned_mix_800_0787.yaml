@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0787
+name: construction_log_audit
+description: 协助一名资深墨西哥裔建筑工头处理工地考勤与材料损耗审计，需处理双语混合的非规范记录并生成结算报告。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0787.md
+environment:
+  asset: data_round_01_aligned_mix_800_0787
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: Data Processing
+prompt: prompts/data_round_01_aligned_mix_800_0787.md

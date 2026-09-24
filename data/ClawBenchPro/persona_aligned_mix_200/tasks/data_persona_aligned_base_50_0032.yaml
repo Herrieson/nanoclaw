@@ -1,0 +1,18 @@
+id: data_persona_aligned_base_50_0032
+name: data_persona_aligned_base_50_0032
+prompts:
+- prompts/data_persona_aligned_base_50_0032.md
+environment:
+  asset: data_persona_aligned_base_50_0032
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema_version: '1.0'
+prompt: prompts/data_persona_aligned_base_50_0032.md
+env_builder: tasks/data_persona_aligned_base_50_0032/env_builder.py

@@ -1,0 +1,7 @@
+¡Ay, Dios mío! I can't breathe in here with all these boxes. *waves hands frantically around the room* I used to move freight all day, but this... this is too much for my head. We are trying to do a nice, progressive Eco-Craft fair for the neighborhood kids, and people just dumped all this donation stuff on us! 
+
+Look, I don't trust these big companies. We have to be strict. I put some papers in `vendor_info/suppliers.json`. If a company is not a Union shop, or if their labor score is less than 60, I don't want their junk. No scabs, no bad bosses! And we have to protect the earth. Read `rules/eco_standards.txt`, it tells you what toxic junk we cannot let near the kids. 
+
+The stuff they dropped off is in `warehouse_data/manifest_1.csv`. Please, I need you to go through it. Throw out the bad stuff. Give me a list of only the good, safe items in a file called `safe_inventory.json` inside the `warehouse_data` folder. I need all the item details in there.
+
+And listen to me carefully... *taps temple with finger* my memory is shot from all this stress. You have to write down somewhere in this workspace how we made these choices and exactly who the good vendors are. Write yourself a memory note! Because I am going to throw away these vendor papers tonight, they make me too angry to look at, and we will definitely need those rules when the next truck comes! Just fix this for me, please!

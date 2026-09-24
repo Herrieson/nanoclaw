@@ -1,0 +1,610 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "arrayShape": "cr:arrayShape",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "containedIn": "cr:containedIn",
+    "cr": "http://mlcommons.org/croissant/",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataBiases": "cr:dataBiases",
+    "dataCollection": "cr:dataCollection",
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "dct": "http://purl.org/dc/terms/",
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isArray": "cr:isArray",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "personalSensitiveInformation": "cr:personalSensitiveInformation",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "distribution": "sc:distribution",
+    "dataLimitations": "rai:dataLimitations",
+    "dataUseCases": "rai:dataUseCases",
+    "dataSocialImpact": "rai:dataSocialImpact",
+    "equivalentProperty": "cr:equivalentProperty",
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "hasSyntheticData": "rai:hasSyntheticData",
+    "samplingRate": "cr:samplingRate",
+    "wasDerivedFrom": "prov:wasDerivedFrom",
+    "wasGeneratedBy": "prov:wasGeneratedBy"
+  },
+  "@type": "sc:Dataset",
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "repo",
+      "name": "repo",
+      "description": "The Hugging Face git repository.",
+      "contentUrl": "https://huggingface.co/datasets/ErenJaegerYeager/ClawBenchPro/tree/refs%2Fconvert%2Fparquet",
+      "encodingFormat": "git+https",
+      "sha256": "https://github.com/mlcommons/croissant/issues/80"
+    },
+    {
+      "@type": "cr:FileSet",
+      "@id": "parquet-files-for-config-default",
+      "containedIn": {
+        "@id": "repo"
+      },
+      "encodingFormat": "application/x-parquet",
+      "includes": "default/*/*.parquet"
+    },
+    {
+      "@type": "cr:FileSet",
+      "@id": "parquet-files-for-config-persona_aligned_mix_200",
+      "containedIn": {
+        "@id": "repo"
+      },
+      "encodingFormat": "application/x-parquet",
+      "includes": "persona_aligned_mix_200/*/*.parquet"
+    },
+    {
+      "@type": "cr:FileSet",
+      "@id": "parquet-files-for-config-round_01_aligned_mix_800",
+      "containedIn": {
+        "@id": "repo"
+      },
+      "encodingFormat": "application/x-parquet",
+      "includes": "round_01_aligned_mix_800/*/*.parquet"
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "dataType": "cr:Split",
+      "key": {
+        "@id": "default_splits/split_name"
+      },
+      "@id": "default_splits",
+      "name": "default_splits",
+      "description": "Splits for the default config.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "default_splits/split_name",
+          "dataType": "sc:Text"
+        }
+      ],
+      "data": [
+        {
+          "default_splits/split_name": "test"
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "default",
+      "description": "ErenJaegerYeager/ClawBenchPro - 'default' subset",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "default/split",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-default"
+            },
+            "extract": {
+              "fileProperty": "fullpath"
+            },
+            "transform": {
+              "regex": "default/(?:partial-)?(test)/.+parquet$"
+            }
+          },
+          "references": {
+            "field": {
+              "@id": "default_splits/split_name"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "default/dataset",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-default"
+            },
+            "extract": {
+              "column": "dataset"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "default/task_id",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-default"
+            },
+            "extract": {
+              "column": "task_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "default/category",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-default"
+            },
+            "extract": {
+              "column": "category"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "default/task_file",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-default"
+            },
+            "extract": {
+              "column": "task_file"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "default/asset_dir",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-default"
+            },
+            "extract": {
+              "column": "asset_dir"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "default/prompt_files",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-default"
+            },
+            "extract": {
+              "column": "prompt_files"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "default/skill_count",
+          "dataType": "cr:Int64",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-default"
+            },
+            "extract": {
+              "column": "skill_count"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "dataType": "cr:Split",
+      "key": {
+        "@id": "persona_aligned_mix_200_splits/split_name"
+      },
+      "@id": "persona_aligned_mix_200_splits",
+      "name": "persona_aligned_mix_200_splits",
+      "description": "Splits for the persona_aligned_mix_200 config.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "persona_aligned_mix_200_splits/split_name",
+          "dataType": "sc:Text"
+        }
+      ],
+      "data": [
+        {
+          "persona_aligned_mix_200_splits/split_name": "test"
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "persona_aligned_mix_200",
+      "description": "ErenJaegerYeager/ClawBenchPro - 'persona_aligned_mix_200' subset",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "persona_aligned_mix_200/split",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-persona_aligned_mix_200"
+            },
+            "extract": {
+              "fileProperty": "fullpath"
+            },
+            "transform": {
+              "regex": "persona_aligned_mix_200/(?:partial-)?(test)/.+parquet$"
+            }
+          },
+          "references": {
+            "field": {
+              "@id": "persona_aligned_mix_200_splits/split_name"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "persona_aligned_mix_200/dataset",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-persona_aligned_mix_200"
+            },
+            "extract": {
+              "column": "dataset"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "persona_aligned_mix_200/task_id",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-persona_aligned_mix_200"
+            },
+            "extract": {
+              "column": "task_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "persona_aligned_mix_200/category",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-persona_aligned_mix_200"
+            },
+            "extract": {
+              "column": "category"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "persona_aligned_mix_200/task_file",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-persona_aligned_mix_200"
+            },
+            "extract": {
+              "column": "task_file"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "persona_aligned_mix_200/asset_dir",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-persona_aligned_mix_200"
+            },
+            "extract": {
+              "column": "asset_dir"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "persona_aligned_mix_200/prompt_files",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-persona_aligned_mix_200"
+            },
+            "extract": {
+              "column": "prompt_files"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "persona_aligned_mix_200/skill_count",
+          "dataType": "cr:Int64",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-persona_aligned_mix_200"
+            },
+            "extract": {
+              "column": "skill_count"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "dataType": "cr:Split",
+      "key": {
+        "@id": "round_01_aligned_mix_800_splits/split_name"
+      },
+      "@id": "round_01_aligned_mix_800_splits",
+      "name": "round_01_aligned_mix_800_splits",
+      "description": "Splits for the round_01_aligned_mix_800 config.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "round_01_aligned_mix_800_splits/split_name",
+          "dataType": "sc:Text"
+        }
+      ],
+      "data": [
+        {
+          "round_01_aligned_mix_800_splits/split_name": "test"
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "round_01_aligned_mix_800",
+      "description": "ErenJaegerYeager/ClawBenchPro - 'round_01_aligned_mix_800' subset",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "round_01_aligned_mix_800/split",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-round_01_aligned_mix_800"
+            },
+            "extract": {
+              "fileProperty": "fullpath"
+            },
+            "transform": {
+              "regex": "round_01_aligned_mix_800/(?:partial-)?(test)/.+parquet$"
+            }
+          },
+          "references": {
+            "field": {
+              "@id": "round_01_aligned_mix_800_splits/split_name"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "round_01_aligned_mix_800/dataset",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-round_01_aligned_mix_800"
+            },
+            "extract": {
+              "column": "dataset"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "round_01_aligned_mix_800/task_id",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-round_01_aligned_mix_800"
+            },
+            "extract": {
+              "column": "task_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "round_01_aligned_mix_800/category",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-round_01_aligned_mix_800"
+            },
+            "extract": {
+              "column": "category"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "round_01_aligned_mix_800/task_file",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-round_01_aligned_mix_800"
+            },
+            "extract": {
+              "column": "task_file"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "round_01_aligned_mix_800/asset_dir",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-round_01_aligned_mix_800"
+            },
+            "extract": {
+              "column": "asset_dir"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "round_01_aligned_mix_800/prompt_files",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-round_01_aligned_mix_800"
+            },
+            "extract": {
+              "column": "prompt_files"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "round_01_aligned_mix_800/skill_count",
+          "dataType": "cr:Int64",
+          "source": {
+            "fileSet": {
+              "@id": "parquet-files-for-config-round_01_aligned_mix_800"
+            },
+            "extract": {
+              "column": "skill_count"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "conformsTo": [
+    "http://mlcommons.org/croissant/1.1",
+    "http://mlcommons.org/croissant/RAI/1.0"
+  ],
+  "name": "ClawBenchPro",
+  "description": "A compact, builder-based workplace-agent benchmark collection containing round_01_aligned_mix_800 and persona_aligned_mix_200.",
+  "alternateName": [
+    "ErenJaegerYeager/ClawBenchPro",
+    "ClawBenchPro"
+  ],
+  "creator": {
+    "@type": "Person",
+    "name": "Eren Jaeger",
+    "url": "https://huggingface.co/ErenJaegerYeager"
+  },
+  "keywords": [
+    "text-generation",
+    "question-answering",
+    "Chinese",
+    "English",
+    "mit",
+    "1K - 10K",
+    "csv",
+    "Text",
+    "Datasets",
+    "pandas",
+    "Polars",
+    "Croissant",
+    "🇺🇸 Region: US",
+    "agent-benchmark",
+    "workplace",
+    "tool-use",
+    "multi-turn",
+    "skills",
+    "nanoclaw"
+  ],
+  "license": "https://spdx.org/licenses/MIT.html",
+  "url": "https://huggingface.co/datasets/ErenJaegerYeager/ClawBenchPro",
+  "version": "1.0.0",
+  "datePublished": "2026-05-06",
+  "citeAs": "ClawBenchPro: A compact, builder-based workplace-agent benchmark collection. https://huggingface.co/datasets/ErenJaegerYeager/ClawBenchPro",
+  "additionalProperty": [
+    {
+      "@type": "sc:PropertyValue",
+      "name": "task_count",
+      "value": 1000
+    },
+    {
+      "@type": "sc:PropertyValue",
+      "name": "dataset_root",
+      "value": "."
+    },
+    {
+      "@type": "sc:PropertyValue",
+      "name": "group_counts",
+      "value": "{\"persona_aligned_mix_200\": 200, \"round_01_aligned_mix_800\": 800}"
+    }
+  ],
+  "rai:dataLimitations": "ClawBenchPro is intended for evaluating workplace-style agent behavior in controlled synthetic tasks. It is not representative of all languages, geographies, industries, accessibility needs, safety-critical domains, or real production workplaces. It should not be used as the sole basis for deployment, hiring, medical, legal, financial, or safety-critical decisions.",
+  "rai:dataBiases": "The tasks were selected and generated to stress agentic workflows, tool use, state tracking, and benchmark coverage. This introduces selection bias toward tasks that are easy to package as local workspaces and may underrepresent low-resource languages, non-technical occupations, and domains requiring embodied or social interaction.",
+  "rai:personalSensitiveInformation": "The dataset is designed as synthetic benchmark data and is not intended to contain real personal data. Some tasks may include fictional personas, synthetic internal URLs, synthetic keys, policy-sensitive text, or domain-specific records as benchmark fixtures.",
+  "rai:dataUseCases": "Validated use cases include comparative evaluation of language-agent runners on workplace-style tasks, category-level benchmark analysis, and reproducibility studies. The dataset is not validated for model fine-tuning, safety certification, demographic fairness auditing, or real-world job-performance measurement.",
+  "rai:dataSocialImpact": "Potential positive impacts include more reproducible agent evaluation and better measurement of multi-turn, tool-using systems. Risks include overgeneralizing benchmark scores, optimizing narrowly to synthetic tasks, or exposing agents to policy-sensitive fixtures without appropriate safeguards. The package documents task categories and uses local synthetic environments to reduce dependence on external services.",
+  "rai:hasSyntheticData": true,
+  "prov:wasDerivedFrom": [
+    {
+      "@id": "nanoclaw_generation_pipeline",
+      "name": "Nanoclaw task generation and import pipeline"
+    }
+  ],
+  "prov:wasGeneratedBy": [
+    {
+      "@type": "prov:Activity",
+      "name": "ClawBenchPro packaging",
+      "description": "Tasks were generated, staged, imported into Nanoclaw task YAML format, validated with env_builder.py builders, grouped into two aligned benchmark datasets, sanitized for local path leakage, and exported in compact builder-only form for hosting.",
+      "prov:used": [
+        "scripts/unpack_task_batch.py",
+        "scripts/import_staged_tasks.py",
+        "scripts/build_published_workplace_datasets.py",
+        "scripts/build_clawbenchpro_hf_dataset.py"
+      ]
+    }
+  ]
+}

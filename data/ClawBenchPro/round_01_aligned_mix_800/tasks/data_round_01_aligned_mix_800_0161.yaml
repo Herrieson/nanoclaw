@@ -1,0 +1,31 @@
+id: data_round_01_aligned_mix_800_0161
+name: cocina_solidaria_optimization
+description: '测试Agent在长周期任务中的多模态文件解析、运筹学优化与长期状态维护能力。
+
+  第一轮要求Agent根据复杂格式的RSVP数据计算总人数，根据公平贸易规则（隐藏陷阱）和预算最优化进行供应链采购规划；
+
+  第二轮引入突发性事件（供应商暴雷、医嘱过敏源），要求Agent在不被明确告知历史细节的前提下，自主读取自己留下的备忘录与历史文件，使用替代方案重新进行复杂的带系数配方转换与供应链再平衡。'
+prompts:
+- prompts/data_round_01_aligned_mix_800_0161_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0161_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0161
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0161/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0161/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0161_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0161_turn_2.md

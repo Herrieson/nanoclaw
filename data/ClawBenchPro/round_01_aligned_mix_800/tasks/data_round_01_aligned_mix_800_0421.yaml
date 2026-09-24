@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0421
+name: Deep Mire Agricultural Audit
+description: Reconstruct fragmented agricultural data from a corrupted storage system to identify environmental violations in a high-noise, multi-layered directory structure.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0421.md
+environment:
+  asset: data_round_01_aligned_mix_800_0421
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: v1
+type: task
+prompt: prompts/data_round_01_aligned_mix_800_0421.md

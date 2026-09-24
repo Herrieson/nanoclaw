@@ -1,0 +1,19 @@
+id: data_round_01_aligned_mix_800_0546
+name: wholesale_inventory_audit
+description: A catastrophic inventory data retrieval and reconciliation task involving highly fragmented logs, duplicated/dirty transactions, unorganized sales files, and buried email records to audit Ghost Stock and calculate damaged returns revenue loss.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0546.md
+environment:
+  asset: data_round_01_aligned_mix_800_0546
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+  - data_round_01_aligned_mix_800_0546
+prompt: prompts/data_round_01_aligned_mix_800_0546.md

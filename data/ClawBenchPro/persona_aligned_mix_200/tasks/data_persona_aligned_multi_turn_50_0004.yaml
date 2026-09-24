@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0004
+name: sensor_fusion_time_series_alignment
+description: 多轮自动驾驶传感器融合任务。测试Agent处理多文件时间序列对齐、解析十六进制CAN报文、根据物理约束（相对速度计算）清洗数据，以及长期记忆和跨越多个回合的复杂规则应用能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0004_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0004_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0004_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0004
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0004/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0004/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0004/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0004_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0004_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0004_turn_3.md

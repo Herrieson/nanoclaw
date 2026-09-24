@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0022
+name: vfx_farm_pipeline_troubleshooting
+description: 评估Agent在复杂的VFX渲染管线环境中的状态跟踪能力。涉及多层级场景描述文件解析、跨系统节点状态匹配、资产依赖与版本冲突解决，要求在多轮会话中维护并利用自构建的记忆来处理动态插单与版本更新。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0022_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0022_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0022_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0022
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0022/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0022/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0022/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0022_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0022_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0022_turn_3.md

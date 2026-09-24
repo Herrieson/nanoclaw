@@ -1,0 +1,7 @@
+Great news! The school board was so impressed with how we handled that supply chain mess that they want to feature our three Core Weekly Specials at the big "Spring Community Tasting Event" next month! We're expecting exactly 500 attendees, and each attendee will get exactly one serving of each of our three specials. 
+
+I've got a fresh catalog from our wholesale distributors over in `catalogs/bulk_suppliers.csv`. It lists all the ingredients we need, but here is where my progressive heart really wants to shine: we need to prioritize buying ingredients that are marked as 'Local' or 'Indigenous' (like our beautiful Cherokee heritage items), even if they are slightly more expensive—*provided* we don't blow past the original per-serving budget limit we established on day one, multiplied for the event scale. 
+
+Here is what I need: read through the finalized menu ingredients. For each ingredient needed across the 500 portions of the three recipes, pick the best supplier from the catalog. Always choose Local/Indigenous if possible, but if picking them pushes the total event food cost over the maximum allowed by our original per-kid budget cap, fallback to the standard supplier for that specific ingredient to balance the books. 
+
+Please generate a final "Event_Purchase_Order" document in our deliverables folder, detailing exactly how much of each ingredient we are buying, from which supplier, and the grand total cost. Let's feed the community right!

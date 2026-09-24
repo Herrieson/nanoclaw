@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0691
+name: data_round_01_aligned_mix_800_0691
+description: Parse corrupted telemetry CSVs from a structural stress test, calculate peak loads, and filter threshold-breaching sensors based on a demanding engineer's specifications.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0691.md
+environment:
+  asset: data_round_01_aligned_mix_800_0691
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0691.md

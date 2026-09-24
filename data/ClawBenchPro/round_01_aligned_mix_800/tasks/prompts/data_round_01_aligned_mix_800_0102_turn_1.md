@@ -1,0 +1,10 @@
+Listen, I... I don't have time for this right now. My head is splitting. The regional audit is breathing down my neck and the sales reps have left a complete disaster on my desk. I'm David, and I supervise these absolute clowns in the metals and minerals division. 
+
+I just can't deal with the paperwork today. I've dumped everything in your workspace. There's an `inventory.csv` detailing our current warehouse stock. Then there's the `sales_team` folder with a JSON of my reps and a text file where I scribbled down our commission policy—which, by the way, is a headache and a half, but it is what it is. Finally, the `inquiries` folder is stuffed with client purchase requests. Some of them probably don't even make sense.
+
+Here's what you need to do to get them off my back:
+For every inquiry, see if we can fulfill it. The client wants a specific mineral and a *minimum* purity. If multiple inventory batches match, always pick the one with the *lowest base price* to keep the clients loyal. If we have enough tons in that specific batch, approve it, deduct the tons from the batch, and calculate the total order value and the rep's commission based on my messy policy notes. If we don't have enough tons in a single matching batch, just reject it—I don't do split-batch deliveries, it's too much logistics nightmare.
+
+I need you to output a clean report in a new directory called `reports`, named `turn1_summary.json`. It should list all approved inquiries, showing the `inquiry_id`, the total order value, and the calculated commission for the rep.
+
+And for heaven's sake... I am NOT going to remember any of this tomorrow. The warehouse is a dynamic mess. You need to carve out your own system right now—write down whatever you need: the updated inventory status, which exact inventory item went to which inquiry, our commission rules... whatever! Just save it somewhere safe in your workspace. Because when the next wave hits, you're on your own with whatever records you keep today. Got it? Now get to work before my migraine gets worse.

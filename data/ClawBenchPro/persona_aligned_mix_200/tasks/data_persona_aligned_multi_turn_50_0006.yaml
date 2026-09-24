@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0006
+name: neuro_bci_pipeline
+description: 测试 Agent 在非标准医疗日志解析、多轮状态流转（坏通道/基线记忆）以及解决多约束冲突（串扰限制）时的工程能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0006_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0006_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0006_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0006
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0006/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0006/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0006/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0006_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0006_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0006_turn_3.md

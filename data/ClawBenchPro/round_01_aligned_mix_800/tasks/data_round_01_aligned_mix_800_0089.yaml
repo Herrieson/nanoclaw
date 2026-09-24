@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0089
+name: communal_table_resource_balancing
+description: 模拟社区餐饮计划的食材采购与社会责任筛选逻辑。测试 Agent 在面对复杂约束、预算压力及突发社会责任变动时的多轮状态保持与复杂计算能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0089_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0089_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0089
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0089/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0089/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0089_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0089_turn_2.md

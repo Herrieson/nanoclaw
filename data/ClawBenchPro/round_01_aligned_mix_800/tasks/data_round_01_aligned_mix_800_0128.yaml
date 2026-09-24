@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0128
+name: insurance_underwriting_and_claims_audit
+description: 模拟一位资深保险代理人在处理复杂客户保单组合时的多轮操作。测试Agent在面对非结构化数据、动态变动的理赔红线以及多文件依赖下的逻辑一致性。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0128_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0128_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0128_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0128
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0128/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0128/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0128/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0128_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0128_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0128_turn_3.md

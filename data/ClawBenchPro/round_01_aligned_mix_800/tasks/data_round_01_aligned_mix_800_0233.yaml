@@ -1,0 +1,23 @@
+id: data_round_01_aligned_mix_800_0233
+name: real_estate_audit_emergency_enhanced
+description: A high-stakes real estate audit where the agent must reconcile messy records, OCR scanned receipts, and calculate dynamic property taxes using specialized tools.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0233.md
+environment:
+  asset: data_round_01_aligned_mix_800_0233
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0233-global-tenant-blacklist-search
+  - data-round-01-aligned-mix-800-0233-local-tenant-registry-query
+  - data-round-01-aligned-mix-800-0233-ocr-financial-invoice-skill
+  - data-round-01-aligned-mix-800-0233-property-tax-calculator-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_analysis
+task_type: logical_reasoning
+agent_prompt: tasks/prompts/data_round_01_aligned_mix_800_0233.md

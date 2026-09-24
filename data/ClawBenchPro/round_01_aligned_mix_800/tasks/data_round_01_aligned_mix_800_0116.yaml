@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0116
+name: dispensing_optician_business_expansion
+description: 评估 Agent 在高压且混乱的商业扩张环境中的状态流转。Agent 需要协助一名富有热情的资深配镜师处理其独立经营的眼镜连锁店在向可持续转型的过程中，面临的供应商筛选、库存逻辑冲突以及复杂物流计划的迭代。测试点包括：跨轮次的规则记忆（环保基准、预算动态）、复杂数据清洗与多文件逻辑关联。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0116_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0116_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0116_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0116
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0116/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0116/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0116/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0116_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0116_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0116_turn_3.md

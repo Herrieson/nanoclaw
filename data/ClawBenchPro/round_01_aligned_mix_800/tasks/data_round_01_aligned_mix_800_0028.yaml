@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0028
+name: yoga_glow_inventory_management
+description: 测试Agent在复杂物流库存场景下的长期记忆、规则继承与冲突消解能力。包含FIFO消耗计算、跨轮次状态流转以及多条件约束的数据过滤。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0028_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0028_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0028_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0028
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0028/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0028/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0028/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0028_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0028_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0028_turn_3.md

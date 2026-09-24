@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0474
+name: insurance_claim_audit_wasteland
+description: In a fragmented corporate environment, the Agent must reconstruct insurance policy rules  from legacy logs, filter hundreds of messy claim files (JSON/CSV/Log) across deep directories,  identify unauthorized policy IDs and over-limit claims, and calculate the total valid liability.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0474.md
+environment:
+  asset: data_round_01_aligned_mix_800_0474
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data-processing
+prompt_path: tasks/prompts/data_round_01_aligned_mix_800_0474.md

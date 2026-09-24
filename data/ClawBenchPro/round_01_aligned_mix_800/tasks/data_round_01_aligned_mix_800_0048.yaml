@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0048
+name: elementary_school_tech_procurement_and_safety_audit
+description: 测试 Agent 在多轮复杂的教育科技设备采购、预算管理与合规性审查中的能力。包含初始预算分配、设备参数对比、后期合规政策突变以及数据完整性校验。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0048_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0048_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0048_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0048
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0048/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0048/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0048/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0048_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0048_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0048_turn_3.md

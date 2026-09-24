@@ -1,0 +1,21 @@
+id: data_round_01_aligned_mix_800_0717
+name: data_round_01_aligned_mix_800_0717
+description: A frantic, disorganized charity hospital physician needs help aggregating messy volunteer logs and finding a lost patient contact.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0717.md
+environment:
+  asset: data_round_01_aligned_mix_800_0717
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: '1.0'
+prompt_file: prompts/data_round_01_aligned_mix_800_0717.md
+verify_script: verify_rules.py
+verify_prompt: verify_prompt.md

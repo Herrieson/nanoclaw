@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0191
+name: literary_menu_management
+description: 协助极度严谨的州政府餐饮主管管理文学周联名项目。涉及多文件数据整合、冲突约束下的方案调整以及基于历史记录的状态流转。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0191_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0191_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0191_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0191
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0191/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0191/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0191/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0191_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0191_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0191_turn_3.md

@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0015
+name: mpc_bottleneck_investigation
+description: 测试Agent在复杂密码学工程场景中的长文本解析、多文件交叉验证、隐式规则提取与多轮长期记忆保持能力，排查MPC协议通信瓶颈与降级攻击。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0015_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0015_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0015_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0015
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0015/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0015/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0015/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0015_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0015_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0015_turn_3.md

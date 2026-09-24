@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0019
+name: physics_engine_optimization
+description: 多会话测试：模拟3A游戏底层物理引擎的性能优化过程。考察Agent在长周期任务中的多模态日志解析能力、跨会话条件组合（状态流转与长期记忆）以及针对复杂规则的数据重构能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0019_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0019_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0019_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0019
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0019/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0019/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0019/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0019_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0019_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0019_turn_3.md

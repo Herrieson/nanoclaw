@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0030
+name: dma_waveform_trace_and_patch
+description: 模拟芯片验证工程师排查 VCD 波形日志、追踪连环异常事件并基于严格时序预算挑选最优 RTL 修复补丁的多轮物理状态流转任务。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0030_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0030_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0030_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0030
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0030/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0030/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0030/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0030_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0030_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0030_turn_3.md

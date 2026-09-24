@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0029
+name: library_archive_curation
+description: 测试Agent在复杂的多文件约束条件下的多轮逻辑推理与状态记忆能力。第一轮涉及预算计算、白名单交叉比对及状态固化；第二轮在不重申前置规则的情况下，要求Agent读取历史记忆，避免资源占用冲突，并引入新的分支库需求匹配逻辑。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0029_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0029_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0029
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0029/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0029/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0029_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0029_turn_2.md

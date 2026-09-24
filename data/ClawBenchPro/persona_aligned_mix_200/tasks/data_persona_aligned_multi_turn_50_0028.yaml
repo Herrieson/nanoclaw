@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0028
+name: finops_idle_gpu_hunt
+description: 多轮云成本优化任务。测试Agent在嵌套JSON日志解析、跨轮次长程记忆（规则守恒与隐式回忆）、增量突发冲突规则下的逻辑处理及最终财务数据计算的能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0028_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0028_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0028_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0028
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0028/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0028/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0028/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0028_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0028_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0028_turn_3.md

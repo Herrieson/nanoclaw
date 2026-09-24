@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0273
+name: data_round_01_aligned_mix_800_0273
+description: Assist an anxious, widowed carpenter by using specialized wood-science tools and OCR skills to inventory usable lumber and outdoor expenses.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0273.md
+environment:
+  asset: data_round_01_aligned_mix_800_0273
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0273-legacy-receipt-ocr-skill
+  - data-round-01-aligned-mix-800-0273-quick-budget-analyzer
+  - data-round-01-aligned-mix-800-0273-wood-quality-inspector-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0273.md

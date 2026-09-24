@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0563
+name: data_round_01_aligned_mix_800_0563
+description: Navigate a fragmented, noisy file system to audit community fair data, enforcing strict identity whitelists and health-standard content filtering amidst systemic data decay.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0563.md
+environment:
+  asset: data_round_01_aligned_mix_800_0563
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema_version: '1.0'
+prompt: prompts/data_round_01_aligned_mix_800_0563.md

@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0039
+name: ext4_orphan_recovery_crisis
+description: 模拟一次突发断电导致的Ext4文件系统损坏。Agent需要分析内核恐慌日志，从模拟的十六进制dump中解析Superblock和Inode数据结构以追踪孤儿节点链，并在多轮会话中结合增量Journal数据制定精确的恢复脚本。强依赖工作区文件进行状态长期流转与多条件关联。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0039_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0039_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0039_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0039
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0039/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0039/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0039/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0039_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0039_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0039_turn_3.md

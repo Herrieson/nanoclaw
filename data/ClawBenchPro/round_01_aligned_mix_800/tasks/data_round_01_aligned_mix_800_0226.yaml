@@ -1,0 +1,26 @@
+id: data_round_01_aligned_mix_800_0226
+name: data_round_01_aligned_mix_800_0226
+description: Process lumber inventory across CSV and PDF formats, query grading standards for defect codes, and calculate usable White Oak board feet.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0226.md
+environment:
+  asset: data_round_01_aligned_mix_800_0226
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0226-lumber-grading-analyzer-skill
+  - data-round-01-aligned-mix-800-0226-moisture-content-validator-skill
+  - data-round-01-aligned-mix-800-0226-ocr-blueprint-parser-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: v1
+prompt_path: tasks/prompts/data_round_01_aligned_mix_800_0226.md
+timeout: 300
+dependencies:
+- openai
+- httpx

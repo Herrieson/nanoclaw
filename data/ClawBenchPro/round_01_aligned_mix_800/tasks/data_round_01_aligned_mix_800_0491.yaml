@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0491
+name: data_round_01_aligned_mix_800_0491
+description: Recover and synthesize structural integrity data from a fragmented, noise-heavy telemetry archive. The Agent must navigate nested directories, handle varied file formats (JSON fragments, corrupted CSVs), resolve ID mapping across distinct datasets, and filter sensor breaches based on specific engineering tolerances.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0491.md
+environment:
+  asset: data_round_01_aligned_mix_800_0491
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0491.md

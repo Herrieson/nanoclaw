@@ -1,0 +1,23 @@
+id: data_round_01_aligned_mix_800_0223
+name: data_round_01_aligned_mix_800_0223
+description: Retail discrepancy reconciliation driven by a highly neurotic, low-agreeableness persona with strict tool-use dependencies.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0223.md
+environment:
+  asset: data_round_01_aligned_mix_800_0223
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0223-cloud-vms-api-v2
+  - data-round-01-aligned-mix-800-0223-legacy-vms-api-v1
+  - data-round-01-aligned-mix-800-0223-proprietary-scanner-decoder
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0223.md
+dependencies:
+- httpx
+- openai

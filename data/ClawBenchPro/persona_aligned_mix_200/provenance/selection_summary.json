@@ -1,0 +1,81 @@
+{
+  "output_root": ".staging/persona_aligned_mix_200",
+  "order_manifest": ".staging/persona_order_manifest.jsonl",
+  "count_per_group": 50,
+  "total_records": 200,
+  "common_source_task_ids": 85,
+  "groups": [
+    {
+      "name": "base",
+      "root": ".staging/persona_base",
+      "available_records": 97
+    },
+    {
+      "name": "multi_turn",
+      "root": ".staging/persona_multi_turn",
+      "available_records": 96
+    },
+    {
+      "name": "hard",
+      "root": ".staging/persona_hard",
+      "available_records": 91
+    },
+    {
+      "name": "skills",
+      "root": ".staging/persona_skills",
+      "available_records": 99
+    }
+  ],
+  "selected_source_task_ids": [
+    "data_94",
+    "data_24",
+    "data_06",
+    "data_28",
+    "data_38",
+    "data_75",
+    "data_15",
+    "data_61",
+    "data_58",
+    "data_59",
+    "data_47",
+    "data_49",
+    "data_05",
+    "data_87",
+    "data_73",
+    "data_07",
+    "data_83",
+    "data_08",
+    "data_16",
+    "data_89",
+    "data_14",
+    "data_62",
+    "data_31",
+    "data_04",
+    "data_25",
+    "data_48",
+    "data_69",
+    "data_100",
+    "data_18",
+    "data_32",
+    "data_66",
+    "data_88",
+    "data_33",
+    "data_98",
+    "data_67",
+    "data_64",
+    "data_86",
+    "data_57",
+    "data_93",
+    "data_36",
+    "data_84",
+    "data_74",
+    "data_56",
+    "data_63",
+    "data_76",
+    "data_02",
+    "data_30",
+    "data_27",
+    "data_92",
+    "data_77"
+  ]
+}

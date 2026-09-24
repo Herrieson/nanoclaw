@@ -1,0 +1,25 @@
+id: data_round_01_aligned_mix_800_0676
+name: data_round_01_aligned_mix_800_0676
+description: The agent must process messy expense records, calculate deductible vs non-deductible totals based on specific rules, and flag habitual offenders, outputting a structured report.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0676.md
+environment:
+  asset: data_round_01_aligned_mix_800_0676
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema_version: '1.0'
+type: evaluation
+task_id: data_round_01_aligned_mix_800_0676
+title: Tax Compliance Automation for a Gadget-Obsessed Manager
+assets:
+- data_round_01_aligned_mix_800_0676
+prompt_file: prompts/data_round_01_aligned_mix_800_0676.md
+verify_rules_file: tasks/data_round_01_aligned_mix_800_0676/verify_rules.py
+verify_prompt_file: tasks/data_round_01_aligned_mix_800_0676/verify_prompt.md

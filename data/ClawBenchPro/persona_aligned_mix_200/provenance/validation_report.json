@@ -1,0 +1,2302 @@
+[
+  {
+    "task_id": "data_persona_aligned_base_50_0001",
+    "task_path": "tasks/data_persona_aligned_base_50_0001.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0001",
+    "asset_dir": "assets/data_persona_aligned_base_50_0001",
+    "builder_path": "tasks/data_persona_aligned_base_50_0001/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0001.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0002",
+    "task_path": "tasks/data_persona_aligned_base_50_0002.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0002",
+    "asset_dir": "assets/data_persona_aligned_base_50_0002",
+    "builder_path": "tasks/data_persona_aligned_base_50_0002/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0002.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0003",
+    "task_path": "tasks/data_persona_aligned_base_50_0003.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0003",
+    "asset_dir": "assets/data_persona_aligned_base_50_0003",
+    "builder_path": "tasks/data_persona_aligned_base_50_0003/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0003.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0004",
+    "task_path": "tasks/data_persona_aligned_base_50_0004.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0004",
+    "asset_dir": "assets/data_persona_aligned_base_50_0004",
+    "builder_path": "tasks/data_persona_aligned_base_50_0004/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0004.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0005",
+    "task_path": "tasks/data_persona_aligned_base_50_0005.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0005",
+    "asset_dir": "assets/data_persona_aligned_base_50_0005",
+    "builder_path": "tasks/data_persona_aligned_base_50_0005/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0005.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0006",
+    "task_path": "tasks/data_persona_aligned_base_50_0006.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0006",
+    "asset_dir": "assets/data_persona_aligned_base_50_0006",
+    "builder_path": "tasks/data_persona_aligned_base_50_0006/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0006.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0007",
+    "task_path": "tasks/data_persona_aligned_base_50_0007.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0007",
+    "asset_dir": "assets/data_persona_aligned_base_50_0007",
+    "builder_path": "tasks/data_persona_aligned_base_50_0007/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0007.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0008",
+    "task_path": "tasks/data_persona_aligned_base_50_0008.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0008",
+    "asset_dir": "assets/data_persona_aligned_base_50_0008",
+    "builder_path": "tasks/data_persona_aligned_base_50_0008/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0008.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0009",
+    "task_path": "tasks/data_persona_aligned_base_50_0009.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0009",
+    "asset_dir": "assets/data_persona_aligned_base_50_0009",
+    "builder_path": "tasks/data_persona_aligned_base_50_0009/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0009.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0010",
+    "task_path": "tasks/data_persona_aligned_base_50_0010.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0010",
+    "asset_dir": "assets/data_persona_aligned_base_50_0010",
+    "builder_path": "tasks/data_persona_aligned_base_50_0010/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0010.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0011",
+    "task_path": "tasks/data_persona_aligned_base_50_0011.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0011",
+    "asset_dir": "assets/data_persona_aligned_base_50_0011",
+    "builder_path": "tasks/data_persona_aligned_base_50_0011/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0011.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0012",
+    "task_path": "tasks/data_persona_aligned_base_50_0012.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0012",
+    "asset_dir": "assets/data_persona_aligned_base_50_0012",
+    "builder_path": "tasks/data_persona_aligned_base_50_0012/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0012.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0013",
+    "task_path": "tasks/data_persona_aligned_base_50_0013.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0013",
+    "asset_dir": "assets/data_persona_aligned_base_50_0013",
+    "builder_path": "tasks/data_persona_aligned_base_50_0013/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0013.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0014",
+    "task_path": "tasks/data_persona_aligned_base_50_0014.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0014",
+    "asset_dir": "assets/data_persona_aligned_base_50_0014",
+    "builder_path": "tasks/data_persona_aligned_base_50_0014/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0014.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0015",
+    "task_path": "tasks/data_persona_aligned_base_50_0015.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0015",
+    "asset_dir": "assets/data_persona_aligned_base_50_0015",
+    "builder_path": "tasks/data_persona_aligned_base_50_0015/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0015.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0016",
+    "task_path": "tasks/data_persona_aligned_base_50_0016.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0016",
+    "asset_dir": "assets/data_persona_aligned_base_50_0016",
+    "builder_path": "tasks/data_persona_aligned_base_50_0016/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0016.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0017",
+    "task_path": "tasks/data_persona_aligned_base_50_0017.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0017",
+    "asset_dir": "assets/data_persona_aligned_base_50_0017",
+    "builder_path": "tasks/data_persona_aligned_base_50_0017/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0017.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0018",
+    "task_path": "tasks/data_persona_aligned_base_50_0018.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0018",
+    "asset_dir": "assets/data_persona_aligned_base_50_0018",
+    "builder_path": "tasks/data_persona_aligned_base_50_0018/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0018.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0019",
+    "task_path": "tasks/data_persona_aligned_base_50_0019.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0019",
+    "asset_dir": "assets/data_persona_aligned_base_50_0019",
+    "builder_path": "tasks/data_persona_aligned_base_50_0019/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0019.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0020",
+    "task_path": "tasks/data_persona_aligned_base_50_0020.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0020",
+    "asset_dir": "assets/data_persona_aligned_base_50_0020",
+    "builder_path": "tasks/data_persona_aligned_base_50_0020/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0020.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0021",
+    "task_path": "tasks/data_persona_aligned_base_50_0021.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0021",
+    "asset_dir": "assets/data_persona_aligned_base_50_0021",
+    "builder_path": "tasks/data_persona_aligned_base_50_0021/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0021.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0022",
+    "task_path": "tasks/data_persona_aligned_base_50_0022.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0022",
+    "asset_dir": "assets/data_persona_aligned_base_50_0022",
+    "builder_path": "tasks/data_persona_aligned_base_50_0022/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0022.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0023",
+    "task_path": "tasks/data_persona_aligned_base_50_0023.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0023",
+    "asset_dir": "assets/data_persona_aligned_base_50_0023",
+    "builder_path": "tasks/data_persona_aligned_base_50_0023/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0023.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0024",
+    "task_path": "tasks/data_persona_aligned_base_50_0024.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0024",
+    "asset_dir": "assets/data_persona_aligned_base_50_0024",
+    "builder_path": "tasks/data_persona_aligned_base_50_0024/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0024.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0025",
+    "task_path": "tasks/data_persona_aligned_base_50_0025.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0025",
+    "asset_dir": "assets/data_persona_aligned_base_50_0025",
+    "builder_path": "tasks/data_persona_aligned_base_50_0025/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0025.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0026",
+    "task_path": "tasks/data_persona_aligned_base_50_0026.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0026",
+    "asset_dir": "assets/data_persona_aligned_base_50_0026",
+    "builder_path": "tasks/data_persona_aligned_base_50_0026/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0026.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0027",
+    "task_path": "tasks/data_persona_aligned_base_50_0027.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0027",
+    "asset_dir": "assets/data_persona_aligned_base_50_0027",
+    "builder_path": "tasks/data_persona_aligned_base_50_0027/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0027.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0028",
+    "task_path": "tasks/data_persona_aligned_base_50_0028.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0028",
+    "asset_dir": "assets/data_persona_aligned_base_50_0028",
+    "builder_path": "tasks/data_persona_aligned_base_50_0028/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0028.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0029",
+    "task_path": "tasks/data_persona_aligned_base_50_0029.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0029",
+    "asset_dir": "assets/data_persona_aligned_base_50_0029",
+    "builder_path": "tasks/data_persona_aligned_base_50_0029/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0029.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0030",
+    "task_path": "tasks/data_persona_aligned_base_50_0030.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0030",
+    "asset_dir": "assets/data_persona_aligned_base_50_0030",
+    "builder_path": "tasks/data_persona_aligned_base_50_0030/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0030.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0031",
+    "task_path": "tasks/data_persona_aligned_base_50_0031.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0031",
+    "asset_dir": "assets/data_persona_aligned_base_50_0031",
+    "builder_path": "tasks/data_persona_aligned_base_50_0031/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0031.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0032",
+    "task_path": "tasks/data_persona_aligned_base_50_0032.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0032",
+    "asset_dir": "assets/data_persona_aligned_base_50_0032",
+    "builder_path": "tasks/data_persona_aligned_base_50_0032/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0032.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0033",
+    "task_path": "tasks/data_persona_aligned_base_50_0033.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0033",
+    "asset_dir": "assets/data_persona_aligned_base_50_0033",
+    "builder_path": "tasks/data_persona_aligned_base_50_0033/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0033.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0034",
+    "task_path": "tasks/data_persona_aligned_base_50_0034.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0034",
+    "asset_dir": "assets/data_persona_aligned_base_50_0034",
+    "builder_path": "tasks/data_persona_aligned_base_50_0034/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0034.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0035",
+    "task_path": "tasks/data_persona_aligned_base_50_0035.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0035",
+    "asset_dir": "assets/data_persona_aligned_base_50_0035",
+    "builder_path": "tasks/data_persona_aligned_base_50_0035/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0035.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0036",
+    "task_path": "tasks/data_persona_aligned_base_50_0036.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0036",
+    "asset_dir": "assets/data_persona_aligned_base_50_0036",
+    "builder_path": "tasks/data_persona_aligned_base_50_0036/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0036.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0037",
+    "task_path": "tasks/data_persona_aligned_base_50_0037.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0037",
+    "asset_dir": "assets/data_persona_aligned_base_50_0037",
+    "builder_path": "tasks/data_persona_aligned_base_50_0037/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0037.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0038",
+    "task_path": "tasks/data_persona_aligned_base_50_0038.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0038",
+    "asset_dir": "assets/data_persona_aligned_base_50_0038",
+    "builder_path": "tasks/data_persona_aligned_base_50_0038/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0038.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0039",
+    "task_path": "tasks/data_persona_aligned_base_50_0039.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0039",
+    "asset_dir": "assets/data_persona_aligned_base_50_0039",
+    "builder_path": "tasks/data_persona_aligned_base_50_0039/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0039.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0040",
+    "task_path": "tasks/data_persona_aligned_base_50_0040.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0040",
+    "asset_dir": "assets/data_persona_aligned_base_50_0040",
+    "builder_path": "tasks/data_persona_aligned_base_50_0040/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0040.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0041",
+    "task_path": "tasks/data_persona_aligned_base_50_0041.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0041",
+    "asset_dir": "assets/data_persona_aligned_base_50_0041",
+    "builder_path": "tasks/data_persona_aligned_base_50_0041/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0041.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0042",
+    "task_path": "tasks/data_persona_aligned_base_50_0042.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0042",
+    "asset_dir": "assets/data_persona_aligned_base_50_0042",
+    "builder_path": "tasks/data_persona_aligned_base_50_0042/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0042.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0043",
+    "task_path": "tasks/data_persona_aligned_base_50_0043.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0043",
+    "asset_dir": "assets/data_persona_aligned_base_50_0043",
+    "builder_path": "tasks/data_persona_aligned_base_50_0043/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0043.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0044",
+    "task_path": "tasks/data_persona_aligned_base_50_0044.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0044",
+    "asset_dir": "assets/data_persona_aligned_base_50_0044",
+    "builder_path": "tasks/data_persona_aligned_base_50_0044/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0044.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0045",
+    "task_path": "tasks/data_persona_aligned_base_50_0045.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0045",
+    "asset_dir": "assets/data_persona_aligned_base_50_0045",
+    "builder_path": "tasks/data_persona_aligned_base_50_0045/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0045.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0046",
+    "task_path": "tasks/data_persona_aligned_base_50_0046.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0046",
+    "asset_dir": "assets/data_persona_aligned_base_50_0046",
+    "builder_path": "tasks/data_persona_aligned_base_50_0046/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0046.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0047",
+    "task_path": "tasks/data_persona_aligned_base_50_0047.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0047",
+    "asset_dir": "assets/data_persona_aligned_base_50_0047",
+    "builder_path": "tasks/data_persona_aligned_base_50_0047/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0047.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0048",
+    "task_path": "tasks/data_persona_aligned_base_50_0048.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0048",
+    "asset_dir": "assets/data_persona_aligned_base_50_0048",
+    "builder_path": "tasks/data_persona_aligned_base_50_0048/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0048.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0049",
+    "task_path": "tasks/data_persona_aligned_base_50_0049.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0049",
+    "asset_dir": "assets/data_persona_aligned_base_50_0049",
+    "builder_path": "tasks/data_persona_aligned_base_50_0049/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0049.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_base_50_0050",
+    "task_path": "tasks/data_persona_aligned_base_50_0050.yaml",
+    "task_dir": "tasks/data_persona_aligned_base_50_0050",
+    "asset_dir": "assets/data_persona_aligned_base_50_0050",
+    "builder_path": "tasks/data_persona_aligned_base_50_0050/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_base_50_0050.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0001",
+    "task_path": "tasks/data_persona_aligned_hard_50_0001.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0001",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0001",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0001/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0001.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0002",
+    "task_path": "tasks/data_persona_aligned_hard_50_0002.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0002",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0002",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0002/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0002.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0003",
+    "task_path": "tasks/data_persona_aligned_hard_50_0003.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0003",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0003",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0003/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0003.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0004",
+    "task_path": "tasks/data_persona_aligned_hard_50_0004.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0004",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0004",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0004/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0004.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0005",
+    "task_path": "tasks/data_persona_aligned_hard_50_0005.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0005",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0005",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0005/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0005.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0006",
+    "task_path": "tasks/data_persona_aligned_hard_50_0006.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0006",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0006",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0006/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0006.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0007",
+    "task_path": "tasks/data_persona_aligned_hard_50_0007.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0007",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0007",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0007/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0007.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0008",
+    "task_path": "tasks/data_persona_aligned_hard_50_0008.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0008",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0008",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0008/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0008.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0009",
+    "task_path": "tasks/data_persona_aligned_hard_50_0009.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0009",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0009",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0009/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0009.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0010",
+    "task_path": "tasks/data_persona_aligned_hard_50_0010.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0010",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0010",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0010/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0010.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0011",
+    "task_path": "tasks/data_persona_aligned_hard_50_0011.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0011",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0011",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0011/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0011.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0012",
+    "task_path": "tasks/data_persona_aligned_hard_50_0012.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0012",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0012",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0012/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0012.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0013",
+    "task_path": "tasks/data_persona_aligned_hard_50_0013.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0013",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0013",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0013/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0013.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0014",
+    "task_path": "tasks/data_persona_aligned_hard_50_0014.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0014",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0014",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0014/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0014.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0015",
+    "task_path": "tasks/data_persona_aligned_hard_50_0015.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0015",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0015",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0015/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0015.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0016",
+    "task_path": "tasks/data_persona_aligned_hard_50_0016.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0016",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0016",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0016/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0016.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0017",
+    "task_path": "tasks/data_persona_aligned_hard_50_0017.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0017",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0017",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0017/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0017.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0018",
+    "task_path": "tasks/data_persona_aligned_hard_50_0018.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0018",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0018",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0018/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0018.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0019",
+    "task_path": "tasks/data_persona_aligned_hard_50_0019.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0019",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0019",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0019/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0019.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0020",
+    "task_path": "tasks/data_persona_aligned_hard_50_0020.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0020",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0020",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0020/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0020.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0021",
+    "task_path": "tasks/data_persona_aligned_hard_50_0021.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0021",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0021",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0021/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0021.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0022",
+    "task_path": "tasks/data_persona_aligned_hard_50_0022.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0022",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0022",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0022/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0022.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0023",
+    "task_path": "tasks/data_persona_aligned_hard_50_0023.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0023",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0023",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0023/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0023.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0024",
+    "task_path": "tasks/data_persona_aligned_hard_50_0024.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0024",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0024",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0024/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0024.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0025",
+    "task_path": "tasks/data_persona_aligned_hard_50_0025.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0025",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0025",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0025/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0025.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0026",
+    "task_path": "tasks/data_persona_aligned_hard_50_0026.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0026",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0026",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0026/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0026.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0027",
+    "task_path": "tasks/data_persona_aligned_hard_50_0027.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0027",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0027",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0027/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0027.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0028",
+    "task_path": "tasks/data_persona_aligned_hard_50_0028.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0028",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0028",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0028/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0028.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0029",
+    "task_path": "tasks/data_persona_aligned_hard_50_0029.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0029",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0029",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0029/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0029.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0030",
+    "task_path": "tasks/data_persona_aligned_hard_50_0030.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0030",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0030",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0030/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0030.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0031",
+    "task_path": "tasks/data_persona_aligned_hard_50_0031.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0031",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0031",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0031/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0031.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0032",
+    "task_path": "tasks/data_persona_aligned_hard_50_0032.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0032",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0032",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0032/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0032.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0033",
+    "task_path": "tasks/data_persona_aligned_hard_50_0033.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0033",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0033",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0033/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0033.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0034",
+    "task_path": "tasks/data_persona_aligned_hard_50_0034.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0034",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0034",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0034/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0034.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0035",
+    "task_path": "tasks/data_persona_aligned_hard_50_0035.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0035",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0035",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0035/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0035.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0036",
+    "task_path": "tasks/data_persona_aligned_hard_50_0036.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0036",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0036",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0036/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0036.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0037",
+    "task_path": "tasks/data_persona_aligned_hard_50_0037.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0037",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0037",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0037/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0037.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0038",
+    "task_path": "tasks/data_persona_aligned_hard_50_0038.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0038",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0038",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0038/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0038.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0039",
+    "task_path": "tasks/data_persona_aligned_hard_50_0039.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0039",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0039",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0039/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0039.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0040",
+    "task_path": "tasks/data_persona_aligned_hard_50_0040.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0040",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0040",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0040/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0040.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0041",
+    "task_path": "tasks/data_persona_aligned_hard_50_0041.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0041",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0041",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0041/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0041.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0042",
+    "task_path": "tasks/data_persona_aligned_hard_50_0042.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0042",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0042",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0042/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0042.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0043",
+    "task_path": "tasks/data_persona_aligned_hard_50_0043.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0043",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0043",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0043/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0043.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0044",
+    "task_path": "tasks/data_persona_aligned_hard_50_0044.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0044",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0044",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0044/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0044.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0045",
+    "task_path": "tasks/data_persona_aligned_hard_50_0045.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0045",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0045",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0045/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0045.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0046",
+    "task_path": "tasks/data_persona_aligned_hard_50_0046.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0046",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0046",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0046/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0046.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0047",
+    "task_path": "tasks/data_persona_aligned_hard_50_0047.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0047",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0047",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0047/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0047.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0048",
+    "task_path": "tasks/data_persona_aligned_hard_50_0048.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0048",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0048",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0048/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0048.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0049",
+    "task_path": "tasks/data_persona_aligned_hard_50_0049.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0049",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0049",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0049/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0049.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_hard_50_0050",
+    "task_path": "tasks/data_persona_aligned_hard_50_0050.yaml",
+    "task_dir": "tasks/data_persona_aligned_hard_50_0050",
+    "asset_dir": "assets/data_persona_aligned_hard_50_0050",
+    "builder_path": "tasks/data_persona_aligned_hard_50_0050/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_hard_50_0050.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0001",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0001.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0001",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0001",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0001/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0001_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0001_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0001_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0002",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0002.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0002",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0002",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0002/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0002_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0002_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0002_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0003",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0003.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0003",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0003",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0003/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0003_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0003_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0003_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0004",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0004.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0004",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0004",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0004/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0004_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0004_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0004_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0005",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0005.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0005",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0005",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0005/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0005_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0005_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0005_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0006",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0006.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0006",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0006",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0006/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0006_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0006_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0006_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0007",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0007.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0007",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0007",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0007/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0007_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0007_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0007_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0008",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0008.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0008",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0008",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0008/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0008_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0008_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0008_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0009",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0009.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0009",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0009",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0009/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0009_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0009_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0009_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0010",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0010.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0010",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0010",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0010/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0010_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0010_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0010_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0011",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0011.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0011",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0011",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0011/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0011_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0011_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0011_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0012",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0012.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0012",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0012",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0012/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0012_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0012_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0012_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0013",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0013.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0013",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0013",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0013/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0013_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0013_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0013_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0014",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0014.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0014",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0014",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0014/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0014_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0014_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0014_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0015",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0015.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0015",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0015",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0015/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0015_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0015_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0015_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0016",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0016.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0016",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0016",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0016/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0016_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0016_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0016_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0017",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0017.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0017",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0017",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0017/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0017_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0017_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0017_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0018",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0018.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0018",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0018",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0018/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0018_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0018_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0018_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0019",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0019.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0019",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0019",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0019/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0019_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0019_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0019_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0020",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0020.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0020",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0020",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0020/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0020_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0020_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0020_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0021",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0021.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0021",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0021",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0021/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0021_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0021_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0021_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0022",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0022.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0022",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0022",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0022/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0022_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0022_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0022_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0023",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0023.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0023",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0023",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0023/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0023_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0023_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0023_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0024",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0024.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0024",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0024",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0024/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0024_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0024_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0024_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0025",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0025.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0025",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0025",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0025/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0025_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0025_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0025_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0026",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0026.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0026",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0026",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0026/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0026_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0026_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0026_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0027",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0027.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0027",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0027",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0027/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0027_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0027_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0027_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0028",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0028.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0028",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0028",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0028/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0028_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0028_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0028_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0029",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0029.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0029",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0029",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0029/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0029_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0029_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0029_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0030",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0030.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0030",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0030",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0030/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0030_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0030_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0030_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0031",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0031.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0031",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0031",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0031/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0031_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0031_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0031_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0032",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0032.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0032",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0032",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0032/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0032_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0032_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0032_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0033",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0033.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0033",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0033",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0033/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0033_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0033_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0033_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0034",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0034.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0034",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0034",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0034/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0034_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0034_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0034_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0035",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0035.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0035",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0035",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0035/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0035_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0035_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0035_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0036",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0036.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0036",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0036",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0036/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0036_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0036_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0036_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0037",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0037.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0037",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0037",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0037/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0037_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0037_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0037_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0038",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0038.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0038",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0038",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0038/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0038_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0038_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0038_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0039",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0039.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0039",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0039",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0039/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0039_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0039_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0039_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0040",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0040.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0040",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0040",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0040/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0040_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0040_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0040_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0041",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0041.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0041",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0041",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0041/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0041_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0041_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0041_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0042",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0042.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0042",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0042",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0042/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0042_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0042_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0042_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0043",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0043.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0043",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0043",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0043/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0043_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0043_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0043_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0044",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0044.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0044",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0044",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0044/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0044_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0044_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0044_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0045",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0045.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0045",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0045",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0045/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0045_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0045_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0045_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0046",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0046.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0046",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0046",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0046/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0046_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0046_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0046_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0047",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0047.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0047",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0047",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0047/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0047_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0047_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0047_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0048",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0048.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0048",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0048",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0048/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0048_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0048_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0048_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0049",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0049.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0049",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0049",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0049/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0049_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0049_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0049_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_multi_turn_50_0050",
+    "task_path": "tasks/data_persona_aligned_multi_turn_50_0050.yaml",
+    "task_dir": "tasks/data_persona_aligned_multi_turn_50_0050",
+    "asset_dir": "assets/data_persona_aligned_multi_turn_50_0050",
+    "builder_path": "tasks/data_persona_aligned_multi_turn_50_0050/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0050_turn_1.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0050_turn_2.md",
+      "tasks/prompts/data_persona_aligned_multi_turn_50_0050_turn_3.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0001",
+    "task_path": "tasks/data_persona_aligned_skills_50_0001.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0001",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0001",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0001/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0001.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0002",
+    "task_path": "tasks/data_persona_aligned_skills_50_0002.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0002",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0002",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0002/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0002.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0003",
+    "task_path": "tasks/data_persona_aligned_skills_50_0003.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0003",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0003",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0003/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0003.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0004",
+    "task_path": "tasks/data_persona_aligned_skills_50_0004.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0004",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0004",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0004/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0004.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0005",
+    "task_path": "tasks/data_persona_aligned_skills_50_0005.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0005",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0005",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0005/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0005.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0006",
+    "task_path": "tasks/data_persona_aligned_skills_50_0006.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0006",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0006",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0006/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0006.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0007",
+    "task_path": "tasks/data_persona_aligned_skills_50_0007.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0007",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0007",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0007/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0007.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0008",
+    "task_path": "tasks/data_persona_aligned_skills_50_0008.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0008",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0008",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0008/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0008.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0009",
+    "task_path": "tasks/data_persona_aligned_skills_50_0009.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0009",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0009",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0009/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0009.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0010",
+    "task_path": "tasks/data_persona_aligned_skills_50_0010.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0010",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0010",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0010/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0010.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0011",
+    "task_path": "tasks/data_persona_aligned_skills_50_0011.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0011",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0011",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0011/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0011.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0012",
+    "task_path": "tasks/data_persona_aligned_skills_50_0012.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0012",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0012",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0012/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0012.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0013",
+    "task_path": "tasks/data_persona_aligned_skills_50_0013.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0013",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0013",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0013/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0013.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0014",
+    "task_path": "tasks/data_persona_aligned_skills_50_0014.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0014",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0014",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0014/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0014.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0015",
+    "task_path": "tasks/data_persona_aligned_skills_50_0015.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0015",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0015",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0015/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0015.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0016",
+    "task_path": "tasks/data_persona_aligned_skills_50_0016.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0016",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0016",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0016/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0016.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0017",
+    "task_path": "tasks/data_persona_aligned_skills_50_0017.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0017",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0017",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0017/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0017.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0018",
+    "task_path": "tasks/data_persona_aligned_skills_50_0018.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0018",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0018",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0018/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0018.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0019",
+    "task_path": "tasks/data_persona_aligned_skills_50_0019.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0019",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0019",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0019/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0019.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0020",
+    "task_path": "tasks/data_persona_aligned_skills_50_0020.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0020",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0020",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0020/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0020.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0021",
+    "task_path": "tasks/data_persona_aligned_skills_50_0021.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0021",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0021",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0021/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0021.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0022",
+    "task_path": "tasks/data_persona_aligned_skills_50_0022.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0022",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0022",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0022/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0022.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0023",
+    "task_path": "tasks/data_persona_aligned_skills_50_0023.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0023",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0023",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0023/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0023.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0024",
+    "task_path": "tasks/data_persona_aligned_skills_50_0024.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0024",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0024",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0024/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0024.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0025",
+    "task_path": "tasks/data_persona_aligned_skills_50_0025.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0025",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0025",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0025/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0025.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0026",
+    "task_path": "tasks/data_persona_aligned_skills_50_0026.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0026",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0026",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0026/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0026.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0027",
+    "task_path": "tasks/data_persona_aligned_skills_50_0027.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0027",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0027",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0027/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0027.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0028",
+    "task_path": "tasks/data_persona_aligned_skills_50_0028.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0028",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0028",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0028/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0028.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0029",
+    "task_path": "tasks/data_persona_aligned_skills_50_0029.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0029",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0029",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0029/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0029.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0030",
+    "task_path": "tasks/data_persona_aligned_skills_50_0030.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0030",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0030",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0030/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0030.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0031",
+    "task_path": "tasks/data_persona_aligned_skills_50_0031.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0031",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0031",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0031/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0031.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0032",
+    "task_path": "tasks/data_persona_aligned_skills_50_0032.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0032",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0032",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0032/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0032.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0033",
+    "task_path": "tasks/data_persona_aligned_skills_50_0033.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0033",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0033",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0033/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0033.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0034",
+    "task_path": "tasks/data_persona_aligned_skills_50_0034.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0034",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0034",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0034/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0034.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0035",
+    "task_path": "tasks/data_persona_aligned_skills_50_0035.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0035",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0035",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0035/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0035.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0036",
+    "task_path": "tasks/data_persona_aligned_skills_50_0036.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0036",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0036",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0036/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0036.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0037",
+    "task_path": "tasks/data_persona_aligned_skills_50_0037.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0037",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0037",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0037/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0037.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0038",
+    "task_path": "tasks/data_persona_aligned_skills_50_0038.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0038",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0038",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0038/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0038.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0039",
+    "task_path": "tasks/data_persona_aligned_skills_50_0039.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0039",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0039",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0039/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0039.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0040",
+    "task_path": "tasks/data_persona_aligned_skills_50_0040.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0040",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0040",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0040/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0040.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0041",
+    "task_path": "tasks/data_persona_aligned_skills_50_0041.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0041",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0041",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0041/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0041.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0042",
+    "task_path": "tasks/data_persona_aligned_skills_50_0042.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0042",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0042",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0042/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0042.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0043",
+    "task_path": "tasks/data_persona_aligned_skills_50_0043.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0043",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0043",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0043/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0043.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0044",
+    "task_path": "tasks/data_persona_aligned_skills_50_0044.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0044",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0044",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0044/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0044.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0045",
+    "task_path": "tasks/data_persona_aligned_skills_50_0045.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0045",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0045",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0045/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0045.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0046",
+    "task_path": "tasks/data_persona_aligned_skills_50_0046.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0046",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0046",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0046/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0046.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0047",
+    "task_path": "tasks/data_persona_aligned_skills_50_0047.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0047",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0047",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0047/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0047.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0048",
+    "task_path": "tasks/data_persona_aligned_skills_50_0048.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0048",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0048",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0048/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0048.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0049",
+    "task_path": "tasks/data_persona_aligned_skills_50_0049.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0049",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0049",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0049/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0049.md"
+    ],
+    "issues": []
+  },
+  {
+    "task_id": "data_persona_aligned_skills_50_0050",
+    "task_path": "tasks/data_persona_aligned_skills_50_0050.yaml",
+    "task_dir": "tasks/data_persona_aligned_skills_50_0050",
+    "asset_dir": "assets/data_persona_aligned_skills_50_0050",
+    "builder_path": "tasks/data_persona_aligned_skills_50_0050/env_builder.py",
+    "prompt_paths": [
+      "tasks/prompts/data_persona_aligned_skills_50_0050.md"
+    ],
+    "issues": []
+  }
+]

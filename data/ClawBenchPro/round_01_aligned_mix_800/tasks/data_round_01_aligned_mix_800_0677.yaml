@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0677
+name: data_round_01_aligned_mix_800_0677_nursing_shift_audit
+description: As a highly conscientious head nurse, audit the chaotic overtime records and  medication distribution logs to identify unauthorized shifts and calculate  precise compensation adjustments.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0677.md
+environment:
+  asset: data_round_01_aligned_mix_800_0677
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: Data Analysis & Audit
+prompt: prompts/data_round_01_aligned_mix_800_0677.md

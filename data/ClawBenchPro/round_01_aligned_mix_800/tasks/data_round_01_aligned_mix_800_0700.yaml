@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0700
+name: poetry_collection_cleanup
+description: 帮助一名 15 岁的学生整理散落在系统中的诗歌草稿，将其分类、修复格式错误，并生成一份正式的诗集目录。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0700.md
+environment:
+  asset: data_round_01_aligned_mix_800_0700
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0700.md

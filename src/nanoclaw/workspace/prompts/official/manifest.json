@@ -1,0 +1,38 @@
+{
+  "source_repo": "/tmp/tmp.rPR4Wq1ynD/openclaw",
+  "source_ref": "main",
+  "source_commit": "4140100807e9745236a5a368b0a58815dc93bba5",
+  "generated_at_utc": "2026-03-25T08:37:52.429695+00:00",
+  "version_id": "20260325T083752Z_4140100807e9",
+  "snapshot_dir": "versions/20260325T083752Z_4140100807e9",
+  "files": {
+    "docs/reference/templates/AGENTS.md": {
+      "sha256": "ede171764b5443af3dabf9dd511c1952e64cd4b11d61346f2bda56923bbebb78",
+      "bytes": 8005
+    },
+    "docs/reference/templates/SOUL.md": {
+      "sha256": "7bdb267d5e9e905507bf836c2d3a2029921942383ac55cffd25eaed11433616c",
+      "bytes": 1800
+    },
+    "docs/reference/templates/TOOLS.md": {
+      "sha256": "eed204d57e7221ae0455a87272da2b0730d6aee6ddd2446a851703276e4a96b7",
+      "bytes": 989
+    },
+    "docs/reference/templates/IDENTITY.md": {
+      "sha256": "78b9847e25264a51f197d9ae203f4ef1614ac91b7471fc1054354752be58bd49",
+      "bytes": 755
+    },
+    "docs/reference/templates/USER.md": {
+      "sha256": "ec3e0eba87de16b5a16e27fdf9e57f62d07f143199c2fd765d41131df86a6f1e",
+      "bytes": 590
+    },
+    "docs/reference/templates/HEARTBEAT.md": {
+      "sha256": "4411c16678f53423ec77753a03bc09b63c4d87f51fcf2f483e2db0acd71c7dca",
+      "bytes": 330
+    },
+    "docs/reference/templates/BOOTSTRAP.md": {
+      "sha256": "4b17fdf30b24fa923b842124aa6c19e726cf9907c1234f0d40364c276156f02e",
+      "bytes": 1604
+    }
+  }
+}

@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0013
+name: hft_orderbook_reconstruction
+description: 高频交易订单簿清洗与异常交易追踪。测试Agent在极低延迟金融数据场景下的时序数据清洗逻辑（如时间戳倒挂修复）、长期规则记忆以及多表关联计算能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0013_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0013_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0013_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0013
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0013/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0013/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0013/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0013_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0013_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0013_turn_3.md

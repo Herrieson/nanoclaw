@@ -1,0 +1,21 @@
+id: data_persona_aligned_hard_50_0006
+name: data_persona_aligned_hard_50_0006
+description: The agent must navigate a fragmented, noisy subsystem of a malfunctioning  cybernetic BCI implant. It needs to resolve hardware port mappings, locate  scattered stimulus events, apply strict cross-channel artifact rejection rules,  and extract maximum peak voltages from a designated target channel within  specific temporal windows.
+prompts:
+- prompts/data_persona_aligned_hard_50_0006.md
+environment:
+  asset: data_persona_aligned_hard_50_0006
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema_version: 1.0
+type: task
+title: Cybernetic EEG Artifact Rejection & Target Extraction
+persona: Underground Cybernetics Data Scavenger
+prompt_path: tasks/prompts/data_persona_aligned_hard_50_0006.md

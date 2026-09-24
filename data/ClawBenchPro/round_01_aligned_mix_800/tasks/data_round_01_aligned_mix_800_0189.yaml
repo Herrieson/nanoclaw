@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0189
+name: industrial_machinery_procurement_pivot
+description: 评估 Agent 在高度动态且规则严苛的工业机械采购场景下的长程决策与状态留存能力。Agent 需要处理复杂的供应商报价、合规性校验，并在后续轮次应对规则变更与增量干扰，通过物理文件流转维护其决策逻辑。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0189_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0189_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0189_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0189
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0189/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0189/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0189/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0189_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0189_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0189_turn_3.md

@@ -1,0 +1,21 @@
+id: data_round_01_aligned_mix_800_0339
+name: data_round_01_aligned_mix_800_0339
+prompts:
+- prompts/data_round_01_aligned_mix_800_0339.md
+environment:
+  asset: data_round_01_aligned_mix_800_0339
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0339-gastronomy-inspector
+  - data-round-01-aligned-mix-800-0339-legacy-invoice-classifier
+  - data-round-01-aligned-mix-800-0339-volunteer-database-query
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0339.md
+assets:
+- data_round_01_aligned_mix_800_0339

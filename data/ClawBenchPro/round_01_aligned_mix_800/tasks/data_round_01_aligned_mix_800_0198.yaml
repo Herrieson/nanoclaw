@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0198
+name: home_care_resource_coordination
+description: 测试 Agent 在居家养老服务场景下的多轮资源调度、规则演进与冲突处理能力。Agent 需要在首轮根据复杂的医嘱和地理信息制定排班与物资计划，并记录逻辑，次轮需在不重复背景规则的前提下处理突发资源短缺与合规性冲突。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0198_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0198_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0198
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0198/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0198/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0198_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0198_turn_2.md

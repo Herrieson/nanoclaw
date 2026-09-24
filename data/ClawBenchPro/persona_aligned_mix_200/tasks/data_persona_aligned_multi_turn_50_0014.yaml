@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0014
+name: edge_iot_bus_analyzer
+description: 嵌入式设备底层总线通信解析与硬件死机追踪。Agent 需要解析 SPI/I2C 十六进制原始报文，将数据还原为物理状态，跨多轮会话跟踪设备的电量/热量积累，并在规则变更后寻找导致死机的真正物理原因，最终生成热修复固件补丁。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0014_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0014_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0014_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0014
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0014/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0014/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0014/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0014_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0014_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0014_turn_3.md

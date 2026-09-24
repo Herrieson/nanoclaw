@@ -1,0 +1,26 @@
+id: data_round_01_aligned_mix_800_0335
+name: data_round_01_aligned_mix_800_0335
+description: Process messy truck delivery logs, fuel receipts, and proprietary dashcam files to generate a consolidated JSON summary.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0335.md
+environment:
+  asset: data_round_01_aligned_mix_800_0335
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0335-omnicam-dat-decoder
+  - data-round-01-aligned-mix-800-0335-telematics-api-lite
+  - data-round-01-aligned-mix-800-0335-telematics-api-pro
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: '1.0'
+task_id: data_round_01_aligned_mix_800_0335
+dependencies:
+  python:
+  - openai
+  - httpx

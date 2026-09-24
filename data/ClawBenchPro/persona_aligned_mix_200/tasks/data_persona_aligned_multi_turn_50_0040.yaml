@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0040
+name: data_persona_aligned_multi_turn_50_0040_physics_optimization
+description: 3A游戏引擎底层物理性能瓶颈分析。多会话任务，测试Agent在复杂日志解析、内存碎片映射与跨平台性能数据对比中的状态流转与长期记忆能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0040_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0040_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0040_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0040
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0040/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0040/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0040/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0040_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0040_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0040_turn_3.md

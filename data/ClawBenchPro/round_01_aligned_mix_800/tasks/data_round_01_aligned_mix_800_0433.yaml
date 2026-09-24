@@ -1,0 +1,19 @@
+id: data_round_01_aligned_mix_800_0433
+name: real_estate_audit_emergency
+description: A high-stakes property management audit task where the agent must reconcile messy tenant payment records against a master lease list, identify discrepancies, and generate a professional financial summary.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0433.md
+environment:
+  asset: data_round_01_aligned_mix_800_0433
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_analysis
+task_type: logical_reasoning
+agent_prompt: tasks/prompts/data_round_01_aligned_mix_800_0433.md

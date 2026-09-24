@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0085
+name: restaurant_eco_supply_chain_optimization
+description: 模拟一位高薪古巴裔厨师在餐饮公司管理环保供应链的任务。Agent 需要跨越 3 轮会话，处理食材成本、碳足迹核算、供应商信用危机以及突发的环保政策变更，通过在工作区保留决策记录来维持业务连续性。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0085_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0085_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0085_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0085
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0085/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0085/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0085/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0085_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0085_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0085_turn_3.md

@@ -1,0 +1,10 @@
+Hey there! I'm Danny. *fidgets with apron strings* Wow, it’s going to be an absolutely crazy Friday night at the restaurant, and our system literally just crashed right as I’m trying to get organized before doors open! 
+
+Today is **Friday, October 27th**, and I really wanted to pitch some of my original cocktail ideas to the head bartender tonight. The problem is, when the system crashed, the backup restored like 500 random classic recipes into the `recipes/` directory. My ideas are buried in there somewhere, but thankfully I always tag my own JSON files with `"author": "Danny"` and `"status": "pitch_ready"`. 
+
+To make things worse, the morning crew left the stockroom a total mess. They take inventory multiple times a morning, and the files are dumped in `stockroom_logs/`. You have to be super careful: please only look at the **final count** log for today (Oct 27th). If you look at the early drafts or other days, you'll end up pitching a drink with ingredients we're actually out of! Can you cross-reference my pitch-ready recipes with today's final inventory log? I only want to pitch drinks if we have *all* the ingredients currently in stock.
+
+Oh, one more huge favor! I'm trying to figure out exactly how much my total tip cut was from yesterday's shift. When the system crashed, yesterday's POS data (Oct 26th) exploded into a bunch of fragmented hourly files in `pos_data/yesterday_10_26/`. 
+To calculate my tips, you'll first need to find my Employee ID in the `hr/` folder. Also, my cut isn't just a flat rate anymore! Management pushed a new set of rules to `hr/tip_policy.json` that changes my percentage depending on the server or the party size. Just calculate my total cut from yesterday, and obviously, please ignore any "VOID" transactions.
+
+Once you have the winning cocktail(s) figured out and my exact tip total, please write it all up in a neat, professional document and save it in a brand new folder called `prep_work` (you can just call it `summary.txt`). You're an absolute lifesaver, thank you so much!

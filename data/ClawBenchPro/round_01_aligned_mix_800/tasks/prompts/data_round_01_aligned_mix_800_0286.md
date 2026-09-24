@@ -1,0 +1,9 @@
+Oi! Hello there! I am in such a rush, but I am *so* excited! We are putting together our first-ever Spring Inclusive Music Showcase for my special needs kiddos. Music is just such a beautiful blessing, and seeing them express themselves on stage is going to be absolute magic! 
+
+But oh my goodness, the paperwork and the new district IT systems are driving me crazy! Between balancing my family, my own music practice, and the classroom, I'm swimming in digital bureaucracy. I have all the parent volunteer sign-up sheets in the `volunteer_signups` folder (they are in CSV format), but our district is super strict about safety. 
+
+Usually, they give me a simple text file with approved names, but this year the IT department deleted it and told me I *must* use the new background check APIs. They gave me two tools: `legacy_bg_check_api` and `district_bg_check_api` (you can find them in the system tools/skills). I need to know exactly which of the signed-up parents haven't completed their background checks yet. 
+
+Also, the most important part: I let the kiddos pick their dream instruments in `student_data/requests.csv`. But as their teacher, I have to make sure their choices actually match their Individualized Education Plan (IEP) motor skill levels. In the past, I had a handy little map, but now IT says I have to use the `iep_music_accessibility_evaluator` tool to check each student's requested instrument against their IEP motor level. If the tool says they are not approved, I need to have a sweet little consultation with them and their parents to find a better fit.
+
+Could you be an absolute angel and figure this out for me? Please create a folder named `showcase_prep`. Inside it, drop a simple JSON file with the names of the uncleared volunteers, and another JSON file listing the names of the kiddos who need an instrument consultation. I'm going to grab my guitar and head to class now, thank you so much for your help!

@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0122
+name: health_wellness_allowance_audit
+description: 评估Agent在多轮次中处理复杂多文件关联核对、基于规则推演以及跨会话状态（如剩余配额追踪、违规名单记忆）流转的综合工程能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0122_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0122_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0122
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0122/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0122/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0122_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0122_turn_2.md

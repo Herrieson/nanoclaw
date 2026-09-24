@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0096
+name: warehouse_inventory_tech_optimization
+description: 评估 Agent 在复杂的库存管理与技术升级场景下的多轮状态流转、规则记忆与逻辑推理能力。涉及脏数据处理、多文件交叉引用及动态约束下的决策。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0096_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0096_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0096_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0096
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0096/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0096/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0096/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0096_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0096_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0096_turn_3.md

@@ -1,0 +1,20 @@
+id: data_persona_aligned_skills_50_0019
+name: data_persona_aligned_skills_50_0019
+prompts:
+- prompts/data_persona_aligned_skills_50_0019.md
+environment:
+  asset: data_persona_aligned_skills_50_0019
+skills:
+  available:
+  - data-persona-aligned-skills-50-0019-ecs-inspector-v1-skill
+  - data-persona-aligned-skills-50-0019-ecs-inspector-v2-skill
+  - data-persona-aligned-skills-50-0019-perf-trace-analyzer-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+prompt: prompts/data_persona_aligned_skills_50_0019.md

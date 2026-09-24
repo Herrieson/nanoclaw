@@ -1,0 +1,31 @@
+id: data_round_01_aligned_mix_800_0145
+name: community_action_venue_allocation
+description: '多轮资源分配与约束满足任务。
+
+  测试Agent在具有多重依赖属性（预算、日期互斥、区域匹配、设施要求）的复杂约束下，进行最优解搜索的能力。
+
+  第二轮引入突发规则修改与资源扣减，迫使Agent依赖历史记录重算状态，并结合新增的数据文件（志愿者）完成多维度的匹配。'
+prompts:
+- prompts/data_round_01_aligned_mix_800_0145_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0145_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0145
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0145/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0145/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0145_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0145_turn_2.md

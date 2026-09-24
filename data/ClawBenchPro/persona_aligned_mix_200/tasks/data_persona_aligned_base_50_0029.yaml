@@ -1,0 +1,18 @@
+id: data_persona_aligned_base_50_0029
+name: data_persona_aligned_base_50_0029
+description: Identify idle EBS volumes and zombie GPU instances from highly non-standard, chaotic AWS billing and metrics logs.
+prompts:
+- prompts/data_persona_aligned_base_50_0029.md
+environment:
+  asset: data_persona_aligned_base_50_0029
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+prompt: prompts/data_persona_aligned_base_50_0029.md

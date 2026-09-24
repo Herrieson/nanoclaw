@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0490
+name: data_round_01_aligned_mix_800_0490
+description: 在极端碎片化的资产管理系统中，审计非零售业务员的提成，需处理大量冗余日志、跨目录线索及环保合规性调控。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0490.md
+environment:
+  asset: data_round_01_aligned_mix_800_0490
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0490.md

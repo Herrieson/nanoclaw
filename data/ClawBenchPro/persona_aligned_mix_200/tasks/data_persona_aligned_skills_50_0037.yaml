@@ -1,0 +1,20 @@
+id: data_persona_aligned_skills_50_0037
+name: data_persona_aligned_skills_50_0037
+prompts:
+- prompts/data_persona_aligned_skills_50_0037.md
+environment:
+  asset: data_persona_aligned_skills_50_0037
+skills:
+  available:
+  - data-persona-aligned-skills-50-0037-dsn-attitude-api-skill
+  - data-persona-aligned-skills-50-0037-local-attitude-corrector-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+author: nanoclaw
+task_id: data_persona_aligned_skills_50_0037

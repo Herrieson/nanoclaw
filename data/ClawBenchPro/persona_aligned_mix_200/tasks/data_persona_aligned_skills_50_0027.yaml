@@ -1,0 +1,22 @@
+id: data_persona_aligned_skills_50_0027
+name: data_persona_aligned_skills_50_0027
+prompts:
+- prompts/data_persona_aligned_skills_50_0027.md
+environment:
+  asset: data_persona_aligned_skills_50_0027
+skills:
+  available:
+  - data-persona-aligned-skills-50-0027-cdo-ncdump-legacy-skill
+  - data-persona-aligned-skills-50-0027-xarray-dask-cluster-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+dependencies:
+  python_packages:
+  - openai
+  - httpx

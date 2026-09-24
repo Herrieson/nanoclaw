@@ -1,0 +1,19 @@
+id: data_round_01_aligned_mix_800_0569
+name: clinical_record_chaos
+description: A speech-language pathologist needs help cleaning up a massive, fragmented, and noisy dump of patient session logs and reconciling them with a dynamic insurance authorization configuration.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0569.md
+environment:
+  asset: data_round_01_aligned_mix_800_0569
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_processing
+persona: data_round_01_aligned_mix_800_0569
+prompt_path: tasks/prompts/data_round_01_aligned_mix_800_0569.md

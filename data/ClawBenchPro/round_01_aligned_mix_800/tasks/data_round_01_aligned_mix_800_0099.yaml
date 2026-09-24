@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0099
+name: electric_grid_dispute_resolution
+description: 评估 Agent 在处理电力公司复杂欠费争议、多维阶梯电价计算以及规则动态变更时的逻辑推理与状态流转能力。任务跨越 3 个会话，要求 Agent 能够持续维护争议账户处理日志。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0099_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0099_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0099_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0099
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0099/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0099/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0099/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0099_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0099_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0099_turn_3.md

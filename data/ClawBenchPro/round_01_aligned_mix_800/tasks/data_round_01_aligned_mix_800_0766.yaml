@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0766
+name: data_round_01_aligned_mix_800_0766
+description: A specialty store cashier needs help reconciling a messy sales log and checking inventory for a personal recipe.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0766.md
+environment:
+  asset: data_round_01_aligned_mix_800_0766
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+assets: data_round_01_aligned_mix_800_0766
+prompt: prompts/data_round_01_aligned_mix_800_0766.md

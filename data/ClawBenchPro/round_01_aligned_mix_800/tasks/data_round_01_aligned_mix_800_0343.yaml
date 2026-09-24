@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0343
+name: data_round_01_aligned_mix_800_0343
+prompts:
+- prompts/data_round_01_aligned_mix_800_0343.md
+environment:
+  asset: data_round_01_aligned_mix_800_0343
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0343-global-trail-database-skill
+  - data-round-01-aligned-mix-800-0343-query-trail-telemetry-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+task_id: data_round_01_aligned_mix_800_0343
+prompt: prompts/data_round_01_aligned_mix_800_0343.md

@@ -1,0 +1,18 @@
+id: data_persona_aligned_hard_50_0029
+name: data_persona_aligned_hard_50_0029
+description: Identify idle EBS volumes and zombie GPU instances from highly fragmented, noise-injected AWS billing and metrics logs across deep directory structures.
+prompts:
+- prompts/data_persona_aligned_hard_50_0029.md
+environment:
+  asset: data_persona_aligned_hard_50_0029
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+prompt: prompts/data_persona_aligned_hard_50_0029.md

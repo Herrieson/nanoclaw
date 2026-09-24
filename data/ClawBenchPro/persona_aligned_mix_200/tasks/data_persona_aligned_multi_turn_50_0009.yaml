@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0009
+name: space_telemetry_rescue
+description: 航天器深空遥测十六进制数据流解析任务。重点考察多文件二进制格式理解、IEEE 754 浮点数解析、数据帧滑动窗口对齐能力，以及在多轮会话中跨事件日志的时间关联和条件状态流转记忆。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0009_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0009_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0009_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0009
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0009/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0009/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0009/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0009_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0009_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0009_turn_3.md

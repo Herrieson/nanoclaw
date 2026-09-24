@@ -1,0 +1,23 @@
+id: data_round_01_aligned_mix_800_0275
+name: Furniture Factory Stain Inventory - High Precision
+description: Process messy logs and spectral raw data to identify bad Cherry batches and calculate volumes, requiring specialized color analysis tools.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0275.md
+environment:
+  asset: data_round_01_aligned_mix_800_0275
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0275-inventory-search-engine-skill
+  - data-round-01-aligned-mix-800-0275-legacy-db-connector-skill
+  - data-round-01-aligned-mix-800-0275-spectro-color-analyzer-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema: nanoclaw/task@v1
+dependencies:
+- openai
+- httpx

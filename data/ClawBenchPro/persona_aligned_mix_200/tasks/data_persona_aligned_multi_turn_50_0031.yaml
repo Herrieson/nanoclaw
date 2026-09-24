@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0031
+name: ebpf_silent_drop_investigation
+description: 模拟eBPF内核网络开发排查丢包问题。涉及多轮日志关联分析、基于规则的状态保存、跨文件数据聚合与冲突合并。测试Agent长文本解析和跨轮次复杂记忆流转。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0031_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0031_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0031_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0031
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0031/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0031/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0031/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0031_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0031_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0031_turn_3.md

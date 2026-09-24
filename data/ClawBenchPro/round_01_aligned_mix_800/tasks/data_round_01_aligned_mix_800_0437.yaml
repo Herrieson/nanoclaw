@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0437
+name: social_worker_case_audit_wasteland
+description: 在极端混乱、充斥过期备份和碎片化日志的社工系统中，提取、清洗并交叉校验高风险家庭的干预记录。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0437.md
+environment:
+  asset: data_round_01_aligned_mix_800_0437
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_processing
+prompt: prompts/data_round_01_aligned_mix_800_0437.md

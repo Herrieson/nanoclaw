@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0150
+name: agricultural_heritage_preservation
+description: 评估 Agent 在多轮作物管理中的决策连贯性、复杂规则遵守以及在动态环境下的状态流转能力。任务涉及建立作物轮作标准、处理突发病虫害数据以及在不违反历史生态红线的前提下调整年度预算。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0150_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0150_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0150_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0150
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0150/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0150/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0150/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0150_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0150_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0150_turn_3.md

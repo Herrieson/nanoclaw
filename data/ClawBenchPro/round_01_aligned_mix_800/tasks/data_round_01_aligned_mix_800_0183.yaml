@@ -1,0 +1,36 @@
+id: data_round_01_aligned_mix_800_0183
+name: jersey_shore_wellness_fest
+description: '测试Agent在多轮突发情况下的状态流转与记忆能力。
+
+  要求Agent跨越JSON、XML和非结构化文本进行数据处理与交叉验证。
+
+  在无显式提示的情况下，依赖先前轮次保留在工作区的业务规则与状态，计算最终的赞助商拨款。'
+prompts:
+- prompts/data_round_01_aligned_mix_800_0183_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0183_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0183_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0183
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0183/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0183/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0183/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0183_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0183_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0183_turn_3.md

@@ -1,0 +1,22 @@
+id: data_round_01_aligned_mix_800_0279
+name: data_processing_legacy_refactor_v2
+description: A software developer needs help refactoring a legacy data processing script and cleaning up inconsistent database exports using specialized internal tools.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0279.md
+environment:
+  asset: data_round_01_aligned_mix_800_0279
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0279-data-integrity-checker-skill
+  - data-round-01-aligned-mix-800-0279-legacy-binary-log-parser-skill
+  - data-round-01-aligned-mix-800-0279-user-identity-resolver-api
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: Software Development & Data Engineering
+task_type: Refactoring & Data Analysis
+prompt: prompts/data_round_01_aligned_mix_800_0279.md

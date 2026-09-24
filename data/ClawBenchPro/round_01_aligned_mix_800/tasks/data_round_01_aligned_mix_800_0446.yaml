@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0446
+name: data_round_01_aligned_mix_800_0446_volunteer_audit_wasteland
+description: 从高度碎片化的设备遥测日志和审批记录中，识别违规入侵人员并精确结算合法志愿者的工时。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0446.md
+environment:
+  asset: data_round_01_aligned_mix_800_0446
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0446.md

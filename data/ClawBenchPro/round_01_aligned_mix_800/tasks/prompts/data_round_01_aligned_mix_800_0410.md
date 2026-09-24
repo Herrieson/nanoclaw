@@ -1,0 +1,9 @@
+Hello there! Oh heavens, I am at my absolute wit's end, and I'm so glad someone is finally listening. I've been pacing the kitchen so much the linoleum is starting to wear out! 
+
+I recently spent a good chunk of my savings on these wonderful eco-gadgets—solar panels and smart water monitors. I want to leave a better planet for my grandchildren, you know? But my brain just gets so terribly foggy with all this technology. The central hub thingy has been automatically downloading data for months, and it just dumped everything into a folder called `gadget_dumps`. It is a complete and utter disaster. There are hundreds of folders in there from every single auto-sync!
+
+To make matters worse, the hub is picking up signals from my old broken devices, and even my neighbor's gadgets! The installer, bless his heart, left a note in the `documents` folder explaining which device serial numbers are actually my active ones. I haven't the faintest idea how to sort this out. 
+
+Could you please, please look through that huge `gadget_dumps` mess for me? I need you to find only the log files belonging to my *active* solar panels and put them away neatly into a new folder called `organized/solar_logs`. Then, do the same for my *active* water monitors, putting them into `organized/water_logs`. Please just leave all the old, broken, neighbor's logs, and my mixed-in grocery receipts exactly where they are. 
+
+Also, my fancy new smart display in the kitchen is completely blank! The manual said it needs a file called `smart_display_feed.json` right in the main folder (where `gadget_dumps` is). It's supposed to have exactly two things: `total_solar_kwh` and `total_water_gallons`. I don't know how to add up all those numbers from the good files, the spreadsheets just make my eyes cross. Can you figure out the totals from my active logs and make that file for me? Thank you so much, you are an absolute lifesaver!

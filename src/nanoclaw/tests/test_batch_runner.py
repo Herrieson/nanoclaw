@@ -1,0 +1,460 @@
+from __future__ import annotations
+
+from pathlib import Path
+import json
+import tempfile
+import unittest
+
+from nanoclaw.batch_runner import (
+    BatchTaskSpec,
+    _env_with_skill_dirs,
+    batch_assets_root,
+    cleanup_environment,
+    find_latest_completed_run_dir,
+    parse_run_dir,
+    partition_task_specs_for_resume,
+    prepare_environment,
+    resolve_task_specs,
+)
+
+
+class BatchRunnerTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.repo_root = Path(self.temp_dir.name)
+        (self.repo_root / "tasks" / "prompts").mkdir(parents=True, exist_ok=True)
+
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
+
+    def test_batch_assets_root_uses_results_local_batch_env(self) -> None:
+        results_dir = self.repo_root / "results" / "demo_model"
+        self.assertEqual(
+            batch_assets_root(results_dir),
+            (results_dir / ".batch_env" / "assets").resolve(),
+        )
+
+    def test_resolve_task_specs_reads_normalized_task(self) -> None:
+        task_path = self.repo_root / "tasks" / "data_01.yaml"
+        prompt_path = self.repo_root / "tasks" / "prompts" / "data_01.md"
+        prompt_path.write_text("Write a report.\n", encoding="utf-8")
+        task_path.write_text(
+            "\n".join(
+                [
+                    "id: data_01",
+                    "name: Example",
+                    "prompts:",
+                    "  - prompts/data_01.md",
+                    "environment:",
+                    "  asset: data_01",
+                    "skills:",
+                    "  available:",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "  mode: interactive",
+                    "  memory_policy: default",
+                    "  approval_mode: reject",
+                    "  max_steps: 30",
+                    "  temperature: 0.2",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        spec = resolve_task_specs(["tasks/data_01.yaml"], repo_root=self.repo_root)[0]
+        self.assertEqual(spec.task_id, "data_01")
+        self.assertEqual(spec.asset_name, "data_01")
+        self.assertIsNone(spec.builder_path)
+
+    def test_resolve_task_specs_prefers_builder_next_to_external_task(self) -> None:
+        external_root = self.repo_root / "external_dataset"
+        task_id = "data_external_01"
+        task_path = external_root / "tasks" / f"{task_id}.yaml"
+        prompt_path = external_root / "tasks" / "prompts" / f"{task_id}.md"
+        builder_path = external_root / "tasks" / task_id / "env_builder.py"
+        prompt_path.parent.mkdir(parents=True, exist_ok=True)
+        builder_path.parent.mkdir(parents=True, exist_ok=True)
+        prompt_path.write_text("Write a report.\n", encoding="utf-8")
+        builder_path.write_text("print('build')\n", encoding="utf-8")
+        task_path.write_text(
+            "\n".join(
+                [
+                    f"id: {task_id}",
+                    "name: External Example",
+                    "prompts:",
+                    f"  - prompts/{task_id}.md",
+                    "environment:",
+                    f"  asset: {task_id}",
+                    "skills:",
+                    "  available:",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "  mode: interactive",
+                    "  memory_policy: default",
+                    "  approval_mode: reject",
+                    "  max_steps: 30",
+                    "  temperature: 0.2",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        spec = resolve_task_specs(["external_dataset/tasks/data_external_01.yaml"], repo_root=self.repo_root)[0]
+
+        self.assertEqual(spec.task_id, task_id)
+        self.assertEqual(spec.builder_path, builder_path)
+        self.assertEqual(spec.skill_dirs, ())
+
+        absolute_spec = resolve_task_specs([str(task_path)], repo_root=self.repo_root)[0]
+        self.assertEqual(absolute_spec.builder_path, builder_path)
+
+    def test_resolve_task_specs_adds_external_dataset_skill_root(self) -> None:
+        external_root = self.repo_root / "external_dataset"
+        task_id = "data_external_02"
+        task_path = external_root / "tasks" / f"{task_id}.yaml"
+        prompt_path = external_root / "tasks" / "prompts" / f"{task_id}.md"
+        skill_root = external_root / "skills"
+        prompt_path.parent.mkdir(parents=True, exist_ok=True)
+        skill_root.mkdir(parents=True, exist_ok=True)
+        prompt_path.write_text("Use a helper skill.\n", encoding="utf-8")
+        task_path.write_text(
+            "\n".join(
+                [
+                    f"id: {task_id}",
+                    "name: External Skill Example",
+                    "prompts:",
+                    f"  - prompts/{task_id}.md",
+                    "environment:",
+                    f"  asset: {task_id}",
+                    "skills:",
+                    "  available:",
+                    "    - external-helper",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "  mode: interactive",
+                    "  memory_policy: default",
+                    "  approval_mode: reject",
+                    "  max_steps: 30",
+                    "  temperature: 0.2",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        spec = resolve_task_specs([str(task_path)], repo_root=self.repo_root)[0]
+
+        self.assertEqual(spec.skill_dirs, (skill_root.resolve(),))
+
+    def test_env_with_skill_dirs_appends_without_duplicates(self) -> None:
+        existing = self.repo_root / "existing_skills"
+        extra = self.repo_root / "external_dataset" / "skills"
+        env = _env_with_skill_dirs(
+            {"NANOCLAW_SKILL_DIRS": str(existing)},
+            (extra, existing),
+        )
+
+        self.assertEqual(
+            env["NANOCLAW_SKILL_DIRS"],
+            f"{existing.resolve()},{extra.resolve()}",
+        )
+
+    def test_prepare_and_cleanup_environment_from_builder(self) -> None:
+        task_id = "data_02"
+        task_path = self.repo_root / "tasks" / f"{task_id}.yaml"
+        prompt_path = self.repo_root / "tasks" / "prompts" / f"{task_id}.md"
+        builder_path = self.repo_root / "tasks" / task_id / "env_builder.py"
+        prompt_path.write_text("Read docs/input.txt.\n", encoding="utf-8")
+        builder_path.parent.mkdir(parents=True, exist_ok=True)
+        builder_path.write_text(
+            "\n".join(
+                [
+                    "from pathlib import Path",
+                    "base = Path('assets/data_02/docs')",
+                    "base.mkdir(parents=True, exist_ok=True)",
+                    "base.joinpath('input.txt').write_text('ok\\n', encoding='utf-8')",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        task_path.write_text(
+            "\n".join(
+                [
+                    "id: data_02",
+                    "name: Example",
+                    "prompts:",
+                    "  - prompts/data_02.md",
+                    "environment:",
+                    "  asset: data_02",
+                    "skills:",
+                    "  available:",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "  mode: interactive",
+                    "  memory_policy: default",
+                    "  approval_mode: reject",
+                    "  max_steps: 30",
+                    "  temperature: 0.2",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        spec = resolve_task_specs(["tasks/data_02.yaml"], repo_root=self.repo_root)[0]
+        isolated_assets_root = (self.repo_root / "results" / "demo_model" / ".batch_env" / "assets")
+        asset_dir = prepare_environment(
+            spec,
+            repo_root=self.repo_root,
+            assets_root=isolated_assets_root,
+        )
+        self.assertTrue(asset_dir.exists())
+        self.assertTrue((asset_dir / "docs" / "input.txt").exists())
+        self.assertEqual(asset_dir, (isolated_assets_root / task_id).resolve())
+
+        cleanup_environment(
+            spec,
+            repo_root=self.repo_root,
+            assets_root=isolated_assets_root,
+        )
+        self.assertFalse(asset_dir.exists())
+
+    def test_prepare_environment_runs_wrapped_builder_inside_isolated_asset_dir(self) -> None:
+        task_id = "data_03"
+        task_path = self.repo_root / "tasks" / f"{task_id}.yaml"
+        prompt_path = self.repo_root / "tasks" / "prompts" / f"{task_id}.md"
+        builder_dir = self.repo_root / "tasks" / task_id
+        builder_path = builder_dir / "env_builder.py"
+        impl_path = builder_dir / "_env_builder_impl.py"
+        prompt_path.write_text("Read docs/input.txt.\n", encoding="utf-8")
+        builder_dir.mkdir(parents=True, exist_ok=True)
+        builder_path.write_text(
+            "\n".join(
+                [
+                    "from pathlib import Path",
+                    "repo_root = Path(__file__).resolve().parents[2]",
+                    f"asset_dir = repo_root / 'assets' / '{task_id}'",
+                    "asset_dir.mkdir(parents=True, exist_ok=True)",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        impl_path.write_text(
+            "\n".join(
+                [
+                    "from pathlib import Path",
+                    "Path('docs').mkdir(parents=True, exist_ok=True)",
+                    "Path('docs/input.txt').write_text('ok\\n', encoding='utf-8')",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        task_path.write_text(
+            "\n".join(
+                [
+                    f"id: {task_id}",
+                    "name: Example",
+                    "prompts:",
+                    f"  - prompts/{task_id}.md",
+                    "environment:",
+                    f"  asset: {task_id}",
+                    "skills:",
+                    "  available:",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "  mode: interactive",
+                    "  memory_policy: default",
+                    "  approval_mode: reject",
+                    "  max_steps: 30",
+                    "  temperature: 0.2",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        spec = resolve_task_specs(["tasks/data_03.yaml"], repo_root=self.repo_root)[0]
+        isolated_assets_root = (self.repo_root / "results" / "demo_model" / ".batch_env" / "assets")
+        asset_dir = prepare_environment(
+            spec,
+            repo_root=self.repo_root,
+            assets_root=isolated_assets_root,
+        )
+
+        self.assertTrue((asset_dir / "docs" / "input.txt").exists())
+        self.assertFalse((self.repo_root / "assets" / task_id).exists())
+
+    def test_prepare_environment_builder_failure_includes_stderr(self) -> None:
+        task_id = "data_bad_builder"
+        task_path = self.repo_root / "tasks" / f"{task_id}.yaml"
+        prompt_path = self.repo_root / "tasks" / "prompts" / f"{task_id}.md"
+        builder_path = self.repo_root / "tasks" / task_id / "env_builder.py"
+        prompt_path.write_text("Read docs/input.txt.\n", encoding="utf-8")
+        builder_path.parent.mkdir(parents=True, exist_ok=True)
+        builder_path.write_text(
+            "\n".join(
+                [
+                    "import sys",
+                    "print('builder stderr detail', file=sys.stderr)",
+                    "raise SystemExit(7)",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        task_path.write_text(
+            "\n".join(
+                [
+                    f"id: {task_id}",
+                    "name: Bad Builder",
+                    "prompts:",
+                    f"  - prompts/{task_id}.md",
+                    "environment:",
+                    f"  asset: {task_id}",
+                    "skills:",
+                    "  available:",
+                    "runtime:",
+                    "  model: gpt-4o",
+                    "  mode: interactive",
+                    "  memory_policy: default",
+                    "  approval_mode: reject",
+                    "  max_steps: 30",
+                    "  temperature: 0.2",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+        spec = resolve_task_specs([str(task_path)], repo_root=self.repo_root)[0]
+        isolated_assets_root = self.repo_root / "results" / "demo_model" / ".batch_env" / "assets"
+
+        with self.assertRaises(RuntimeError) as context:
+            prepare_environment(
+                spec,
+                repo_root=self.repo_root,
+                assets_root=isolated_assets_root,
+            )
+
+        message = str(context.exception)
+        self.assertIn("env_builder.py exited with 7", message)
+        self.assertIn("builder stderr detail", message)
+
+    def test_parse_run_dir(self) -> None:
+        stdout = "Trace: foo\nRun dir: /tmp/example-run\nSummary: summary.json\n"
+        self.assertEqual(parse_run_dir(stdout), Path("/tmp/example-run").resolve())
+
+    def test_find_latest_completed_run_dir_prefers_latest_completed_run(self) -> None:
+        task_results_dir = self.repo_root / "results" / "data_03"
+        task_results_dir.mkdir(parents=True, exist_ok=True)
+
+        def write_summary(run_id: str, status: str) -> Path:
+            run_dir = task_results_dir / run_id
+            run_dir.mkdir(parents=True, exist_ok=True)
+            if status == "completed":
+                (run_dir / "final_answer.md").write_text("done\n", encoding="utf-8")
+            (run_dir / "summary.json").write_text(
+                json.dumps(
+                    {
+                        "task_id": "data_03",
+                        "run_id": run_id,
+                        "status": status,
+                        "final_answer_file": "final_answer.md",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            return run_dir
+
+        write_summary("20260101T000000Z", "completed")
+        write_summary("20260101T000000Z_2", "failed")
+        latest_completed = write_summary("20260101T000000Z_10", "completed")
+
+        resolved = find_latest_completed_run_dir(
+            "data_03",
+            results_dir=self.repo_root / "results",
+        )
+        self.assertEqual(resolved, latest_completed.resolve())
+
+    def test_partition_task_specs_for_resume_skips_completed_tasks_only(self) -> None:
+        task_a_results = self.repo_root / "results" / "data_10" / "20260101T000000Z"
+        task_a_results.mkdir(parents=True, exist_ok=True)
+        (task_a_results / "summary.json").write_text(
+            json.dumps(
+                {
+                    "task_id": "data_10",
+                    "run_id": "20260101T000000Z",
+                    "status": "completed",
+                    "final_answer_file": "final_answer.md",
+                }
+            ),
+            encoding="utf-8",
+        )
+        (task_a_results / "final_answer.md").write_text("done\n", encoding="utf-8")
+        task_b_results = self.repo_root / "results" / "data_11" / "20260101T000000Z"
+        task_b_results.mkdir(parents=True, exist_ok=True)
+        (task_b_results / "summary.json").write_text(
+            json.dumps({"task_id": "data_11", "run_id": "20260101T000000Z", "status": "failed"}),
+            encoding="utf-8",
+        )
+
+        specs = [
+            BatchTaskSpec(
+                task_path=self.repo_root / "tasks" / "data_10.yaml",
+                task_id="data_10",
+                asset_name="data_10",
+                builder_path=None,
+            ),
+            BatchTaskSpec(
+                task_path=self.repo_root / "tasks" / "data_11.yaml",
+                task_id="data_11",
+                asset_name="data_11",
+                builder_path=None,
+            ),
+            BatchTaskSpec(
+                task_path=self.repo_root / "tasks" / "data_12.yaml",
+                task_id="data_12",
+                asset_name="data_12",
+                builder_path=None,
+            ),
+        ]
+
+        pending_specs, reused_run_dirs = partition_task_specs_for_resume(
+            specs,
+            results_dir=self.repo_root / "results",
+        )
+
+        self.assertEqual([spec.task_id for spec in pending_specs], ["data_11", "data_12"])
+        self.assertEqual(reused_run_dirs, {"data_10": task_a_results.resolve()})
+
+    def test_resume_does_not_skip_empty_completed_final_answer(self) -> None:
+        task_results = self.repo_root / "results" / "data_empty" / "20260101T000000Z"
+        task_results.mkdir(parents=True, exist_ok=True)
+        (task_results / "final_answer.md").write_text("\n", encoding="utf-8")
+        (task_results / "summary.json").write_text(
+            json.dumps(
+                {
+                    "task_id": "data_empty",
+                    "run_id": "20260101T000000Z",
+                    "status": "completed",
+                    "final_answer_file": "final_answer.md",
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        resolved = find_latest_completed_run_dir(
+            "data_empty",
+            results_dir=self.repo_root / "results",
+        )
+
+        self.assertIsNone(resolved)
+
+
+if __name__ == "__main__":
+    unittest.main()

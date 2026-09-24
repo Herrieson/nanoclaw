@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0146
+name: wholesale_inventory_dynamic_compliance
+description: 评估 Agent 在机械批发管理中的多轮库存审计、合规性流转及突发环境变更的处理能力。Agent 需要在第一轮建立复杂的库存规则与分配逻辑，并在第二轮处理规则冲突与供应链突发数据，且必须依赖第一轮自行建立的记录文件。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0146_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0146_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0146
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0146/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0146/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0146_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0146_turn_2.md

@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0141
+name: construction_financial_audit_and_reallocation
+description: 模拟建筑公司财务经理处理多项目超支审核、分包商信用风险评估及预算重分配。测试 Agent 在复杂财务数据下的规则理解、状态持久化及多轮任务中的逻辑一致性。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0141_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0141_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0141_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0141
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0141/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0141/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0141/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0141_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0141_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0141_turn_3.md

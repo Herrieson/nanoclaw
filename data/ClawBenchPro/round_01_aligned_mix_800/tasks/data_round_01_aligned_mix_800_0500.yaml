@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0500
+name: poetry_collection_cleanup
+description: 帮助 15 岁的学生 Elena 从崩溃的同步盘废墟中找回并修复她真正的诗歌草稿，排除海量干扰项，生成电子诗集。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0500.md
+environment:
+  asset: data_round_01_aligned_mix_800_0500
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0500.md

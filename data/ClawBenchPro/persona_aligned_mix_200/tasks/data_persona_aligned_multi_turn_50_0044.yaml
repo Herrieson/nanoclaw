@@ -1,0 +1,40 @@
+id: data_persona_aligned_multi_turn_50_0044
+name: finops_cloud_cost_optimizer
+description: '测试 Agent 在跨云 FinOps 场景下的长期状态流转、复杂条件判断及跨回合记忆维护能力。
+
+  共包含 3 轮会话：
+
+  Turn 1：处理 AWS 账单，根据复杂的嵌套标签合规性要求及闲置资源阈值进行分析，并自主留下记忆。
+
+  Turn 2：在不重申红线规则的情况下，接入 GCP 数据流进行泛化映射，同时处理突发的部门豁免名单，更新状态。
+
+  Turn 3：引入财务目标及关键业务标签冲突，要求 Agent 结合记忆中的历史金额测算执行计划，验证其是否能忠实应用前期结果并规避新陷阱。'
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0044_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0044_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0044_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0044
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0044/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0044/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0044/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0044_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0044_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0044_turn_3.md

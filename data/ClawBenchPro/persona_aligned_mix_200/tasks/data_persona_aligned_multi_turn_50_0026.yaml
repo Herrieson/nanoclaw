@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0026
+name: backend_trace_p99_latency_analysis
+description: 评估Agent在多轮复杂上下文中，跨越多个JSON流数据和不同格式配置文件，对高并发微服务链路追踪记录(Trace)进行嵌套解析、规则过滤及节点环境状态交叉验证的综合排查能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0026_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0026_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0026_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0026
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0026/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0026/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0026/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0026_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0026_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0026_turn_3.md

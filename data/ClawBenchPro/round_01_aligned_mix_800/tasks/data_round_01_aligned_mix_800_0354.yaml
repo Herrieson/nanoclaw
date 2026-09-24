@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0354
+name: data_round_01_aligned_mix_800_0354
+description: Decode proprietary kiosk binary logs, semantically route transcripts to departments using an API tool, normalize times, and extract specific escalations based on persona requirements.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0354.md
+environment:
+  asset: data_round_01_aligned_mix_800_0354
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0354-kiosk-decoder-skill
+  - data-round-01-aligned-mix-800-0354-legacy-rule-router-skill
+  - data-round-01-aligned-mix-800-0354-smart-dept-router-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0354.md

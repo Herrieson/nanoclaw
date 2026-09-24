@@ -1,0 +1,22 @@
+id: data_persona_aligned_skills_50_0016
+name: data_persona_aligned_skills_50_0016_agentic_rl_alignment
+description: Cleanse Agentic RL trajectory data by interacting with a mocked telemetry API, filtering out broken formats, infinite tool-call loops, and severe token truncations.
+prompts:
+- prompts/data_persona_aligned_skills_50_0016.md
+environment:
+  asset: data_persona_aligned_skills_50_0016
+skills:
+  available:
+  - data-persona-aligned-skills-50-0016-legacy-telemetry-query-skill
+  - data-persona-aligned-skills-50-0016-nova-telemetry-query-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+prompt: prompts/data_persona_aligned_skills_50_0016.md
+setup:
+- pip install openai httpx

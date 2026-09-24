@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0434
+name: comic_inventory_rescue_deep_waste
+description: Navigate a fragmented and noisy digital archive to recover and curate a high-value comic book collection from a corrupted legacy database.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0434.md
+environment:
+  asset: data_round_01_aligned_mix_800_0434
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_processing
+prompt: prompts/data_round_01_aligned_mix_800_0434.md

@@ -1,0 +1,21 @@
+id: data_persona_aligned_skills_50_0039
+name: data_persona_aligned_skills_50_0039
+prompts:
+- prompts/data_persona_aligned_skills_50_0039.md
+environment:
+  asset: data_persona_aligned_skills_50_0039
+skills:
+  available:
+  - data-persona-aligned-skills-50-0039-ext4-inode-query-skill
+  - data-persona-aligned-skills-50-0039-kallsyms-lookup-skill
+  - data-persona-aligned-skills-50-0039-vmlinux-addr2line-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+task_id: data_persona_aligned_skills_50_0039
+prompt_path: prompts/data_persona_aligned_skills_50_0039.md

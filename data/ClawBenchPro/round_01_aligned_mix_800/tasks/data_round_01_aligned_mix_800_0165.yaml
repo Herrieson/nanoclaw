@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0165
+name: community_pharmacy_audit
+description: 测试 Agent 在极度非结构化需求下的多文件综合研判能力、长程状态流转记忆以及对历史决策的追溯修正能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0165_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0165_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0165
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0165/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0165/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0165_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0165_turn_2.md

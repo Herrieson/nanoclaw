@@ -1,0 +1,22 @@
+id: data_round_01_aligned_mix_800_0531
+name: real_estate_audit_wasteland
+description: Audit highly fragmented rental income data across various formats and perform a relational database join to generate a sustainability report.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0531.md
+environment:
+  asset: data_round_01_aligned_mix_800_0531
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+  - data_round_01_aligned_mix_800_0531
+meta:
+  category: Data Analysis & Business Logic
+  difficulty: Abysmal
+prompt_src: tasks/prompts/data_round_01_aligned_mix_800_0531.md

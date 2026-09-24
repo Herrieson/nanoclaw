@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0077
+name: eden_grove_holistic_care
+description: 模拟高级护理机构中复杂的医疗约束与园艺疗法预算规划。测试Agent在多轮对话中对增量医疗数据、冲突规则和沉没成本的长期追踪能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0077_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0077_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0077
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0077/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0077/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0077_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0077_turn_2.md

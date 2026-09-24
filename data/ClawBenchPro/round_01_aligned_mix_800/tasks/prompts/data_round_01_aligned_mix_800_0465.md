@@ -1,0 +1,9 @@
+Mira, I don't have all day for this. My foot’s tapping a hole in the floor right now. I’m staring at the precinct’s terminal and it is a complete bureaucratic disaster. I swear, the state’s IT system was designed by pendejos. I’m a police officer—I'm supposed to be out there maintaining order, not writing Python scripts to fix a fragmented database when I could be home sketching in my notebook with my kids.
+
+Here’s the nightmare: they shattered our database. The active watchlists are dumped into `state_db/rosters/`, but the automated daily dumps at 08:00 AM are corrupted with ghost data. **Only** trust the manual sync from Friday at 17:00 (`roster_2023-10-27_1700.csv`). Anyone not listed as "ACTIVE" on that specific roster does not exist to me. 
+
+But of course, that roster only gives me Offender IDs! You have to dig through hundreds of loose JSON files in `state_db/profiles/` just to match those IDs to actual names. 
+
+I need you to comb through the `dispatch_archives/` for this past weekend ONLY—that is October 28th and 29th, 2023. Ignore Friday, ignore Monday. There are dozens of district folders and thousands of system logs in there. I only care about people who are ALREADY on that Friday 17:00 active roster AND got tagged for either a **Noise Complaint (Code 415)** or **Illegal Dumping (Code 332)** over the weekend. Nothing else! If they got pulled in for shoplifting, or if they aren't on the Friday 17:00 list, ignore them completely. We don't have the budget to chase ghosts.
+
+Figure out exactly who fits those exact criteria. Create a clean CSV file at `desk_report/action_list.csv` with exactly three columns: `ID`, `Name`, and `Incident_Code`. Dios mio, do not give me extra work. No formatting gimmicks, just the headers and the correct data. Get it done so I can hand it to the captain and finish my shift.

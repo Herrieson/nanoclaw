@@ -1,0 +1,31 @@
+id: data_round_01_aligned_mix_800_0374
+name: legal_document_audit
+description: Audit confidential litigation files to identify unauthorized access and summarize billable hours.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0374.md
+environment:
+  asset: data_round_01_aligned_mix_800_0374
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0374-cloud-iam-lookup-skill
+  - data-round-01-aligned-mix-800-0374-legacy-iam-lookup-skill
+  - data-round-01-aligned-mix-800-0374-sec-log-decryptor-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: legal_data_processing
+tags:
+- data_analysis
+- security_audit
+- legal_services
+- tool_usage
+- error_recovery
+dependencies:
+  python:
+  - openai
+  - httpx
+prompt: prompts/data_round_01_aligned_mix_800_0374.md

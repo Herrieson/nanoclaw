@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0673
+name: data_round_01_aligned_mix_800_0673
+description: Assist an anxious, frugal, widowed carpenter in summarizing his usable wood inventory and outdoor expenses from messy logs.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0673.md
+environment:
+  asset: data_round_01_aligned_mix_800_0673
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0673.md

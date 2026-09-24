@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0606
+name: data_round_01_aligned_mix_800_0606
+description: Act as a stressed, highly critical preschool teacher asking the agent to parse messy fundraiser files for specific donation statistics and VIP parent names.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0606.md
+environment:
+  asset: data_round_01_aligned_mix_800_0606
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0606.md

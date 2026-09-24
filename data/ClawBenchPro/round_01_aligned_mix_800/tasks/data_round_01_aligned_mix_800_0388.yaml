@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0388
+name: counselor_record_audit_enhanced
+description: Audit school counseling records for regulatory compliance using external registry APIs and transcript extractors.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0388.md
+environment:
+  asset: data_round_01_aligned_mix_800_0388
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0388-audio-transcript-extractor-skill
+  - data-round-01-aligned-mix-800-0388-credential-registry-query-skill
+  - data-round-01-aligned-mix-800-0388-fake-license-validator-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0388.md

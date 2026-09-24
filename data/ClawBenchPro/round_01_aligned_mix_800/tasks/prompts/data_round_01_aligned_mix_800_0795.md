@@ -1,0 +1,5 @@
+Look, I don't have the time or patience to hold your hand through this. The EPC contractors just dumped a massive pile of raw SCADA telemetry and inverter logs into the `field_logs` directory, and it's a complete disaster. Typical. 
+
+Between finalizing the new 115kV substation schematics and dealing with my kid's chaotic soccer schedule, my bandwidth is literally zero. I need you to act as the parser here. Go through that garbage directory. I only care about the nodes that are currently active and meet strict IEEE 1547 interconnection compliance. If a node shows a voltage sag of 0.05 p.u. or higher, or a frequency deviation exceeding 0.1 Hz, it's out. Complete trash. Don't include it.
+
+I need to know exactly which grid nodes are actually compliant and the aggregated active power output (in MW) we can reliably dispatch from them. Put the final structured payload—JSON is preferred so I can pipe it directly into my load flow simulation—into a new directory called `grid_summary`. Call the file `compliance_report.json` or whatever makes sense. Just get it done, and spare me the pleasantries.

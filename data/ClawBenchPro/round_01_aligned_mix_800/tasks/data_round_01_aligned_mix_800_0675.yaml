@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0675
+name: Furniture Factory Stain Inventory
+description: Process messy log files to identify bad batches and calculate total good volume based on persona's loose description.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0675.md
+environment:
+  asset: data_round_01_aligned_mix_800_0675
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema: nanoclaw/task@v1

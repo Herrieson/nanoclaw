@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0352
+name: data_round_01_aligned_mix_800_0352
+prompts:
+- prompts/data_round_01_aligned_mix_800_0352.md
+environment:
+  asset: data_round_01_aligned_mix_800_0352
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0352-ncsr-graphql-query-skill
+  - data-round-01-aligned-mix-800-0352-ncsr-legacy-query-skill
+  - data-round-01-aligned-mix-800-0352-rfid-log-decoder-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+topic: construction_project_material_reconciliation
+agent_prompt: tasks/prompts/data_round_01_aligned_mix_800_0352.md

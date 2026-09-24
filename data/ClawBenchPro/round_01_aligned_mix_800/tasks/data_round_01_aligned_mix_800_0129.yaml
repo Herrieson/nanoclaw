@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0129
+name: data_round_01_aligned_mix_800_0129_bungee_tower_contracting
+description: A multi-turn complex constraint-solving task where the agent must evaluate construction subcontractor bids across multiple files, calculate costs, maintain state of unrepeated budget/material constraints, and adjust to sudden regulatory changes in subsequent turns.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0129_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0129_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0129
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0129/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0129/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0129_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0129_turn_2.md

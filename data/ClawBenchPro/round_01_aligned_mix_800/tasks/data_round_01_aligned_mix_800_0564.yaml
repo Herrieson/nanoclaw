@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0564
+name: legal_document_discrepancy_audit_wasteland
+description: High-stakes legal audit in a chaotic environment. Detect scheduling conflicts, missing depositions, and unauthorized personnel across fragmented, noisy logs and a version-conflicted master schedule.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0564.md
+environment:
+  asset: data_round_01_aligned_mix_800_0564
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0564.md

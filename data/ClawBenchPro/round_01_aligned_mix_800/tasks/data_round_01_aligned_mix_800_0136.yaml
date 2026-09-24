@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0136
+name: cherokee_school_cook_menu_planner
+description: 测试Agent在复杂业务流中的多文件状态转移与长程记忆。涉及文件级约束条件的解析、多步骤数据交叉验证（配方与营养标准）、应对突发变化（供应链断裂导致的价格与原料变更）以及最终的批量复杂计算（基于最终配方进行带有优先级的采购计算）。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0136_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0136_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0136_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0136
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0136/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0136/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0136/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0136_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0136_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0136_turn_3.md

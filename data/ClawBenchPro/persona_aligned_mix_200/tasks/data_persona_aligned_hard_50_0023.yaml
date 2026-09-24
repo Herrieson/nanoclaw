@@ -1,0 +1,25 @@
+id: data_persona_aligned_hard_50_0023
+name: data_persona_aligned_hard_50_0023
+prompts:
+- prompts/data_persona_aligned_hard_50_0023.md
+environment:
+  asset: data_persona_aligned_hard_50_0023
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: v1
+prompt: prompts/data_persona_aligned_hard_50_0023.md
+tags:
+- reverse-engineering
+- malware-analysis
+- log-parsing
+- data-extraction
+- multi-hop-reasoning
+- noise-filtering

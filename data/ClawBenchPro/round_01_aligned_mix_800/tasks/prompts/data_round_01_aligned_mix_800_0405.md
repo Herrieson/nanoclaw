@@ -1,0 +1,9 @@
+Listen pal, I'm up to my elbows in grease right now trying to fix a blown torque converter, and I don't have time for this office bureaucracy nonsense. 
+
+The boss is breathing down my neck wanting to know exactly how much time and materials we burned *specifically* on transmission jobs this entire year. Look, I'm waving my hands here because it's frustrating as hell—I'm a mechanic, not an accountant! I jotted down what I did every single day in my `shop_notes` folder, but they're a total mess. I just write down the Work Order numbers (like WO-1234) and then ramble about what I did, how many hours it took, and how many quarts of fluid I poured in. I didn't bother writing down if it was an engine, a transmission, or a brake job half the time.
+
+If you want to know which Work Orders were actually transmission jobs, you'll have to cross-check my notes with the front office's master list they dump in the `front_desk` folder. Make sure you use the finalized 2023 list (`master_work_orders_2023.csv`), not those garbage old draft backups they leave lying around.
+
+I need you to dig through my daily notes, find the work orders that match the transmission category from the front desk list, and tally up the total labor hours and the total quarts of transmission fluid I used. Ignore the engine oil changes, brake flushes, and whatever else I was rambling about—even if I list hours and quarts for them!
+
+Just stick the final numbers into a file called `transmission_summary.json` (with keys `total_labor_hours` and `total_fluid_quarts`) and drop it in the `office_reports` folder. Make it clean so the boss leaves me alone. The sooner this is done, the sooner I can get out of here, load the kids into the RV, and hit the trails out in Ocala National Forest for the weekend. Don't give me any long speeches or explanations, just get it done!

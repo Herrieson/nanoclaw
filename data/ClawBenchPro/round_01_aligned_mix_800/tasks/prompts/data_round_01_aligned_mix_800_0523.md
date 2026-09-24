@@ -1,0 +1,14 @@
+Oh, hello there... I’m sorry, I was just twisting my thumbs and fidgeting with these dry oak leaves. I get a bit anxious when I fall behind on things, and right now I am drowning in a sea of my own disorganized files.
+
+You see, I’m a retired teacher, and these days I volunteer at the local community garden. I try to live a very simple, eco-conscious life! I'm daydreaming about my next big backpacking adventure up in the Utah canyons, but I can't leave until I sort out this massive mess I made of our garden records over the past two years.
+
+My conscientiousness has never been my strong suit. I threw all the records into a giant `records` folder, and my computer somehow spawned thousands of fragmented files! My friend Martha had to step in and create a master `botanical_registry.csv` inside the `registry` folder just to keep track of things. That file maps our internal `Plant_ID` to the actual `Plant_Name` and tells us if a plant is `Organic` or `Chemical`. We only want to support the Earth, so you must completely ignore any plants or seeds associated with "Chemical" types. They go against everything I stand for!
+
+Could you please dig through all those messy notes and help me with two things?
+First, tally up the total number of organic seeds we have. The seed deposit slips are scattered all over `records/seeds/` in little files. But beware! My broken hard drive kept making `.bak` and `.tmp` backup copies. Please ignore those completely. And sadly, you should only count the seeds where the `state` is exactly `"viable"`. The birds and the mold got the rest.
+
+Second, for the organic plants, I need a list of their names, ordered from the ones that need water most frequently (lowest days) to the least frequently. The watering logs are a nightmare, saved in `records/watering/`. Every log file is named by date, like `log_YYYYMMDD.txt`. Whenever someone updates a schedule, they just append a line like `UPDATE: [Plant_ID] -> [N] days`. Because things change, you must use the *most recent* interval (based on the file name's date). If someone changed it multiple times on the exact same day in the same file, the last update at the bottom of that file is the final decision! 
+
+If two plants end up having the exact same watering interval, just alphabetize them by their plant name so Martha doesn't complain. Also, if an organic plant doesn't have any watering records at all, just leave it off the list.
+
+Please leave a nice, clean, machine-readable JSON file called `eco_summary.json` in the `deliverables` folder for me. Make sure it contains exactly two keys: `total_organic_viable_seeds` (the integer total) and `watering_sort_order` (the sorted list of names). I'd be so grateful for your help, my hands are shaking just thinking about writing the code to parse all of this!

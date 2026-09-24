@@ -1,0 +1,9 @@
+Hey man! *whistles a nervous, upbeat tune and adjusts bandana* How's it going? Listen, I'm in a serious bind and could really use a hand. You're good with computers, right? 
+
+Here's the deal: I run my own machinery repair and welding gig. Love the work, hate the paperwork. My filing system basically consists of me coming home from the shop, emptying my pockets, and tossing whatever receipts or scribbled notes I have into a digital pile. Now it's tax season, and the accountant is breathing down my neck. Don't even get me started on the government—taking a cut of my hard-earned cash to fund bureaucrats while I'm out here busting my knuckles fixing industrial mixers and tractors! It's a racket, I tell ya. 
+
+Anyway, I need to get my books straight before I get audited. I've dumped all my recent job logs, scribbles, and invoices into the `desk_drawer_dump` folder. It's... well, it's a complete mess. Some of it is just notes I wrote to myself, some are CSV files from the welding supply shop, and some are weird digital logs. 
+
+I need you to comb through all of that, figure out how much money I actually brought in (my total revenue from the repair jobs), and sum up all my legitimate business expenses (parts, welding gas, grease, that kind of stuff). Just a heads-up, sometimes I buy personal stuff like a new bandana while I'm picking up supplies—make sure you don't include my personal expenses, or the tax man will have a field day with me.
+
+When you've got the final numbers, just write them out nicely into a file named `tax_headache_summary.json` and drop it in the `accountant_ready` folder. It doesn't need to be fancy, just clear enough for the accountant to see the total revenue and the total deductible expenses. I’m gonna go hit the trails and clear my head. You're a lifesaver, buddy!

@@ -1,0 +1,19 @@
+id: data_round_01_aligned_mix_800_0265
+name: data_round_01_aligned_mix_800_0265
+description: Enhanced data processing task for a high-neuroticism police persona.  The agent must use a specialized audio transcription skill to decode  unreadable dispatch logs and an external criminal records API to verify  subjects against a watch list.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0265.md
+environment:
+  asset: data_round_01_aligned_mix_800_0265
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0265-advanced-neural-transcriber
+  - data-round-01-aligned-mix-800-0265-criminal-records-api-skill
+  - data-round-01-aligned-mix-800-0265-vlc-audio-player
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2

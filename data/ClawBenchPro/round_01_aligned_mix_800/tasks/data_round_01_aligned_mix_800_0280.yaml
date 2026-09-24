@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0280
+name: data_round_01_aligned_mix_800_0280
+prompts:
+- prompts/data_round_01_aligned_mix_800_0280.md
+environment:
+  asset: data_round_01_aligned_mix_800_0280
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0280-art-ledger-ocr-skill
+  - data-round-01-aligned-mix-800-0280-legacy-gold-converter
+  - data-round-01-aligned-mix-800-0280-universal-commodity-rates
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+task_id: data_round_01_aligned_mix_800_0280
+prompt_file: prompts/data_round_01_aligned_mix_800_0280.md

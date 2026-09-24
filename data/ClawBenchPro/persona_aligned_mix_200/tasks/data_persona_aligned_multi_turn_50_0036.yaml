@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0036
+name: stream_kernel_debugging
+description: 测试Agent对底层流媒体协议日志的综合排查与长周期归因能力。包含连续复杂时序状态判断、跨日志维度的故障定位，以及基于物理文件的记忆流转。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0036_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0036_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0036_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0036
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0036/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0036/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0036/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0036_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0036_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0036_turn_3.md

@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0035
+name: sustainable_grocery_supply_chain_management
+description: 测试 Agent 在变动规则下的供应链管理与决策一致性。Agent 需要为一名注重环保的小型杂货店主处理供应商筛选、库存审计及应对突发环境合规性要求。任务跨越 3 个轮次，涉及复杂的逻辑推演、历史记录追溯及动态数据更新。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0035_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0035_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0035_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0035
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0035/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0035/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0035/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0035_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0035_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0035_turn_3.md

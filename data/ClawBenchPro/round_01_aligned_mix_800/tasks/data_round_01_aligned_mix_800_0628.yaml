@@ -1,0 +1,21 @@
+id: data_round_01_aligned_mix_800_0628
+name: Mai's Organic Soap Inventory
+description: A persona-driven task to parse messy inventory logs and calculate totals for approved materials while ignoring distractors.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0628.md
+environment:
+  asset: data_round_01_aligned_mix_800_0628
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: v1
+type: task
+assets:
+- data_round_01_aligned_mix_800_0628

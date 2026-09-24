@@ -1,0 +1,22 @@
+id: data_round_01_aligned_mix_800_0284
+name: data_round_01_aligned_mix_800_0284
+prompts:
+- prompts/data_round_01_aligned_mix_800_0284.md
+environment:
+  asset: data_round_01_aligned_mix_800_0284
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0284-eco-impact-auditor
+  - data-round-01-aligned-mix-800-0284-legacy-db-extractor
+  - data-round-01-aligned-mix-800-0284-terrain-risk-analyzer
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: 1.0
+schema: nanoclaw_task
+task_id: data_round_01_aligned_mix_800_0284
+prompt: prompts/data_round_01_aligned_mix_800_0284.md

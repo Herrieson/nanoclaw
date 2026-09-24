@@ -1,0 +1,7 @@
+Well, don't that beat all! I told you Mother Nature was stubborn as a mule. Look at the forecast in `updates/weather.json`. It's going to pour buckets on Day 2.
+
+Pull up the notes you saved previously about the campsite and activities we locked in. Look at the activities you scheduled. Cancel any outdoor activities scheduled for Day 2. To replace them, you need to dig back into the venue's catalog and pick indoor, ecology-focused activities for Day 2 so we still hit our educational quota. If they don't have enough indoor ecology ones to make up the difference, just pick any indoor activity they have for Day 2. 
+
+Also, the PTA finally got off their duffs and sent the parent chaperone list in `logistics/chaperones.csv`. But I'm not taking any chances—filter out anyone whose background check isn't explicitly 'Cleared'. 
+
+Here's your main deliverable for today: the caterers are hounding me. Based on the finalized kids from your previous records and these cleared chaperones, I need a comprehensive `catering_order.json` placed in the `planning` folder. It should just be a simple tally of the exact number of meals needed for each dietary restriction category (e.g., {"Standard": 5, "Vegan": 2...}). If someone has no restriction, they get "Standard". Do not mess up these numbers, or we'll have hungry, cranky kids barking up the wrong tree all afternoon. Update your master planning notes with the revised activities and the final adult list, too.

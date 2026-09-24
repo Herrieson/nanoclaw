@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0587
+name: extreme_wasteland_construction_audit
+description: 深度异化的建筑工地考勤与材料损耗审计任务。Agent 需要在充斥着数千个碎片文件、多语言混杂、以及伪造日志的废土环境中，通过多级关联推理恢复真实的财务结算。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0587.md
+environment:
+  asset: data_round_01_aligned_mix_800_0587
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: Data Processing
+prompt: prompts/data_round_01_aligned_mix_800_0587.md

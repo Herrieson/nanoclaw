@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0704
+name: data_round_01_aligned_mix_800_0704
+description: Process dirty POS logs and calculate tip distributions based on a specific persona.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0704.md
+environment:
+  asset: data_round_01_aligned_mix_800_0704
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema_version: '1.0'

@@ -1,0 +1,22 @@
+id: data_round_01_aligned_mix_800_0268
+name: data_round_01_aligned_mix_800_0268
+description: Process an encrypted PDF of e-sports tournament signups. Agent must parse the PDF and use a specialized gamer database API to verify player ages before generating the bracket.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0268.md
+environment:
+  asset: data_round_01_aligned_mix_800_0268
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0268-e-sports-pdf-extractor-skill
+  - data-round-01-aligned-mix-800-0268-gamer-id-validator-skill
+  - data-round-01-aligned-mix-800-0268-legacy-query-tool
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+assets:
+- data_round_01_aligned_mix_800_0268
+prompt: prompts/data_round_01_aligned_mix_800_0268.md

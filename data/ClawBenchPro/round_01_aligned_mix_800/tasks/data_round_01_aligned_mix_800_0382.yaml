@@ -1,0 +1,21 @@
+id: data_round_01_aligned_mix_800_0382
+name: data_round_01_aligned_mix_800_0382
+prompts:
+- prompts/data_round_01_aligned_mix_800_0382.md
+environment:
+  asset: data_round_01_aligned_mix_800_0382
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0382-handwritten-ledger-parser-skill
+  - data-round-01-aligned-mix-800-0382-legacy-volunteer-db-query
+  - data-round-01-aligned-mix-800-0382-raptor-safety-validator-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema_version: '1.0'
+type: agentic_eval
+prompt: prompts/data_round_01_aligned_mix_800_0382.md

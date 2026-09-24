@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0155
+name: entertainment_complex_janitorial_optimization
+description: 针对大型娱乐综合体的清洁与维护任务进行多轮优化。涉及复杂的排班冲突解决、特殊区域（赌场、剧院）的动态准入规则管理，以及在资源约束和人员伤亡/变动情况下的状态流转测试。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0155_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0155_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0155_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0155
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0155/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0155/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0155/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0155_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0155_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0155_turn_3.md

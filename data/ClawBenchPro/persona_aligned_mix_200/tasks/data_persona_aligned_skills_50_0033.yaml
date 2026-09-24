@@ -1,0 +1,26 @@
+id: data_persona_aligned_skills_50_0033
+name: Spacecraft Telemetry Recovery
+description: Query the ICD database to obtain frame formats, parse corrupted hexadecimal telemetry logs to extract Star Tracker quaternions, and normalize them using flight-certified tools before saving.
+prompts:
+- prompts/data_persona_aligned_skills_50_0033.md
+environment:
+  asset: data_persona_aligned_skills_50_0033
+skills:
+  available:
+  - data-persona-aligned-skills-50-0033-query-legacy-telemetry-db
+  - data-persona-aligned-skills-50-0033-query-mission-icd
+  - data-persona-aligned-skills-50-0033-spacecraft-quaternion-normalizer
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+agent:
+  type: nanoclaw
+  capabilities:
+  - file_system
+  - python_execution
+prompt: prompts/data_persona_aligned_skills_50_0033.md

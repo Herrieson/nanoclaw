@@ -1,0 +1,19 @@
+id: data_round_01_aligned_mix_800_0291
+name: data_round_01_aligned_mix_800_0291
+description: Parse corrupted raw telemetry CSVs from a structural stress test, utilize kinematics calibration tools to translate electrical signals to physical units, calculate peak loads, and filter threshold-breaching sensors based on a demanding engineer's specifications.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0291.md
+environment:
+  asset: data_round_01_aligned_mix_800_0291
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0291-cloud-kinematics-api-skill
+  - data-round-01-aligned-mix-800-0291-local-kinematics-db-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0291.md

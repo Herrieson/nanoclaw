@@ -1,0 +1,273 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "sc": "https://schema.org/",
+    "cr": "http://mlcommons.org/croissant/",
+    "citeAs": "cr:citeAs",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "dct": "http://purl.org/dc/terms/",
+    "conformsTo": "dct:conformsTo",
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "distribution": "sc:distribution",
+    "recordSet": "cr:recordSet",
+    "field": "cr:field",
+    "source": "cr:source",
+    "extract": "cr:extract",
+    "column": "cr:column",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "includes": "cr:includes",
+    "containedIn": "cr:containedIn",
+    "dataLimitations": "rai:dataLimitations",
+    "dataBiases": "rai:dataBiases",
+    "personalSensitiveInformation": "rai:personalSensitiveInformation",
+    "dataUseCases": "rai:dataUseCases",
+    "dataSocialImpact": "rai:dataSocialImpact",
+    "equivalentProperty": "cr:equivalentProperty",
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "hasSyntheticData": "rai:hasSyntheticData",
+    "samplingRate": "cr:samplingRate",
+    "wasDerivedFrom": "prov:wasDerivedFrom",
+    "wasGeneratedBy": "prov:wasGeneratedBy"
+  },
+  "@type": "sc:Dataset",
+  "name": "round_01_aligned_mix_800",
+  "description": "Round 01 Aligned Mix 800 from the ClawBenchPro benchmark collection.",
+  "url": "https://huggingface.co/datasets/ErenJaegerYeager/ClawBenchPro/tree/main/round_01_aligned_mix_800",
+  "license": "https://spdx.org/licenses/MIT.html",
+  "conformsTo": [
+    "http://mlcommons.org/croissant/1.1",
+    "http://mlcommons.org/croissant/RAI/1.0"
+  ],
+  "version": "1.0.0",
+  "datePublished": "2026-05-06",
+  "creator": {
+    "@type": "sc:Organization",
+    "name": "Nanoclaw contributors"
+  },
+  "keywords": [
+    "agent benchmark",
+    "workplace tasks",
+    "tool use",
+    "multi-turn",
+    "skills",
+    "synthetic data"
+  ],
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "huggingface_repository",
+      "name": "ClawBenchPro Hugging Face repository",
+      "contentUrl": "https://huggingface.co/datasets/ErenJaegerYeager/ClawBenchPro/tree/main/round_01_aligned_mix_800",
+      "encodingFormat": "git+https",
+      "sha256": "a9e3119485d5f9bef4aedd8676fc39f30160e15a802afb95512b3447dbdf8236"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "dataset_index_csv",
+      "name": "dataset_index.csv",
+      "contentUrl": "https://huggingface.co/datasets/ErenJaegerYeager/ClawBenchPro/resolve/main/round_01_aligned_mix_800/dataset_index.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "5412d7651f522aa5fc56e96451b386ad993921584b51a8d6b1033995e117461d"
+    },
+    {
+      "@type": "cr:FileSet",
+      "@id": "round_01_aligned_mix_800_tasks",
+      "name": "round_01_aligned_mix_800_tasks",
+      "containedIn": {
+        "@id": "huggingface_repository"
+      },
+      "includes": "round_01_aligned_mix_800/tasks/**/*",
+      "encodingFormat": "text/*"
+    },
+    {
+      "@type": "cr:FileSet",
+      "@id": "round_01_aligned_mix_800_skills",
+      "name": "round_01_aligned_mix_800_skills",
+      "containedIn": {
+        "@id": "huggingface_repository"
+      },
+      "includes": "round_01_aligned_mix_800/skills/**/*",
+      "encodingFormat": "text/*"
+    },
+    {
+      "@type": "cr:FileSet",
+      "@id": "round_01_aligned_mix_800_eval_manifests",
+      "name": "round_01_aligned_mix_800_eval_manifests",
+      "containedIn": {
+        "@id": "huggingface_repository"
+      },
+      "includes": "round_01_aligned_mix_800/eval_manifests/*",
+      "encodingFormat": "text/*"
+    },
+    {
+      "@type": "cr:FileSet",
+      "@id": "round_01_aligned_mix_800_provenance",
+      "name": "round_01_aligned_mix_800_provenance",
+      "containedIn": {
+        "@id": "huggingface_repository"
+      },
+      "includes": "round_01_aligned_mix_800/provenance/*",
+      "encodingFormat": "text/*"
+    }
+  ],
+  "citeAs": "ClawBenchPro: A compact, builder-based workplace-agent benchmark collection. https://huggingface.co/datasets/ErenJaegerYeager/ClawBenchPro/tree/main/round_01_aligned_mix_800",
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "task_index",
+      "name": "Task index",
+      "description": "One row per task in round_01_aligned_mix_800. This index points to task YAML files, prompt files, task-local builders, generated asset locations, and skill counts.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "dataset",
+          "name": "dataset",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dataset_index_csv"
+            },
+            "extract": {
+              "column": "dataset"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "task_id",
+          "name": "task_id",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dataset_index_csv"
+            },
+            "extract": {
+              "column": "task_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "category",
+          "name": "category",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dataset_index_csv"
+            },
+            "extract": {
+              "column": "category"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "task_file",
+          "name": "task_file",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dataset_index_csv"
+            },
+            "extract": {
+              "column": "task_file"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "asset_dir",
+          "name": "asset_dir",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dataset_index_csv"
+            },
+            "extract": {
+              "column": "asset_dir"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "prompt_files",
+          "name": "prompt_files",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dataset_index_csv"
+            },
+            "extract": {
+              "column": "prompt_files"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "skill_count",
+          "name": "skill_count",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dataset_index_csv"
+            },
+            "extract": {
+              "column": "skill_count"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "rai:dataLimitations": "ClawBenchPro is intended for evaluating workplace-style agent behavior in controlled synthetic tasks. It is not representative of all languages, geographies, industries, accessibility needs, safety-critical domains, or real production workplaces. It should not be used as the sole basis for deployment, hiring, medical, legal, financial, or safety-critical decisions.",
+  "rai:dataBiases": "The tasks were selected and generated to stress agentic workflows, tool use, state tracking, and benchmark coverage. This introduces selection bias toward tasks that are easy to package as local workspaces and may underrepresent low-resource languages, non-technical occupations, and domains requiring embodied or social interaction.",
+  "rai:personalSensitiveInformation": "The dataset is designed as synthetic benchmark data and is not intended to contain real personal data. Some tasks may include fictional personas, synthetic internal URLs, synthetic keys, policy-sensitive text, or domain-specific records as benchmark fixtures.",
+  "rai:dataUseCases": "Validated use cases include comparative evaluation of language-agent runners on workplace-style tasks, category-level benchmark analysis, and reproducibility studies. The dataset is not validated for model fine-tuning, safety certification, demographic fairness auditing, or real-world job-performance measurement.",
+  "rai:dataSocialImpact": "Potential positive impacts include more reproducible agent evaluation and better measurement of multi-turn, tool-using systems. Risks include overgeneralizing benchmark scores, optimizing narrowly to synthetic tasks, or exposing agents to policy-sensitive fixtures without appropriate safeguards. The package documents task categories and uses local synthetic environments to reduce dependence on external services.",
+  "rai:hasSyntheticData": true,
+  "prov:wasDerivedFrom": [
+    {
+      "@id": "nanoclaw_generation_pipeline",
+      "name": "Nanoclaw task generation and import pipeline"
+    }
+  ],
+  "prov:wasGeneratedBy": [
+    {
+      "@type": "prov:Activity",
+      "name": "ClawBenchPro packaging",
+      "description": "Tasks were generated, staged, imported into Nanoclaw task YAML format, validated with env_builder.py builders, grouped into two aligned benchmark datasets, sanitized for local path leakage, and exported in compact builder-only form for hosting.",
+      "prov:used": [
+        "scripts/unpack_task_batch.py",
+        "scripts/import_staged_tasks.py",
+        "scripts/build_published_workplace_datasets.py",
+        "scripts/build_clawbenchpro_hf_dataset.py"
+      ]
+    }
+  ],
+  "additionalProperty": [
+    {
+      "@type": "sc:PropertyValue",
+      "name": "task_count",
+      "value": 800
+    },
+    {
+      "@type": "sc:PropertyValue",
+      "name": "dataset_root",
+      "value": "round_01_aligned_mix_800"
+    },
+    {
+      "@type": "sc:PropertyValue",
+      "name": "group_counts",
+      "value": "{\"base\": 200, \"hard_aligned\": 200, \"multi_turn_aligned\": 200, \"skills_aligned\": 200}"
+    }
+  ]
+}

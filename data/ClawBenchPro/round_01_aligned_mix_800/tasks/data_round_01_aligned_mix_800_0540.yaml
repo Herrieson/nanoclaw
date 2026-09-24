@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0540
+name: data_round_01_aligned_mix_800_0540
+description: Navigate a fractured, noisy police database to extract total stolen property values and identify specific suspects with neck tattoos across multiple data formats.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0540.md
+environment:
+  asset: data_round_01_aligned_mix_800_0540
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0540.md

@@ -1,0 +1,22 @@
+id: data_round_01_aligned_mix_800_0311
+name: clinical_shift_audit_enhanced
+description: An enhanced nursing shift audit requiring PDF parsing, clinical policy lookup, and specialized dosage validation tools.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0311.md
+environment:
+  asset: data_round_01_aligned_mix_800_0311
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0311-emr-clinical-dosage-validator
+  - data-round-01-aligned-mix-800-0311-hospital-archived-pdf-parser
+  - data-round-01-aligned-mix-800-0311-legacy-query-tool
+  - data-round-01-aligned-mix-800-0311-nursing-policy-search-engine
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_analysis
+prompt: prompts/data_round_01_aligned_mix_800_0311.md

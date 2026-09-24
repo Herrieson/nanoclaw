@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0168
+name: community_coop_fund_management
+description: 测试Agent在复杂社区互助网络中的长线调度与资金约束核算能力。需要处理多文件格式（JSON/CSV/YAML），并在多轮会话中保持对价值观约束（如平权指标、剥削评分）和财务底线的记忆，防RAG机制严格测试其状态流转能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0168_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0168_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0168
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0168/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0168/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0168_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0168_turn_2.md

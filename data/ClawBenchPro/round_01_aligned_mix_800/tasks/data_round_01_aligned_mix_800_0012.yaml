@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0012
+name: livestock_genetic_breeding_management
+description: 评估 Agent 在处理复杂育种数据时的逻辑推理、文件状态流转及跨会话规则记忆能力。任务涉及多维度筛选（基因、健康、成本）及针对突发疫病/市场变动的规则动态调整。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0012_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0012_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0012_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0012
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0012/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0012/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0012/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0012_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0012_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0012_turn_3.md

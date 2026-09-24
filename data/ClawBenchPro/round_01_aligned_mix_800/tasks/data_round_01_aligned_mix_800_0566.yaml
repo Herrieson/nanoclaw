@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0566
+name: data_round_01_aligned_mix_800_0566
+description: A specialty store cashier needs help reconciling a fragmented POS system, finding a specific employee's errors, and calculating remaining inventory for a personal recipe.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0566.md
+environment:
+  asset: data_round_01_aligned_mix_800_0566
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+assets: data_round_01_aligned_mix_800_0566
+prompt: prompts/data_round_01_aligned_mix_800_0566.md

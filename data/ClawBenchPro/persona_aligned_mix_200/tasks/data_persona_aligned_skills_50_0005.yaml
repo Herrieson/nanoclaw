@@ -1,0 +1,24 @@
+id: data_persona_aligned_skills_50_0005
+name: data_persona_aligned_skills_50_0005
+prompts:
+- prompts/data_persona_aligned_skills_50_0005.md
+environment:
+  asset: data_persona_aligned_skills_50_0005
+skills:
+  available:
+  - data-persona-aligned-skills-50-0005-ask-corp-bot-skill
+  - data-persona-aligned-skills-50-0005-hr-graphql-skill
+  - data-persona-aligned-skills-50-0005-query-gpu-metrics-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+task_id: data_persona_aligned_skills_50_0005
+prompt: prompts/data_persona_aligned_skills_50_0005.md
+dependencies:
+- httpx
+- openai

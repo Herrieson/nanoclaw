@@ -1,0 +1,25 @@
+id: data_round_01_aligned_mix_800_0476
+name: data_round_01_aligned_mix_800_0476
+description: The agent must parse a massive, deeply nested archive of multi-format expense records, dynamically identify non-deductible categories via corporate memos, filter out noise and voided items, and flag habitual offenders.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0476.md
+environment:
+  asset: data_round_01_aligned_mix_800_0476
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema_version: '1.0'
+type: evaluation
+task_id: data_round_01_aligned_mix_800_0476
+title: Tax Compliance Automation for a Gadget-Obsessed Manager - Wasteland Edition
+assets:
+- data_round_01_aligned_mix_800_0476
+prompt_file: prompts/data_round_01_aligned_mix_800_0476.md
+verify_rules_file: tasks/data_round_01_aligned_mix_800_0476/verify_rules.py
+verify_prompt_file: tasks/data_round_01_aligned_mix_800_0476/verify_prompt.md

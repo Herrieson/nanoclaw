@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0435
+name: grocery_store_inventory_audit
+description: 店主的数字化系统崩溃了，库存数据、供应商资质和品控日志碎了一地。你需要在充满噪音和作废记录的废墟中，通过三表关联找回符合特定资质且未过期的商品，并生成一份环保节供应清单。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0435.md
+environment:
+  asset: data_round_01_aligned_mix_800_0435
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: Data processing and Business Analysis

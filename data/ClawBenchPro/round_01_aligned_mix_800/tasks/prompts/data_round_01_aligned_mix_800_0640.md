@@ -1,0 +1,7 @@
+Dios mío, I can't take this anymore. Every night I come in to clean this real estate office, and the agents leave everything completely disorganized! Not just physical trash, but their digital files on this shared terminal. I'm just the night janitor, I sweep the floors and take out the trash, but the building manager told me I have to make sure his "morning brief" is ready on his desktop. I don't know anything about computers, and I'm terrified I'm going to lose my job if this isn't perfect. I have my wife and two little kids to think about, I can't afford to get fired!
+
+Look, there is a folder called `messy_desk`. It is full of junk. There are lunch orders, old receipt logs... absolute trash! Please, just like I throw away the physical trash, I need you to completely delete the lunch orders and receipt files. They are making my head spin. 
+
+But be very careful with the maintenance logs and the open house notes in that same folder! The manager only cares about the emergencies. Anything that mentions a "LEAK" or is marked "URGENT" needs to be copied over to a new file in the `clean_desk` folder. You can call it whatever makes sense for urgent repairs, maybe a markdown file. Please gather every single emergency note from those messy files and put them neatly in that new file. 
+
+I have to go mop the lobby now. Please have it completely tidy before the morning shift arrives. My chest is tight just thinking about the manager yelling at me. I'm begging you, clean this up for me!

@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0509
+name: data_round_01_aligned_mix_800_0509
+prompts:
+- prompts/data_round_01_aligned_mix_800_0509.md
+environment:
+  asset: data_round_01_aligned_mix_800_0509
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema: nanoclaw/task@v1.0
+prompt: prompts/data_round_01_aligned_mix_800_0509.md

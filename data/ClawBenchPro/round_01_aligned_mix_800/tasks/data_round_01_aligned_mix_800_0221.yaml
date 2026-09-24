@@ -1,0 +1,24 @@
+id: data_round_01_aligned_mix_800_0221
+name: Crop Manager Environmental Audit (Skill-Enhanced)
+description: Process complex agricultural logs involving spectral soil data and proprietary chemical analysis to identify environmental violations.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0221.md
+environment:
+  asset: data_round_01_aligned_mix_800_0221
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0221-agri-chemical-analyzer-skill
+  - data-round-01-aligned-mix-800-0221-global-agri-search-engine
+  - data-round-01-aligned-mix-800-0221-pdf-parser-skill
+  - data-round-01-aligned-mix-800-0221-soil-spectrogram-parser-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: v1
+type: task
+prompt: prompts/data_round_01_aligned_mix_800_0221.md

@@ -1,0 +1,7 @@
+Look, I'm at my breaking point. The shop's server rack took a hit during the power surge last night, and the data management software is completely trashed. My boss is breathing down my neck for the "End-of-Month Critical Liability Report" before he'll let me clock out. If I don't get this to him, I'm finished.
+
+Everything is a disaster zone. The OBD-II scanner exports are scattered across a nested mess of diagnostic folders—some are corrupted backups, some are temporary cache files, and only the ones marked with the "FINAL" integrity flag in their internal metadata actually count. I need the **License Plates** of every vehicle that has flagged either an **Engine Misfire (P0300)** or a **Catalytic Converter failure (P0420)**. Be careful: the codes might be buried in raw hex strings or fragmented across multiple 'chunk' files for the same session.
+
+And the inventory? Don't even get me started. The digital ledger is gone, so people have been dumping "inventory_snapshot" snippets into the `logs/archive/` directory for weeks. You'll need to hunt through all those files, find any mention of "Spark Plugs" (watch out for different brands and messy scribbles), and calculate the **Total Current Stock**. 
+
+I need a professional `boss_report.txt` containing the unique list of License Plates (sorted alphabetically) and the total count of Spark Plugs. Please, just find the needle in this haystack. My kids are waiting for me.

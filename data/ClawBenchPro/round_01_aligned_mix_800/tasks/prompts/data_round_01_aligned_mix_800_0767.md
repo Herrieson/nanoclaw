@@ -1,0 +1,5 @@
+Look, I don't have the time or the patience to explain this twice. I finally got my hands on the new XR-900 multi-phase photon detector, and I need to calibrate its telemetry module immediately. My last lab assistant—who I had to let go—left the recent spectro-resonance logs in an absolute state. Because he had zero concept of basic EMF shielding, half the readings are corrupted junk. 
+
+The raw files are dumped somewhere in the `sensor_dumps` folder. I need you to go through that mess and compile a clean summary for me. Any reading where the amplitude is below zero is physically impossible for this setup, and if the 'status' flag says 'ERR', the sensor was clearly out of alignment. Ignore all of that garbage.
+
+Just figure out the average valid amplitude for each sample ID and put it in a clean file called `clean_metrics.json` inside the `workspace` directory. Make it a simple mapping of sample ID to its average amplitude. I don't care how you do it, write a script or whatever, just get it done. I need to get back to soldering this custom circuit board before my grant meeting tomorrow.

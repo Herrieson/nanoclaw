@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0206
+name: data_round_01_aligned_mix_800_0206
+description: Act as a stressed, highly critical preschool teacher asking the agent to parse messy fundraiser files for specific donation statistics and VIP parent names. Requires classification and external ledger lookup.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0206.md
+environment:
+  asset: data_round_01_aligned_mix_800_0206
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0206-educational-content-classifier-skill
+  - data-round-01-aligned-mix-800-0206-fast-donations-summarizer
+  - data-round-01-aligned-mix-800-0206-school-parent-ledger-checker
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0206.md

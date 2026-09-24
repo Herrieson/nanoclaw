@@ -1,0 +1,28 @@
+id: data_round_01_aligned_mix_800_0276
+name: data_round_01_aligned_mix_800_0276
+description: The agent must process messy expense records (including a proprietary encrypted .osnas file), query a Tax Oracle API to dynamically determine deductibility rules, calculate totals, and flag habitual offenders.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0276.md
+environment:
+  asset: data_round_01_aligned_mix_800_0276
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0276-legacy-tax-oracle
+  - data-round-01-aligned-mix-800-0276-osnas-decryptor
+  - data-round-01-aligned-mix-800-0276-q3-tax-oracle
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+schema_version: '1.0'
+type: evaluation
+task_id: data_round_01_aligned_mix_800_0276
+title: Tax Compliance Automation for a Gadget-Obsessed Manager
+assets:
+- data_round_01_aligned_mix_800_0276
+prompt_file: prompts/data_round_01_aligned_mix_800_0276.md
+verify_rules_file: tasks/data_round_01_aligned_mix_800_0276/verify_rules.py
+verify_prompt_file: tasks/data_round_01_aligned_mix_800_0276/verify_prompt.md

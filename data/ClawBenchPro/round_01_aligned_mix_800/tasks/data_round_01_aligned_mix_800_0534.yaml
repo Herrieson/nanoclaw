@@ -1,0 +1,24 @@
+id: data_round_01_aligned_mix_800_0534
+name: university_records_cleanup
+description: A manager at a non-profit university needs to reconcile chaotic volunteer field trip logs against an official whitelist and generate a formal budget impact report.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0534.md
+environment:
+  asset: data_round_01_aligned_mix_800_0534
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+meta:
+  category: Data Processing & Administrative Automation
+  tags:
+  - data-cleaning
+  - reconciliation
+  - non-profit-management
+  persona_id: data_round_01_aligned_mix_800_0534
+prompt: prompts/data_round_01_aligned_mix_800_0534.md

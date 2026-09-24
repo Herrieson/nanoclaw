@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0107
+name: scenic_tour_compliance_audit
+description: 针对旅游向导业务的多轮合规性审计与调度优化任务。Agent 需要在第一轮建立核心资源库、排除违规供应商，并生成后续可追踪的状态文件；在第二轮面临路线突发封锁和复杂的环保政策冲突，必须基于第一轮的记录进行实时调整，涉及复杂的时空逻辑与规则匹配。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0107_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0107_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0107
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0107/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0107/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0107_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0107_turn_2.md

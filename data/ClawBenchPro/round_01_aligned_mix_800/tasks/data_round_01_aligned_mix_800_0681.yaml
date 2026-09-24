@@ -1,0 +1,17 @@
+id: data_round_01_aligned_mix_800_0681
+name: janitorial_inventory_crisis
+description: Help an extremely extroverted and conscientious but irritable janitor manage a messy inventory and billing discrepancy for a community center.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0681.md
+environment:
+  asset: data_round_01_aligned_mix_800_0681
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0681.md

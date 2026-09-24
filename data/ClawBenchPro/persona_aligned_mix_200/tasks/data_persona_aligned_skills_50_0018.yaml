@@ -1,0 +1,19 @@
+id: data_persona_aligned_skills_50_0018
+name: data_persona_aligned_skills_50_0018
+prompts:
+- prompts/data_persona_aligned_skills_50_0018.md
+environment:
+  asset: data_persona_aligned_skills_50_0018
+skills:
+  available:
+  - data-persona-aligned-skills-50-0018-local-heuristic-evaluator-skill
+  - data-persona-aligned-skills-50-0018-oem-perception-cloud-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+prompt: prompts/data_persona_aligned_skills_50_0018.md

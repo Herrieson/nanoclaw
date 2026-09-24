@@ -1,0 +1,24 @@
+id: data_round_01_aligned_mix_800_0282
+name: data_round_01_aligned_mix_800_0282
+description: Assistance for a busy federal nursing assistant in decrypting shift logs, querying auth APIs to identify unauthorized access, and reconciling hours.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0282.md
+environment:
+  asset: data_round_01_aligned_mix_800_0282
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0282-fed-nursing-auth-api-v1
+  - data-round-01-aligned-mix-800-0282-fed-secure-auth-v2
+  - data-round-01-aligned-mix-800-0282-hospital-log-decryptor
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: Data Analysis & Administrative
+prompt_src: tasks/prompts/data_round_01_aligned_mix_800_0282.md
+dependencies:
+- openai
+- httpx

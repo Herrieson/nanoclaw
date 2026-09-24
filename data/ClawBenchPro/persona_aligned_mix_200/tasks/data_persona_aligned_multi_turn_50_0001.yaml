@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0001
+name: split_brain_raft_recovery
+description: 测试 Agent 在分布式系统集群脑裂场景下，通过跨文件分析杂乱日志进行状态推演、识别并剔除未共识的脏数据，并利用其自主维护的物理记忆文件完成多轮次的灾难恢复工作。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0001_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0001_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0001_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0001
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0001/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0001/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0001/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0001_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0001_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0001_turn_3.md

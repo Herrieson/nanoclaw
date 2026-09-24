@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0139
+name: martha_multicultural_festival
+description: 模拟政府行政助理在复杂多变环境下的长程任务处理。测试Agent能否在多轮会话中通过物理文件记录、更新状态，并在突发需求（预算缩减、场地关闭）下严格遵守未在当前Prompt重申的历史业务红线（如卫生评级、特定饮食需求限制），同时进行多维度的复杂数据筛选与统筹规划。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0139_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0139_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0139_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0139
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0139/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0139/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0139/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0139_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0139_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0139_turn_3.md

@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0061
+name: logistics_route_optimization_and_compliance
+description: 评估 Agent 在多轮复杂的物流调度任务中的逻辑分析、冲突解决、长时记忆以及物理状态流转能力。任务涉及跨境包裹合规性审查、多约束路径规划及突发政策变更的处理。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0061_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0061_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0061_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0061
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0061/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0061/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0061/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0061_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0061_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0061_turn_3.md

@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0497
+name: data_round_01_aligned_mix_800_0497
+description: Filter fragmented student botany logs across multiple formats, cross-reference with an active enrollment roster and the official plant guide, identify missing assignments, and calculate total native plant growth.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0497.md
+environment:
+  asset: data_round_01_aligned_mix_800_0497
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0497.md
+timeout: 300

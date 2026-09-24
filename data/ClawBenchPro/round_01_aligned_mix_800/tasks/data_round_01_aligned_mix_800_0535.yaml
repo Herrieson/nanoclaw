@@ -1,0 +1,19 @@
+id: data_round_01_aligned_mix_800_0535
+name: data_round_01_aligned_mix_800_0535
+description: Process highly fragmented and noisy truck telemetry logs, OCR fuel receipts, and raw GPS dashcam data to extract total mileage, fuel costs, and the city with the longest idle time.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0535.md
+environment:
+  asset: data_round_01_aligned_mix_800_0535
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+version: '1.0'
+schema_version: '1.0'
+task_id: data_round_01_aligned_mix_800_0535

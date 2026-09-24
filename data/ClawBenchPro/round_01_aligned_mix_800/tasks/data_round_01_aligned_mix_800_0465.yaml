@@ -1,0 +1,16 @@
+id: data_round_01_aligned_mix_800_0465
+name: data_round_01_aligned_mix_800_0465
+description: 'A deep-abyss data processing task. The agent must navigate a highly fragmented, noisy file system based on a neurotic police officer''s instructions. It involves multi-hop logic: identifying the correct timestamped roster, cross-referencing scattered JSON profiles for ID-to-Name mappings, and parsing semi-structured  district logs across specific dates and crime codes, while ignoring decoys.'
+prompts:
+- prompts/data_round_01_aligned_mix_800_0465.md
+environment:
+  asset: data_round_01_aligned_mix_800_0465
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2

@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0047
+name: defi_reentrancy_audit_and_response
+description: 测试 Agent 在多文件 DeFi 协议源码审计、突发攻击日志溯源及补丁审查过程中的长期记忆与状态流转能力，防范基于历史规则的 RAG 泄漏，考察复杂文件交叉比对逻辑。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0047_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0047_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0047_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0047
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0047/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0047/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0047/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0047_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0047_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0047_turn_3.md

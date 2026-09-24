@@ -1,0 +1,16 @@
+id: data_round_01_aligned_mix_800_0404
+name: data_round_01_aligned_mix_800_0404
+description: Filter large-scale fragmented scientific raw data based on cross-referenced machine specs, metadata, and QC contamination lists, then calculate averages and output a JSON report.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0404.md
+environment:
+  asset: data_round_01_aligned_mix_800_0404
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2

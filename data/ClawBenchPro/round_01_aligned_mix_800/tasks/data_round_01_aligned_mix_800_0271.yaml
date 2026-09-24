@@ -1,0 +1,22 @@
+id: data_round_01_aligned_mix_800_0271
+name: data_round_01_aligned_mix_800_0271
+description: A teacher needs help auditing student field trip records. Data is fragmented across PDFs and handwritten scans, requiring specific insurance policy lookups and OCR tools.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0271.md
+environment:
+  asset: data_round_01_aligned_mix_800_0271
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0271-fast-data-extractor
+  - data-round-01-aligned-mix-800-0271-handwritten-form-ocr-skill
+  - data-round-01-aligned-mix-800-0271-insurance-premium-validator-skill
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+  - data_round_01_aligned_mix_800_0271
+prompt: prompts/data_round_01_aligned_mix_800_0271.md

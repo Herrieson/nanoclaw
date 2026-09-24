@@ -1,0 +1,19 @@
+id: data_round_01_aligned_mix_800_0479
+name: data_processing_wasteland_recovery
+description: Recover and reconcile fragmented user activity data from a catastrophic server migration failure.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0479.md
+environment:
+  asset: data_round_01_aligned_mix_800_0479
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: Software Development & Data Engineering
+task_type: Data Recovery & Forensic Analysis
+prompt: prompts/data_round_01_aligned_mix_800_0479.md

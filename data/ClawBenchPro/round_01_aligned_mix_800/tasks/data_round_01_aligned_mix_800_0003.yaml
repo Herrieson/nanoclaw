@@ -1,0 +1,32 @@
+id: data_round_01_aligned_mix_800_0003
+name: eco_curriculum_strategic_planning
+description: 模拟一位极其严谨的中学环境科学教师进行多年期课程与校园绿化项目的战略规划。测试 Agent 在面对复杂规则变更、增量数据处理以及跨会话状态维护（如预算追踪和供应商黑名单）时的能力。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0003_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0003_turn_2.md
+- prompts/data_round_01_aligned_mix_800_0003_turn_3.md
+environment:
+  asset: data_round_01_aligned_mix_800_0003
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0003/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0003/turn_2
+    turn_3:
+    - data_round_01_aligned_mix_800_0003/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0003_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0003_turn_2.md
+- turn: 3
+  prompt: prompts/data_round_01_aligned_mix_800_0003_turn_3.md

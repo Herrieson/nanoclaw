@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0042
+name: legacy_mainframe_modernization
+description: 测试Agent在多会话环境下的复杂文件结构解析、跨文件状态追踪与规则动态变更的适应能力。Agent需要解析类似COBOL的结构，在十六进制数据与日志中建立关联，并跨越多轮会话维持业务状态。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0042_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0042_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0042_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0042
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0042/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0042/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0042/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0042_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0042_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0042_turn_3.md

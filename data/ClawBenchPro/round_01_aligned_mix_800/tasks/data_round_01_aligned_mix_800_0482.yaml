@@ -1,0 +1,18 @@
+id: data_round_01_aligned_mix_800_0482
+name: data_round_01_aligned_mix_800_0482
+description: Federal nursing assistant audit involving fragmented logs, massive noise, and multi-hop reconciliation across a chaotic directory structure.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0482.md
+environment:
+  asset: data_round_01_aligned_mix_800_0482
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: Data Analysis & Administrative
+prompt_src: tasks/prompts/data_round_01_aligned_mix_800_0482.md

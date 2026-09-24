@@ -1,0 +1,5 @@
+OMG, hey! Listen up! I am literally drowning in customer complaints today and I really need your help before my shift ends! My friends and I are hitting this amazing new spot downtown in like, an hour, and I cannot be stuck here dealing with angry shipping tickets. 
+
+So here's the tea: The system went totally crazy this week, and my inbox in the `support_tickets` folder is stuffed with emails from people yelling about their packages. I need to sort out who actually deserves a priority refund. Our company policy right now is that we only escalate refunds if the customer explicitly asked for their money back in their message, AND the `shipping_logs.csv` shows their package has been delayed for more than 3 days. If it's 3 days or less, they just gotta wait, you know?
+
+Can you please cross-check the tickets with the shipping log and make a neat little file for me? Just drop it into a folder called `deliverables` so I can grab it on Monday. I don't care how you format the file, just make sure I can clearly see the order numbers and customer names for the people who actually meet both conditions. I'm counting on you, thanks a million!

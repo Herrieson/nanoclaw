@@ -1,0 +1,32 @@
+id: data_persona_aligned_multi_turn_50_0043
+name: ransomware_dynamic_reversing
+description: 测试 Agent 在恶意软件动态分析场景下的长上下文状态流转、跨文件关联（API追踪与内存转储结合）以及抵御强干扰诱饵数据的能力。
+prompts:
+- prompts/data_persona_aligned_multi_turn_50_0043_turn_1.md
+- prompts/data_persona_aligned_multi_turn_50_0043_turn_2.md
+- prompts/data_persona_aligned_multi_turn_50_0043_turn_3.md
+environment:
+  asset: data_persona_aligned_multi_turn_50_0043
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_persona_aligned_multi_turn_50_0043/turn_1
+    turn_2:
+    - data_persona_aligned_multi_turn_50_0043/turn_2
+    turn_3:
+    - data_persona_aligned_multi_turn_50_0043/turn_3
+sessions:
+- turn: 1
+  prompt: prompts/data_persona_aligned_multi_turn_50_0043_turn_1.md
+- turn: 2
+  prompt: prompts/data_persona_aligned_multi_turn_50_0043_turn_2.md
+- turn: 3
+  prompt: prompts/data_persona_aligned_multi_turn_50_0043_turn_3.md

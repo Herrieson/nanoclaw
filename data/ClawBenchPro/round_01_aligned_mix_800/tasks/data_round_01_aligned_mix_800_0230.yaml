@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0230
+name: data_round_01_aligned_mix_800_0230_student_performance_sketch_analysis
+description: A teacher needs help reconciling messy student performance data, querying the school database, and generating a structured report for a parent-teacher conference.
+prompts:
+- prompts/data_round_01_aligned_mix_800_0230.md
+environment:
+  asset: data_round_01_aligned_mix_800_0230
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0230-edusync-legacy-roster-api
+  - data-round-01-aligned-mix-800-0230-edusync-v2-roster-api
+  - data-round-01-aligned-mix-800-0230-peric-sketch-decoder
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+prompt: prompts/data_round_01_aligned_mix_800_0230.md

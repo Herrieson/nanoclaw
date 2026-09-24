@@ -1,0 +1,7 @@
+Hey there! I am absolutely thrilled to get this new semester's lunch menu rolling! The kids here in the district deserve something vibrant, healthy, and full of energy, you know? I've been brainstorming non-stop, but I really need your help to pull the administrative side together so I can get back to the kitchen.
+
+Here's the scoop: the state district has dropped some strict new dietary and financial guidelines in the `district_policies` folder. Meanwhile, I've got a bunch of wild and wonderful recipe ideas saved in the `recipes/first_drafts` directory. Some are mine, some are from the staff. 
+
+I need you to dig through those policies, figure out exactly what our limits are (like the absolute cost ceiling per serving, the hard limits on calories and sodium, and any strictly banned ingredients), and then evaluate all the recipes. Please pick exactly THREE recipes that perfectly pass all the district rules to be our "Core Weekly Specials". 
+
+Once you find the three winners, compile a nice, official "Core Menu Draft" for me and save it in a new folder called `deliverables`. Oh, and this is super important: please write down a clear, detailed memo in that same folder capturing all those strict district rules, thresholds, and your reasoning. I have a terrible memory for numbers and I know we are going to need those exact rules again next week when we plan the side dishes. Let's make this menu amazing!

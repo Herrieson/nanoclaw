@@ -1,0 +1,27 @@
+id: data_round_01_aligned_mix_800_0098
+name: global_portfolio_rebalancing
+description: 模拟高级财务分析师处理跨国投资组合的调仓任务。Agent 需要在第一轮基于复杂的合规性约束和波动率阈值筛选资产，并在第二轮处理突发的市场熔断与政策变更，要求其必须严格依赖第一轮建立的分析记录和持仓逻辑。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0098_turn_1.md
+- prompts/data_round_01_aligned_mix_800_0098_turn_2.md
+environment:
+  asset: data_round_01_aligned_mix_800_0098
+skills:
+  available: null
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+  assets:
+    turn_1:
+    - data_round_01_aligned_mix_800_0098/turn_1
+    turn_2:
+    - data_round_01_aligned_mix_800_0098/turn_2
+sessions:
+- turn: 1
+  prompt: prompts/data_round_01_aligned_mix_800_0098_turn_1.md
+- turn: 2
+  prompt: prompts/data_round_01_aligned_mix_800_0098_turn_2.md

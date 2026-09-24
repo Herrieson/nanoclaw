@@ -1,0 +1,20 @@
+id: data_round_01_aligned_mix_800_0373
+name: data_round_01_aligned_mix_800_0373
+description: 调查一宗学术不端疑云，利用外部学术数据库核对研究经费使用记录与实际产出。
+prompts:
+- prompts/data_round_01_aligned_mix_800_0373.md
+environment:
+  asset: data_round_01_aligned_mix_800_0373
+skills:
+  available:
+  - data-round-01-aligned-mix-800-0373-query-global-academic-nexus
+  - data-round-01-aligned-mix-800-0373-query-google-scholar-api
+runtime:
+  model: gpt-4o
+  mode: interactive
+  memory_policy: default
+  approval_mode: auto-approve
+  max_steps: 50
+  temperature: 0.2
+category: data_analysis
+prompt: prompts/data_round_01_aligned_mix_800_0373.md
