@@ -26,6 +26,9 @@ Evaluation focuses on the workspace produced by the agent. Task builders prepare
 
 **Dataset on Hugging Face:** [ErenJaegerYeager/ClawBenchPro](https://huggingface.co/datasets/ErenJaegerYeager/ClawBenchPro).
 
+<p align="center"><img src="docs/figures/evaluation-workflow.png" alt="ClawBenchPro evaluation workflow" width="820"></p>
+<p align="center"><em>Evaluation workflow from the accompanying paper: initialization, agent harness execution, and workspace verification.</em></p>
+
 ---
 
 ## 2. 📁 Project structure
@@ -70,6 +73,9 @@ Each package contains task YAML, Markdown prompts, workspace builders, optional 
 
 Workspaces are distributed in compact builder form and materialized during execution. See the [data format](docs/data-format.md) and [dataset card](data/ClawBenchPro/README.md) for details.
 
+<p align="center"><img src="docs/figures/domain-coverage.png" alt="ClawBenchPro domain coverage" width="560"></p>
+<p align="center"><em>Domain coverage reported in the paper: nine strategic areas are expanded into 43 scenario domains.</em></p>
+
 ### 3.2 Execution and evaluation
 
 | Component | Role | Source |
@@ -91,6 +97,9 @@ Workspaces are distributed in compact builder form and materialized during execu
 | Codex | Docker adapter | [Profile](src/nanoclaw/runner_profiles/codex.yaml) · [Adapter guide](src/nanoclaw/docker/codex-runner/README.md) |
 
 Model and endpoint compatibility depends on the selected harness. Configure the relevant profile and provider environment variables before comparing frameworks.
+
+<p align="center"><img src="docs/figures/harness-comparison.png" alt="Comparison across agent harnesses" width="900"></p>
+<p align="center"><em>Illustrative cross-harness comparison reproduced from the paper's released figure.</em></p>
 
 ---
 

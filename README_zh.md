@@ -26,6 +26,9 @@
 
 **Hugging Face 数据集：** [ErenJaegerYeager/ClawBenchPro](https://huggingface.co/datasets/ErenJaegerYeager/ClawBenchPro)。
 
+<p align="center"><img src="docs/figures/evaluation-workflow.png" alt="ClawBenchPro 评测流程" width="820"></p>
+<p align="center"><em>论文中的评测流程：初始化环境、运行 Agent 框架、验证最终工作区。</em></p>
+
 ---
 
 ## 2. 📁 项目结构
@@ -70,6 +73,9 @@ ClawBenchPro/
 
 初始工作区以紧凑的构建器形式发布，在执行时生成。详细结构见[数据格式说明](docs/data-format.md)和[数据卡](data/ClawBenchPro/README.md)。
 
+<p align="center"><img src="docs/figures/domain-coverage.png" alt="ClawBenchPro 领域覆盖" width="560"></p>
+<p align="center"><em>论文中的领域覆盖图：9 个战略领域进一步展开为 43 个具体场景领域。</em></p>
+
 ### 3.2 执行与评测流程
 
 | 组件 | 作用 | 代码位置 |
@@ -91,6 +97,9 @@ ClawBenchPro/
 | Codex | Docker 适配器 | [配置](src/nanoclaw/runner_profiles/codex.yaml) · [适配器说明](src/nanoclaw/docker/codex-runner/README.md) |
 
 模型与服务端点的兼容性由所选框架决定。跨框架实验前，需要按对应 profile 配置模型服务及环境变量。
+
+<p align="center"><img src="docs/figures/harness-comparison.png" alt="不同 Agent 框架对比" width="900"></p>
+<p align="center"><em>论文中发布的不同 Agent harness 对比图。</em></p>
 
 ---
 
